@@ -1,0 +1,23 @@
+﻿
+Each method to be meddled with 
+
+
+*** NOMENCLATURE ***
+
+Millinery is a veritable hive of cross-cutting metaphors:
+
+Millinery - the art of hat-making.
+Fillet - a band used to tidy the hair into a hat.
+
+The dominant imagery local to this project is then that of affixing hats onto methods, each of which
+must be tidied into its new form by a fillet.
+
+
+Below us, however, is quite another regime, that of birds and nests:
+
+Fody - a small, nest-making bird.
+Weaving - how the little bird makes its nest.
+
+Think then of the fody's woven nests raised upwards, turned upside-down, and stacked neatly on top of a balding head.
+
+Of course, Millinery.Fody also concerns itself with additions to a method's *tail* - but we ignore this.
