@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />
+    <Compile Include="ElementNameProvider.cs" />
     <Compile Include="Weave.cs" />
     <Compile Include="WeaveContext.cs" />
     <Compile Include="WeaveSpec.cs" />

@@ -16,6 +16,10 @@ namespace Cuckoo.TestAssembly
             _aNum = 89;
         }
 
+        public ClassWithStaticCtor() {
+
+        }
+
         [SimpleCuckoo]
         public string Hello(string recipient1, string recipient2) {
             string greeting = "Yip Yip!";

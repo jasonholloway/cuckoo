@@ -25,11 +25,13 @@ namespace Cuckoo.TestAssembly
 
             public void Blah() {
 
-                var r = new object[3];
+                object i = 3;
 
-                r[0] = 7;
-                r[1] = 9;
-                r[2] = 1;
+                int[] rInts = new int[10];
+
+                rInts[5] = (int)i;
+
+
 
                 //...
             }
@@ -54,16 +56,40 @@ namespace Cuckoo.TestAssembly
             return greeting;
         }
 
+
         [FieldCuckoo(Name = "Tony")]
         public string MethodWithFieldCuckoo() {
             string blah = "grrrowl";
             return blah;
         }
 
+
         [SimpleCuckoo]
         public string MethodReturnsString() {
             return "Hello from down below!";
         }
+
+
+        [ReturnChangingCuckoo("CHANGED!")]
+        public string MethodWithChangeableReturn() {
+            return "Blahdy blah blah";
+        }
+
+
+        [AddingCuckoo(8)]
+        [DeductingCuckoo(10)]
+        public int MethodReturnsInt() {
+            return 13;
+        }
+
+
+        /*
+        [SimpleCuckoo]
+        public T GenericMethod<T>() {
+            return default(T);
+        }
+        */
+
 
 
         public void Dummy2() { }

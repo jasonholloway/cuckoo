@@ -27,6 +27,7 @@ namespace Cuckoo.Fody
         {
             var module = _ctx.Module;
             var method = _spec.Method;
+            var nameProvider = new ElementNameProvider(_spec.Method.DeclaringType);
 
             var tICallUsurper = module.ImportReference(typeof(ICallUsurper));
             var tCallSite = module.ImportReference(typeof(Cuckoo.Common.CallSite));
@@ -38,15 +39,20 @@ namespace Cuckoo.Fody
             //********************************************************************************************
             //////////////////////////////////////////////////
             //Copy original method to usurped inner
-            var mUsurped = method.CopyToNewSibling("<USURPED>" + method.Name);
+            string usurpedName = nameProvider.GetElementName("USURPED", method.Name); 
+
+            var mUsurped = method.CopyToNewSibling(usurpedName);
+            
             mUsurped.Attributes |= MethodAttributes.Private;
 
 
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Create static CallSite ///////////////////////////////////////////////////////////////////
+            string callSiteName = nameProvider.GetElementName("CALLSITE", method.Name);
+
             var fCallSite = tDeclaring.AddField(
                                         tCallSite, 
-                                        "<CALLSITE>" + method.Name );
+                                        callSiteName );
 
             fCallSite.Attributes = FieldAttributes.Private
                                     | FieldAttributes.Static
@@ -55,6 +61,10 @@ namespace Cuckoo.Fody
 
             tDeclaring.AppendToStaticCtor(
                 (i, m) => {
+                    var vMethodInfo = m.Body.AddVariable<Refl.MethodInfo>();
+                    var vUsurper = m.Body.AddVariable<ICallUsurper>();
+
+
                     var mMethodInfoResolve = 
                             module.ImportReference(typeof(Refl.MethodBase)
                                                         .GetMethod(
@@ -69,7 +79,7 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Ldtoken, method);
                     i.Emit(OpCodes.Call, mMethodInfoResolve);
-
+                    i.Emit(OpCodes.Stloc, vMethodInfo);
 
 
                     /////////////////////////////////////////////////////////////////////
@@ -112,14 +122,10 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Newobj, mCtor);
                     }
 
-
-                    var vUsurper = new VariableDefinition("usurper", tICallUsurper);
-                    i.Body.Variables.Add(vUsurper);
+                    i.Emit(OpCodes.Stloc, vUsurper);
 
 
                     if(atCuckoo.HasFields) {
-                        i.Emit(OpCodes.Stloc, vUsurper);
-
                         foreach(var namedArg in atCuckoo.Fields) {
                             var field = tCuckoo.Resolve().Fields
                                                      .First(f => f.Name == namedArg.Name);
@@ -128,13 +134,9 @@ namespace Cuckoo.Fody
                             i.EmitConstant(namedArg.Argument.Type, namedArg.Argument.Value);
                             i.Emit(OpCodes.Stfld, field);
                         }
-
-                        i.Emit(OpCodes.Ldloc, vUsurper);
                     }
 
                     if(atCuckoo.HasProperties) {
-                        i.Emit(OpCodes.Stloc, vUsurper);
-
                         foreach(var namedArg in atCuckoo.Properties) {
                             var prop = tCuckoo.Resolve().Properties
                                             .Where(p => p.SetMethod != null)
@@ -144,8 +146,6 @@ namespace Cuckoo.Fody
                             i.EmitConstant(namedArg.Argument.Type, namedArg.Argument.Value);
                             i.Emit(OpCodes.Call, prop.SetMethod);
                         }
-
-                        i.Emit(OpCodes.Ldloc, vUsurper);
                     }
 
 
@@ -154,9 +154,20 @@ namespace Cuckoo.Fody
                     var mCallSiteCtor = module.ImportReference(
                                                     tCallSite.Resolve().GetConstructors().First()
                                                     );
-            
+
+                    i.Emit(OpCodes.Ldloc, vMethodInfo);
+                    i.Emit(OpCodes.Ldloc, vUsurper);
                     i.Emit(OpCodes.Newobj, mCallSiteCtor);
                     i.Emit(OpCodes.Stsfld, fCallSite);
+
+
+                    ////////////////////////////////////////////////////////////////////
+                    //Init usurper ////////////////////////////////////////////////////
+                    var mUsurperInit = module.ImportReference(typeof(ICallUsurper).GetMethod("Init"));
+                    
+                    i.Emit(OpCodes.Ldloc, vUsurper);
+                    i.Emit(OpCodes.Ldloc, vMethodInfo);
+                    i.Emit(OpCodes.Call, mUsurperInit);
                 });
 
 
@@ -164,9 +175,11 @@ namespace Cuckoo.Fody
 
             ////////////////////////////////////////////////////////////////////////////////////////////
             //Declare new ICall class /////////////////////////////////////////////////////////////////
+            string callClassName = nameProvider.GetElementName("CALL", method.Name);
+
             var tCall = new TypeDefinition(
                                 tDeclaring.Namespace,
-                                "<CALL>" + method.Name,
+                                callClassName,
                                 TypeAttributes.Class | TypeAttributes.NestedPrivate
                                 );
 
@@ -296,8 +309,15 @@ namespace Cuckoo.Fody
                         "set_ReturnValue",
                         (i, m) => {
                             if(fReturn != null) {
-                                //unbox and cast
-                                //...
+                                i.Emit(OpCodes.Ldarg_0);
+
+                                i.Emit(OpCodes.Ldarg_1);
+
+                                if(fReturn.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Unbox_Any, fReturn.FieldType);
+                                }
+
+                                i.Emit(OpCodes.Stfld, fReturn);
                             }
 
                             i.Emit(OpCodes.Ret);

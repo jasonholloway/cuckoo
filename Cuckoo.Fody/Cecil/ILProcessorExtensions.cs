@@ -33,6 +33,9 @@ namespace Cuckoo.Fody.Cecil
                 case "System.String":
                     return @this.EmitEx(OpCodes.Ldstr, (string)value);
 
+                case "System.Int32":
+                    return @this.EmitEx(OpCodes.Ldc_I4, (int)value);
+
                 default:
                     throw new InvalidOperationException("Can't emit constant of such a type (for now!)...");
             }

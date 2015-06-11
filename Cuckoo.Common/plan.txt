@@ -1,10 +1,13 @@
 ﻿TO DO:
 
+> Init to be called DONE ******
 > Cooler testing
-> Change returned value
+> Change returned value DONE ******
 > Multiple cuckoos in one nest
 > Generic classes
 > Generic methods
+> Args wrapped in classes
 > out and ref parameters -> how about an exposed parameter class? This is needed to output these...
 > async
 > Cuckoos declared in other assemblies
+> Names provision encapsulated DONE *****

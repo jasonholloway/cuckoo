@@ -8,6 +8,7 @@ using Mono.Cecil.Pdb;
 using Cuckoo.Fody;
 using Cuckoo.Common;
 using Cuckoo.Test.Infrastructure;
+using Cuckoo.TestAssembly;
 
 namespace Cuckoo.Test
 {
@@ -23,13 +24,8 @@ namespace Cuckoo.Test
             string projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj"));
             string assemblyPath = Path.Combine(Path.GetDirectoryName(projectPath), @"bin\Debug\Cuckoo.TestAssembly.dll");
             string newAssemblyPath = assemblyPath.Replace(".dll", "2.dll");
-
-            //File.Copy(assemblyPath, newAssemblyPath, true);
             
-
             var asmResolver = new DefaultAssemblyResolver();
-            //asmResolver.AddSearchDirectory(@"..\..\..\Cuckoo.TestAssembly\bin\Debug");
-
 
             var readerParams = new ReaderParameters() {
                 AssemblyResolver = asmResolver,
@@ -67,6 +63,12 @@ namespace Cuckoo.Test
         }
 
 
+        MethodInfo GetUsurpedMethod(string name) {
+            return _usurpedMethods.First(m => m.Name == name);
+        }
+
+
+
         [TestMethod]
         public void UsurpationsInPlaceAndCallable() {
             Assert.IsTrue(_usurpedMethods.Any(), "No usurpations!");
@@ -81,7 +83,7 @@ namespace Cuckoo.Test
         public void CallSitesInPlace() {
             foreach(var method in _usurpedMethods) {
                 var fCallSite = method.DeclaringType.GetField(
-                                                        "<CALLSITE>" + method.Name, 
+                                                        "<CALLSITE>_" + method.Name, 
                                                         BindingFlags.Static | BindingFlags.NonPublic);
 
                 object value = fCallSite.GetValue(null);
@@ -94,8 +96,8 @@ namespace Cuckoo.Test
         }
 
         [TestMethod]
-        public void ReturnsValueFromUsurped() {
-            var method = _usurpedMethods.First(m => m.Name == "MethodReturnsString");
+        public void CuckooReturnsValue() {
+            var method = GetUsurpedMethod("MethodReturnsString");
 
             string result = (string)MethodTester.Test(method);
 
@@ -103,9 +105,24 @@ namespace Cuckoo.Test
         }
 
 
+        [TestMethod]
+        public void CuckooChangesReturnValue() {
+            var method = GetUsurpedMethod("MethodWithChangeableReturn");
+
+            string result = (string)MethodTester.Test(method);
+
+            Assert.IsTrue(result == "CHANGED!");
+        }
 
 
+        [TestMethod]
+        public void MultipleCuckoosWorkTogether() {
+            var method = GetUsurpedMethod("MethodReturnsInt");
 
+            int result = (int)MethodTester.Test(method);
+
+            Assert.IsTrue(result == 13 + 8 - 10);
+        }
 
 
     }
