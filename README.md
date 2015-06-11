@@ -1,1 +1,1 @@
-## Cuckoo - a methodical parasite of nests
+## Cuckoo: a method-intercepting Fody add-in
