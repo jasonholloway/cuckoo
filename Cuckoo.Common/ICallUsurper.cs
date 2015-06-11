@@ -14,7 +14,7 @@ namespace Cuckoo.Common
         void Usurp(ICall call);
     }
 
-
+    /*
     class ExampleCallUsurper : ICallUsurper
     {
         MethodInfo _methodInfo;
@@ -30,6 +30,6 @@ namespace Cuckoo.Common
 
             call.ReturnValue = null; //can change return value here
         }
-    } 
+    } */
 
 }

@@ -11,6 +11,31 @@ namespace Cuckoo.TestAssembly
 {
     public class SimpleCuckoosClass
     {
+
+
+        class Nested
+        {
+            int _a;
+            string _b;
+
+            public Nested(int a, string b) {
+                _a = a;
+                _b = b;
+            }
+
+            public void Blah() {
+
+                var r = new object[3];
+
+                r[0] = 7;
+                r[1] = 9;
+                r[2] = 1;
+
+                //...
+            }
+        }
+
+
         public void Dummy1() { }
 
 
@@ -30,8 +55,9 @@ namespace Cuckoo.TestAssembly
         }
 
         [FieldCuckoo(Name = "Tony")]
-        public void MethodWithFieldCuckoo() {
+        public string MethodWithFieldCuckoo() {
             string blah = "grrrowl";
+            return blah;
         }
 
         [SimpleCuckoo]

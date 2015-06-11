@@ -55,7 +55,7 @@ namespace Cuckoo.Common
     }
 
 
-
+    /*
     public class AfterInstance
     {
         static CallSite _callSite;
@@ -75,7 +75,7 @@ namespace Cuckoo.Common
             return s;
         }
 
-
+        
         //create a special call class for each call site
         class _MethodCall : ICall {
 
@@ -124,9 +124,8 @@ namespace Cuckoo.Common
 
         }
 
-
     }
-
+*/
 
 
 }

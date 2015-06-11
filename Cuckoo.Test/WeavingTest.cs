@@ -94,7 +94,7 @@ namespace Cuckoo.Test
         }
 
         [TestMethod]
-        public void DelegatesToUsurped() {
+        public void ReturnsValueFromUsurped() {
             var method = _usurpedMethods.First(m => m.Name == "MethodReturnsString");
 
             string result = (string)MethodTester.Test(method);

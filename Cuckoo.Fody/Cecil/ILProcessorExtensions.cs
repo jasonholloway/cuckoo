@@ -39,11 +39,6 @@ namespace Cuckoo.Fody.Cecil
         }
 
 
-
-
-
-
-
         #region EmitEx
 
         public static Instruction EmitEx(this ILProcessor @this, OpCode opcode) {

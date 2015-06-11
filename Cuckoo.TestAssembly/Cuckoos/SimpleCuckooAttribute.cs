@@ -14,7 +14,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
             //...
         }
         public override void Usurp(ICall call) {
-            throw new NotImplementedException();
+            call.CallInner();
         }
     }
 

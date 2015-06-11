@@ -11,7 +11,7 @@ namespace Cuckoo.Fody.Cecil
     public static class MethodDefinitionExtensions
     {
 
-        public static MethodDefinition CopyToSibling(this MethodDefinition @this, string siblingName) 
+        public static MethodDefinition CopyToNewSibling(this MethodDefinition @this, string siblingName) 
         {
             var mNew = new MethodDefinition(
                                 siblingName,
