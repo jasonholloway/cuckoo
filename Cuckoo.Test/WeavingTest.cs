@@ -93,7 +93,14 @@ namespace Cuckoo.Test
             }
         }
 
+        [TestMethod]
+        public void DelegatesToUsurped() {
+            var method = _usurpedMethods.First(m => m.Name == "MethodReturnsString");
 
+            string result = (string)MethodTester.Test(method);
+
+            Assert.IsTrue(result == "Hello from down below!");
+        }
 
 
 

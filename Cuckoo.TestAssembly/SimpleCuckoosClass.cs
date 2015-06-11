@@ -34,6 +34,11 @@ namespace Cuckoo.TestAssembly
             string blah = "grrrowl";
         }
 
+        [SimpleCuckoo]
+        public string MethodReturnsString() {
+            return "Hello from down below!";
+        }
+
 
         public void Dummy2() { }
     }

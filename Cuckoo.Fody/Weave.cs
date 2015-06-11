@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    internal class Fillet
+    internal class Weave
     {
-        FilletSpec _spec;
-        FilletContext _ctx;
+        WeaveSpec _spec;
+        WeaveContext _ctx;
 
-        public Fillet(FilletSpec spec, FilletContext ctx) {
+        public Weave(WeaveSpec spec, WeaveContext ctx) {
             _spec = spec;
             _ctx = ctx;
         }

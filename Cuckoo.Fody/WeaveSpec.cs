@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    internal class FilletSpec
+    internal class WeaveSpec
     {
         public MethodDefinition Method { get; set; }
         public CustomAttribute[] CuckooAttributes { get; set; }
