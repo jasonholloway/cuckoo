@@ -10,4 +10,7 @@
 > out and ref parameters -> how about an exposed parameter class? This is needed to output these...
 > async
 > Cuckoos declared in other assemblies
-> Names provision encapsulated DONE *****
+> Name-provision encapsulated DONE *****
+> Light-weight SyncLock on args creation
+> Use abstract CallBase class, with only sub-methods emitted
+> CallArgs should check type of value set

@@ -11,7 +11,7 @@ namespace Cuckoo.Common
     {
         object Instance { get; }
         MethodInfo Method { get; }
-        object[] Args { get; }
+        CallArg[] Args { get; }
         object ReturnValue { get; set; }
 
         void CallInner();

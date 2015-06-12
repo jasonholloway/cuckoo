@@ -17,10 +17,17 @@ namespace Cuckoo.TestAssembly
         {
             int _a;
             string _b;
+            object[] _r;
 
             public Nested(int a, string b) {
                 _a = a;
                 _b = b;
+
+                if(_r != null) {
+                    _a = 99;
+                }
+
+                _b = "88";
             }
 
             public void Blah() {
@@ -81,6 +88,14 @@ namespace Cuckoo.TestAssembly
         public int MethodReturnsInt() {
             return 13;
         }
+
+        [ArgChangingCuckoo]
+        public string MethodReturnsStrings(int a, string b, string c, float d, string e) {
+            return string.Format("{0}! {1}! {2}!", b, c, e);
+        }
+
+
+
 
 
         /*

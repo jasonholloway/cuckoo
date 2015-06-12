@@ -31,6 +31,7 @@ namespace Cuckoo.Fody
 
             var tICallUsurper = module.ImportReference(typeof(ICallUsurper));
             var tCallSite = module.ImportReference(typeof(Cuckoo.Common.CallSite));
+            var tCallArg = module.ImportReference(typeof(CallArg));
             var tICall = module.ImportReference(typeof(ICall));
             var tMethodInfo = module.ImportReference(typeof(Refl.MethodInfo));
             var tDeclaring = method.DeclaringType;
@@ -189,27 +190,27 @@ namespace Cuckoo.Fody
 
             tCall.Interfaces.Add(tICall);
 
-            var fInstance = tCall.AddField<object>("_instance");
-            var fMethodInfo = tCall.AddField<Refl.MethodInfo>("_methodInfo");
+            var fCall_Instance = tCall.AddField<object>("_instance");
+            var fCall_CallSite = tCall.AddField<Cuckoo.Common.CallSite>("_callSite");
 
 
-            FieldDefinition fReturn = null;
+            FieldDefinition fCall_Return = null;
 
             if(method.ReturnsValue()) {
-                fReturn = tCall.AddField(method.ReturnType, "_return");
-                fReturn.Attributes = FieldAttributes.Public;
+                fCall_Return = tCall.AddField(method.ReturnType, "_return");
+                fCall_Return.Attributes = FieldAttributes.Public;
             }
 
 
-            var rfArgs = method.Parameters
-                                .Select(p => tCall.AddField(p.ParameterType, "_arg" + p.Name))
-                                .ToArray();
+            var rfCall_ArgValue = method.Parameters
+                                            .Select(p => tCall.AddField(p.ParameterType, "_argValue_" + p.Name))
+                                            .ToArray();
 
             var rCtorArgTypes = new[] { 
                                     module.ImportReference(typeof(object)), 
                                     module.ImportReference(typeof(Refl.MethodInfo)) 
                                 }
-                                .Concat(rfArgs.Select(f => f.FieldType))
+                                .Concat(rfCall_ArgValue.Select(f => f.FieldType))
                                 .ToArray();
 
             var mCallCtor = tCall.AddCtor(
@@ -217,20 +218,20 @@ namespace Cuckoo.Fody
                                     (i, m) => {
                                         i.Emit(OpCodes.Ldarg_0);
                                         i.Emit(OpCodes.Ldarg_1);
-                                        i.Emit(OpCodes.Stfld, fInstance);
+                                        i.Emit(OpCodes.Stfld, fCall_CallSite);
 
                                         i.Emit(OpCodes.Ldarg_0);
                                         i.Emit(OpCodes.Ldarg_2);
-                                        i.Emit(OpCodes.Stfld, fMethodInfo);
+                                        i.Emit(OpCodes.Stfld, fCall_Instance);
 
                                         //put args into special fields
                                         int iP = 2;
                                         var rParams = m.Parameters.ToArray();
 
-                                        foreach(var fArg in rfArgs) {
+                                        foreach(var fArgValue in rfCall_ArgValue) {
                                             i.Emit(OpCodes.Ldarg_0);
                                             i.Emit(OpCodes.Ldarg_S, rParams[iP]);
-                                            i.Emit(OpCodes.Stfld, fArg);
+                                            i.Emit(OpCodes.Stfld, fArgValue);
                                             iP++;
                                         }
 
@@ -242,7 +243,7 @@ namespace Cuckoo.Fody
                         "get_Instance",
                         (i, m) => {
                             i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldfld, fInstance);
+                            i.Emit(OpCodes.Ldfld, fCall_Instance);
                             i.Emit(OpCodes.Ret);
                         });
 
@@ -250,38 +251,80 @@ namespace Cuckoo.Fody
                         tICall,
                         "get_Method",
                         (i, m) => {
+                            var mCallSite_GetMethod = module.ImportReference(
+                                                                tCallSite.Resolve().GetMethod("get_Method"));
                             i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldfld, fMethodInfo);
+                            i.Emit(OpCodes.Ldfld, fCall_CallSite);
+                            i.Emit(OpCodes.Call, mCallSite_GetMethod);
                             i.Emit(OpCodes.Ret);
                         });
 
-            tCall.OverrideMethod(
+
+            var fCall_Args = tCall.AddField<CallArg[]>("_rArgs");
+
+            tCall.OverrideMethod( //CallArgs need to be created lazily 
                         tICall,
                         "get_Args",
                         (i, m) => {
-                            var vArr = m.Body.AddVariable<object[]>();
+                            var mCallArg_Ctor = module.ImportReference(
+                                                        tCallArg.Resolve().GetConstructors().First());
 
-                            i.Emit(OpCodes.Ldc_I4, rfArgs.Length);
-                            i.Emit(OpCodes.Newarr, module.TypeSystem.Object);
-                            i.Emit(OpCodes.Stloc_S, vArr);
+                            var mCallSite_GetParams = module.ImportReference(
+                                                                tCallSite.GetMethod("get_Parameters"));
                             
-                            for(int iA = 0; iA < rfArgs.Length; iA++) {
-                                var fArg = rfArgs[iA];
+                            //if _rArgs not null, return that
+                            var vArgs = m.Body.AddVariable<CallArg[]>();
+                            var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
+                            var lbCreateArgs = i.Create(OpCodes.Nop);
 
-                                i.Emit(OpCodes.Ldloc_S, vArr);
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldfld, fCall_Args);
+                            i.Emit(OpCodes.Stloc_S, vArgs);
+                            i.Emit(OpCodes.Ldloc_S, vArgs);
+                            i.Emit(OpCodes.Ldnull);
+                            i.Emit(OpCodes.Ceq);
+                            i.Emit(OpCodes.Brtrue_S, lbCreateArgs);
 
+                                i.Emit(OpCodes.Ldloc_S, vArgs);
+                                i.Emit(OpCodes.Ret);
+
+                            i.Append(lbCreateArgs);
+                            i.Emit(OpCodes.Ldc_I4, rfCall_ArgValue.Length);
+                            i.Emit(OpCodes.Newarr, tCallArg);
+                            i.Emit(OpCodes.Stloc_S, vArgs);
+                            
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldfld, fCall_CallSite);
+                            i.Emit(OpCodes.Call, mCallSite_GetParams);
+                            i.Emit(OpCodes.Stloc_S, vParams);
+                                                        
+                            for(int iA = 0; iA < rfCall_ArgValue.Length; iA++) {
+                                i.Emit(OpCodes.Ldloc_S, vArgs);
                                 i.Emit(OpCodes.Ldc_I4, iA);
 
+                                //load parameter
+                                i.Emit(OpCodes.Ldloc_S, vParams);
+                                i.Emit(OpCodes.Ldc_I4, iA);
+                                i.Emit(OpCodes.Ldelem_Ref);
+                                                                
+                                //load value & box
+                                var fArgValue = rfCall_ArgValue[iA];
                                 i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fArg);
-                                if(fArg.FieldType.IsValueType) {
-                                    i.Emit(OpCodes.Box, fArg.FieldType);
+                                i.Emit(OpCodes.Ldfld, fArgValue);
+                                if(fArgValue.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Box, fArgValue.FieldType);
                                 }
+
+                                i.Emit(OpCodes.Newobj, mCallArg_Ctor);
 
                                 i.Emit(OpCodes.Stelem_Ref);
                             }
 
-                            i.Emit(OpCodes.Ldloc_S, vArr);
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldloc_S, vArgs);
+                            i.Emit(OpCodes.Stfld, fCall_Args);
+
+                            i.Emit(OpCodes.Ldloc_S, vArgs);
                             i.Emit(OpCodes.Ret);
                         });
 
@@ -289,12 +332,12 @@ namespace Cuckoo.Fody
                         tICall,
                         "get_ReturnValue",
                         (i, m) => {
-                            if(fReturn != null) {
+                            if(fCall_Return != null) {
                                 i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fReturn);
+                                i.Emit(OpCodes.Ldfld, fCall_Return);
 
-                                if(fReturn.FieldType.IsValueType) {
-                                    i.Emit(OpCodes.Box, fReturn.FieldType);
+                                if(fCall_Return.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Box, fCall_Return.FieldType);
                                 }
                             }
                             else {
@@ -308,16 +351,16 @@ namespace Cuckoo.Fody
                         tICall,
                         "set_ReturnValue",
                         (i, m) => {
-                            if(fReturn != null) {
+                            if(fCall_Return != null) {
                                 i.Emit(OpCodes.Ldarg_0);
 
                                 i.Emit(OpCodes.Ldarg_1);
 
-                                if(fReturn.FieldType.IsValueType) {
-                                    i.Emit(OpCodes.Unbox_Any, fReturn.FieldType);
+                                if(fCall_Return.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Unbox_Any, fCall_Return.FieldType);
                                 }
 
-                                i.Emit(OpCodes.Stfld, fReturn);
+                                i.Emit(OpCodes.Stfld, fCall_Return);
                             }
 
                             i.Emit(OpCodes.Ret);
@@ -326,23 +369,71 @@ namespace Cuckoo.Fody
             tCall.OverrideMethod(
                         tICall,
                         "CallInner",
-                        (i, m) => {                            
+                        (i, m) => {                         
+                            ///////////////////////////////////////////////////////////////
+                            //Update arg fields if args not pristine
+                            var mCallArg_GetIsPristine = module.ImportReference(
+                                                                    tCallArg.GetMethod("get_IsPristine"));
+
+                            var mCallArg_GetValue = module.ImportReference(
+                                                                tCallArg.GetMethod("get_Value"));
+
+                            var vArgs = i.Body.AddVariable<CallArg[]>();
+                            var vArg = i.Body.AddVariable<CallArg>();
+
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldfld, fCall_Args);
+                            i.Emit(OpCodes.Stloc_S, vArgs);
+
+                            int iA = 0;
+
+                            foreach(var fArgValue in rfCall_ArgValue) {
+                                var lbSkipUpdateArgValue = i.Create(OpCodes.Nop);
+
+                                i.Emit(OpCodes.Ldloc_S, vArgs);
+                                i.Emit(OpCodes.Ldc_I4, iA);
+                                i.Emit(OpCodes.Ldelem_Ref);
+                                i.Emit(OpCodes.Stloc_S, vArg);
+
+                                i.Emit(OpCodes.Ldloc_S, vArg);
+                                i.Emit(OpCodes.Call, mCallArg_GetIsPristine);
+                                i.Emit(OpCodes.Brtrue_S, lbSkipUpdateArgValue);
+
+                                //update arg value here
+                                i.Emit(OpCodes.Ldarg_0);
+
+                                i.Emit(OpCodes.Ldloc_S, vArg);
+                                i.Emit(OpCodes.Call, mCallArg_GetValue);
+                                if(fArgValue.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Unbox_Any, fArgValue.FieldType);
+                                }
+
+                                i.Emit(OpCodes.Stfld, fArgValue);
+
+                                i.Append(lbSkipUpdateArgValue);
+
+                                iA++;
+                            }
+
+
+                            ////////////////////////////////////////////////////////////
+                            //Load args onto stack from typed fields
                             i.Emit(OpCodes.Ldarg_0);
 
-                            foreach(var fArg in rfArgs) {
+                            foreach(var fArgValue in rfCall_ArgValue) {
                                 i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fArg);
+                                i.Emit(OpCodes.Ldfld, fArgValue);
                             }
 
                             i.Emit(OpCodes.Call, mUsurped);
 
-                            if(fReturn != null) {
-                                var vReturn = m.Body.AddVariable(fReturn.FieldType);
+                            if(fCall_Return != null) {
+                                var vReturn = m.Body.AddVariable(fCall_Return.FieldType);
                                 i.Emit(OpCodes.Stloc, vReturn);
                                 
                                 i.Emit(OpCodes.Ldarg_0);
                                 i.Emit(OpCodes.Ldloc, vReturn);
-                                i.Emit(OpCodes.Stfld, fReturn);
+                                i.Emit(OpCodes.Stfld, fCall_Return);
                             }
 
                             i.Emit(OpCodes.Ret);
@@ -361,16 +452,15 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable<ICall>();
 
+                    i.Emit(OpCodes.Ldsfld, fCallSite);
+
                     if(m.HasThis) {
                         i.Emit(OpCodes.Ldarg_0);
                     }
                     else {
                         i.Emit(OpCodes.Ldnull);
                     }
-
-                    i.Emit(OpCodes.Ldsfld, fCallSite);
-                    i.Emit(OpCodes.Call, tCallSite.GetMethod("get_Method"));
-
+                    
                     foreach(var param in m.Parameters) {
                         i.Emit(OpCodes.Ldarg_S, param);
                     }
@@ -386,9 +476,9 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Call, tICallUsurper.GetMethod("Usurp"));
 
-                    if(fReturn != null) {
+                    if(fCall_Return != null) {
                         i.Emit(OpCodes.Ldloc, vCall);
-                        i.Emit(OpCodes.Ldfld, fReturn);
+                        i.Emit(OpCodes.Ldfld, fCall_Return);
                     }
 
                     i.Emit(OpCodes.Ret);

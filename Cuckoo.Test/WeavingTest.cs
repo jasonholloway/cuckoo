@@ -125,5 +125,19 @@ namespace Cuckoo.Test
         }
 
 
+        [TestMethod]
+        public void CuckooChangesArgs() {
+            var method = GetUsurpedMethod("MethodReturnsStrings");
+
+            string result = (string)MethodTester.Test(method);
+
+            Assert.IsTrue(result == "Growl! Growl! Growl!");
+        }
+
+
+
+
+
+
     }
 }
