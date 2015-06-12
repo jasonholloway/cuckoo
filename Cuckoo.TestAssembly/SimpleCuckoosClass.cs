@@ -95,6 +95,11 @@ namespace Cuckoo.TestAssembly
         }
 
 
+        [ReturnChangingCuckoo("BLAH")]
+        [ReturnChangingCuckoo2("Wow!")]
+        public string MethodWithTwoCuckoos(string s, int b) {
+            return s;
+        }
 
 
 

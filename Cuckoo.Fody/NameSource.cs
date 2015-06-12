@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Cuckoo.Fody
 {
-    class ElementNameSource
+    class NameSource
     {
         HashSet<string> _hash;
 
-        public ElementNameSource(TypeDefinition typeDef) {
+        public NameSource(TypeDefinition typeDef) {
             _hash = new HashSet<string>();
 
             foreach(var m in typeDef.Methods) {

@@ -24,6 +24,7 @@ namespace Cuckoo.Fody
                                                             Method = m,
                                                             CuckooAttributes = m.CustomAttributes
                                                                                 .Where(a => IsHatAttributeType(a.AttributeType))
+                                                                                .Reverse()
                                                                                 .ToArray()
                                                         })
                                                         .Where(spec => spec.CuckooAttributes.Any());

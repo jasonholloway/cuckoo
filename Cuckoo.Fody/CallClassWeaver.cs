@@ -2,31 +2,32 @@
 using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using System.Linq;
 
 namespace Cuckoo.Fody
 {
     using Refl = System.Reflection;
     
-    abstract class CallClassBuilder
+    abstract class CallClassWeaver
     {
-        protected BuildContext _ctx;
+        protected WeaveContext _ctx;
 
         protected FieldDefinition _fInstance;
         protected FieldDefinition _fCallSite;
         protected FieldDefinition[] _rfArgValues;
 
 
-        public CallClassBuilder(BuildContext ctx) {
+        public CallClassWeaver(WeaveContext ctx) {
             _ctx = ctx;
         }
 
 
-        protected abstract void EmitInvoke(ILProcessor il);
+        protected abstract void EmitInnerInvoke(ILProcessor il);
 
 
         public TypeDefinition Build() {
-            var R = _ctx.Ref;
+            var R = _ctx.RefMap;
             var mod = _ctx.Module;
             var tContainer = _ctx.DeclaringType;
             var mOuter = _ctx.OuterMethod;
@@ -264,7 +265,7 @@ namespace Cuckoo.Fody
 
                             i.Append(lbSkipAllArgUpdates);
 
-                            EmitInvoke(i);
+                            EmitInnerInvoke(i);
 
                             if(fReturn != null) {
                                 var vReturn = m.Body.AddVariable(fReturn.FieldType);
@@ -283,25 +284,69 @@ namespace Cuckoo.Fody
     }
 
 
-    class MediateCallClassBuilder : CallClassBuilder
+    class MediateCallClassWeaver : CallClassWeaver
     {
-        public MediateCallClassBuilder(BuildContext ctx)
-            : base(ctx) { }
+        TypeDefinition _tNextCall;
+        int _iUsurper;
 
-        protected override void EmitInvoke(ILProcessor il) {
-            //need to create next call class
-            //and feed it to next usurper
-            //...
+        public MediateCallClassWeaver(WeaveContext ctx, TypeDefinition tNextCall, int iUsurper)
+            : base(ctx) 
+        {
+            _tNextCall = tNextCall;
+            _iUsurper = iUsurper;
+        }
+
+        protected override void EmitInnerInvoke(ILProcessor i) {
+            var R = _ctx.RefMap;
+            var NextCall_mCtor = _tNextCall.GetConstructors().First();
+            var NextCall_fReturn = _tNextCall.Fields.FirstOrDefault(f => f.Name == "_return");
+
+            //get next usurper by index
+            var vUsurper = i.Body.AddVariable<ICallUsurper>();
+            var vCallSite = i.Body.AddVariable<Cuckoo.Common.CallSite>();
+            var vCall = i.Body.AddVariable<ICall>();
+
+            i.Emit(OpCodes.Ldarg_0);
+            i.Emit(OpCodes.Ldfld, _fCallSite);
+            i.Emit(OpCodes.Call, R.CallSite_mGetUsurpers);
+            i.Emit(OpCodes.Ldc_I4, _iUsurper);
+            i.Emit(OpCodes.Ldelem_Ref);
+            i.Emit(OpCodes.Stloc_S, vUsurper);
+            
+            //load various args for next call ctor
+            i.Emit(OpCodes.Ldarg_0);
+            i.Emit(OpCodes.Ldfld, _fCallSite);
+
+            i.Emit(OpCodes.Ldarg_0);
+            i.Emit(OpCodes.Ldfld, _fInstance);
+
+            foreach(var fArgValue in _rfArgValues) {
+                i.Emit(OpCodes.Ldarg_0);
+                i.Emit(OpCodes.Ldfld, fArgValue);
+            }
+
+            i.Emit(OpCodes.Newobj, NextCall_mCtor);
+            i.Emit(OpCodes.Stloc_S, vCall);
+
+            //feed to next usurper
+            i.Emit(OpCodes.Ldloc_S, vUsurper);
+            i.Emit(OpCodes.Ldloc_S, vCall);
+            i.Emit(OpCodes.Call, R.ICallUsurper_mUsurp);
+
+            if(NextCall_fReturn != null) {
+                i.Emit(OpCodes.Ldloc, vCall);
+                i.Emit(OpCodes.Ldfld, NextCall_fReturn);
+            }
         }
     }
 
 
-    class FinalCallClassBuilder : CallClassBuilder
+    class FinalCallClassWeaver : CallClassWeaver
     {
-        public FinalCallClassBuilder(BuildContext ctx)
+        public FinalCallClassWeaver(WeaveContext ctx)
             : base(ctx) { }
 
-        protected override void EmitInvoke(ILProcessor i) {
+        protected override void EmitInnerInvoke(ILProcessor i) {
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
 

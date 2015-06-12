@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    class BuildContext
+    class WeaveContext
     {
         public ModuleDefinition Module;
         public TypeDefinition DeclaringType;
         public MethodDefinition InnerMethod;
         public MethodDefinition OuterMethod;
-        public ElementNameSource NameSource;
-        public Ref Ref;
+        public FieldDefinition CallSiteField;
+
+        public NameSource NameSource;
+        public RefMap RefMap;
+        public Action<string> Logger;
     }
 }

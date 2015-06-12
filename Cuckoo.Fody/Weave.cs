@@ -16,63 +16,104 @@ namespace Cuckoo.Fody
     internal class Weave
     {
         WeaveSpec _spec;
-        BuildContext _buildContext;
-        Action<string> _logger;
+        WeaveContext _ctx;
 
-        public Weave(WeaveSpec spec, Action<string> logger) {
-            _buildContext = new BuildContext() {
+        public Weave(WeaveSpec spec, Action<string> logger) 
+        {
+            _spec = spec;
+
+            _ctx = new WeaveContext() {
                 DeclaringType = spec.Method.DeclaringType,
                 Module = spec.Method.Module,
                 OuterMethod = spec.Method,
-                NameSource = new ElementNameSource(_spec.Method.DeclaringType)
+                NameSource = new NameSource(_spec.Method.DeclaringType),
+                RefMap = new RefMap(_spec.Method.Module, spec.Method),
+                Logger = logger
             };
+        }
 
-            _buildContext.Ref = new Ref(_buildContext.Module, spec.Method);
+        
+        public void Apply() 
+        {            
+            CopyOuterToInner(_ctx);
+            
+            CreateCallSite(_ctx);
+            
+            var tCall = new FinalCallClassWeaver(_ctx).Build();
 
-            _spec = spec;
-            _logger = logger;
+            for(int iU = 1; iU < _spec.CuckooAttributes.Length; iU++) {
+                tCall = new MediateCallClassWeaver(_ctx, tCall, iU).Build();
+            }
+
+            UsurpOuterMethod(_ctx, tCall);
+
+            AddUsurpedAttributeToOuter(_ctx);
+
+            _ctx.Logger(string.Format("Mod applied to {0}!", _ctx.OuterMethod.FullName));
         }
 
 
-        public void Apply() 
-        {
-            var R = _buildContext.Ref;
-            var tContainer = _buildContext.DeclaringType;
-            var mOuter = _buildContext.OuterMethod;
-            var nameSource = _buildContext.NameSource;
-            var mod = _buildContext.Module;
 
-            //********************************************************************************************
-            //////////////////////////////////////////////////
-            //Copy original method to usurped inner
-            string usurpedName = nameSource.GetElementName("USURPED", mOuter.Name); 
+        void AddUsurpedAttributeToOuter(WeaveContext ctx) {
+            var R = ctx.RefMap;
+            var mod = ctx.Module;
+            var mInner = ctx.InnerMethod;
+            var mOuter = ctx.OuterMethod;
 
-            var mInner = mOuter.CopyToNewSibling(usurpedName);
-     
+            var atUsurped = new CustomAttribute(R.UsurpedAtt_mCtor);
+            atUsurped.ConstructorArguments.Add(
+                            new CustomAttributeArgument(mod.TypeSystem.String, mInner.Name));
+
+            mOuter.CustomAttributes.Add(atUsurped);
+        }
+
+
+
+        MethodDefinition CopyOuterToInner(WeaveContext ctx) {
+            var mOuter = ctx.OuterMethod;
+            var names = ctx.NameSource;
+
+            string innerName = names.GetElementName("USURPED", mOuter.Name);
+
+            var mInner = mOuter.CopyToNewSibling(innerName);
+
             mInner.Attributes |= MethodAttributes.Private;
 
-            _buildContext.InnerMethod = mInner;
+            _ctx.InnerMethod = mInner;
 
+            return mInner;
+        }
+
+
+        FieldDefinition CreateCallSite(WeaveContext ctx) {
+            var mod = ctx.Module;
+            var mOuter = ctx.OuterMethod;
+            var mInner = ctx.InnerMethod;
+            var names = ctx.NameSource;
+            var tContainer = ctx.DeclaringType;
+            var R = ctx.RefMap;
 
             //////////////////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Create static CallSite ///////////////////////////////////////////////////////////////////
-            string callSiteName = nameSource.GetElementName("CALLSITE", mOuter.Name);
+            string callSiteName = names.GetElementName("CALLSITE", mOuter.Name);
 
-            var fDec_CallSite = tContainer.AddField(
-                                                R.CallSite_TypeRef, 
-                                                callSiteName );
+            var f = tContainer.AddField(
+                                R.CallSite_TypeRef,
+                                callSiteName);
 
-            fDec_CallSite.Attributes = FieldAttributes.Private
+            f.Attributes = FieldAttributes.Private
                                         | FieldAttributes.Static
                                         | FieldAttributes.InitOnly;
+
+            ctx.CallSiteField = f;
 
             tContainer.AppendToStaticCtor(
                 (i, m) => {
                     var vMethodInfo = m.Body.AddVariable<Refl.MethodInfo>();
                     var vUsurper = m.Body.AddVariable<ICallUsurper>();
                     var vUsurpers = m.Body.AddVariable<ICallUsurper[]>();
-                    
+
                     i.Emit(OpCodes.Ldtoken, mOuter);
                     i.Emit(OpCodes.Call, R.MethodInfo_mGetMethodFromHandle);
                     i.Emit(OpCodes.Stloc, vMethodInfo);
@@ -82,12 +123,12 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Ldc_I4, _spec.CuckooAttributes.Length);
                     i.Emit(OpCodes.Newarr, R.ICallUsurper_TypeRef);
                     i.Emit(OpCodes.Stloc_S, vUsurpers);
-                    
+
                     int iA = 0;
 
                     foreach(var att in _spec.CuckooAttributes) {
                         var tAtt = mod.ImportReference(att.AttributeType);
-                        
+
                         if(att.HasConstructorArguments) {
                             var mCtor = mod.ImportReference(
                                                     tAtt.Resolve()
@@ -122,8 +163,7 @@ namespace Cuckoo.Fody
 
                         if(att.HasFields) {
                             foreach(var namedCtorArg in att.Fields) {
-                                var field = tAtt.Resolve().Fields
-                                                    .First(f => f.Name == namedCtorArg.Name);
+                                var field = tAtt.Resolve().GetField(namedCtorArg.Name);
 
                                 i.Emit(OpCodes.Ldloc, vUsurper);
                                 i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
@@ -142,12 +182,12 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Call, prop.SetMethod);
                             }
                         }
-                        
+
                         i.Emit(OpCodes.Ldloc_S, vUsurpers);
                         i.Emit(OpCodes.Ldc_I4, iA);
                         i.Emit(OpCodes.Ldloc_S, vUsurper);
                         i.Emit(OpCodes.Stelem_Ref);
-                        
+
                         iA++;
                     }
 
@@ -157,7 +197,7 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Ldloc, vMethodInfo);
                     i.Emit(OpCodes.Ldloc, vUsurpers);
                     i.Emit(OpCodes.Newobj, R.CallSite_mCtor);
-                    i.Emit(OpCodes.Stsfld, fDec_CallSite);
+                    i.Emit(OpCodes.Stsfld, f);
 
 
                     ////////////////////////////////////////////////////////////////////
@@ -171,32 +211,27 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Call, R.ICallUsurper_mInit);
                     }
                 });
-            
+
+            return f;
+        }
 
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            //Declare new ICall classes ///////////////////////////////////////////////////////////////
 
-            var callClassBuilder = new FinalCallClassBuilder(_buildContext);
+        MethodDefinition UsurpOuterMethod(WeaveContext ctx, TypeDefinition tTopCall) {
+            var mOuter = ctx.OuterMethod;
+            var R = ctx.RefMap;
+            var fCallSite = ctx.CallSiteField;
 
-            var rtCalls = new[] { 
-                callClassBuilder.Build()
-            };
-
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////
-            //Write new body to cuckooed method //////////////////////////////////////////////////////////
             mOuter.Body = new MethodBody(mOuter);
 
-            var TopCall_mCtor = rtCalls.First().GetConstructors().First();
-            var TopCall_fReturn = rtCalls.First().Fields.FirstOrDefault(f => f.Name == "_return");
-            
+            var TopCall_mCtor = tTopCall.GetConstructors().First();
+            var TopCall_fReturn = tTopCall.Fields.FirstOrDefault(f => f.Name == "_return");
+
             mOuter.Compose(
-                (i, m) => { 
+                (i, m) => {
                     var vCall = m.Body.AddVariable<ICall>();
 
-                    i.Emit(OpCodes.Ldsfld, fDec_CallSite);
+                    i.Emit(OpCodes.Ldsfld, fCallSite);
 
                     if(m.HasThis) {
                         i.Emit(OpCodes.Ldarg_0);
@@ -204,7 +239,7 @@ namespace Cuckoo.Fody
                     else {
                         i.Emit(OpCodes.Ldnull);
                     }
-                    
+
                     foreach(var param in m.Parameters) {
                         i.Emit(OpCodes.Ldarg_S, param);
                     }
@@ -212,10 +247,10 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Newobj, TopCall_mCtor);
                     i.Emit(OpCodes.Stloc_S, vCall);
 
-                    i.Emit(OpCodes.Ldsfld, fDec_CallSite);
+                    i.Emit(OpCodes.Ldsfld, fCallSite);
                     i.Emit(OpCodes.Call, R.CallSite_mGetUsurpers);
                     i.Emit(OpCodes.Ldc_I4_0);
-                    i.Emit(OpCodes.Ldelem_Ref); //!!!!!!!!!!!!!!!!!!!!!!!!!
+                    i.Emit(OpCodes.Ldelem_Ref);
 
                     i.Emit(OpCodes.Ldloc, vCall);
 
@@ -229,22 +264,8 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Ret);
                 });
 
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////
-            //Add a simple attribute to mark our usurpation ///////////////////////////////////////////////
-            var atUsurped = new CustomAttribute(R.UsurpedAtt_mCtor);
-            atUsurped.ConstructorArguments.Add(
-                            new CustomAttributeArgument(mod.TypeSystem.String, mInner.Name));
-
-            mOuter.CustomAttributes.Add(atUsurped);
-
-
-            _logger(string.Format("Mod applied to {0}!", mOuter.FullName));
+            return mOuter;
         }
-
-
-
-
 
 
 

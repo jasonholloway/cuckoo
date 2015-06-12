@@ -41,12 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildContext.cs" />
-    <Compile Include="CallClassBuilder.cs" />
+    <Compile Include="WeaveContext.cs" />
+    <Compile Include="CallClassWeaver.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />
-    <Compile Include="ElementNameProvider.cs" />
-    <Compile Include="Ref.cs" />
+    <Compile Include="NameSource.cs" />
+    <Compile Include="RefMap.cs" />
     <Compile Include="Weave.cs" />
     <Compile Include="WeaveSpec.cs" />
     <Compile Include="Cecil\ILProcessorExtensions.cs" />

@@ -123,6 +123,16 @@ namespace Cuckoo.Test
             Assert.IsTrue(result == 13 + 8 - 10);
         }
 
+        [TestMethod]
+        public void CuckoosWorkTogetherInCorrectOrder() {
+            var method = GetUsurpedMethod("MethodWithTwoCuckoos");
+
+            string result = (string)MethodTester.Test(method);
+
+            Assert.IsTrue(result == "Wow!");
+        }
+
+
 
         [TestMethod]
         public void CuckooChangesArgs() {

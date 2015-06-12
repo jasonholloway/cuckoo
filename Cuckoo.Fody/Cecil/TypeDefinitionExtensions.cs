@@ -11,8 +11,25 @@ namespace Cuckoo.Fody.Cecil
 {
     public static class TypeDefinitionExtensions
     {
+        
+        #region GetField
 
+        public static FieldDefinition GetField(
+            this TypeDefinition @this, 
+            string fieldName) 
+        {
+            return @this.Fields.First(f => f.Name == fieldName);
+        }
 
+        public static FieldDefinition GetField(
+            this TypeReference @this,
+            string fieldName) 
+        {
+            return @this.Resolve().GetField(fieldName);
+        }
+
+        #endregion
+        
         #region AddMethod
 
         public static MethodDefinition AddMethod(

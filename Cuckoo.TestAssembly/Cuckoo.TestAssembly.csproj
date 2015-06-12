@@ -51,6 +51,7 @@
     <Compile Include="Cuckoos\DeductingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\FieldCuckooAttribute.cs" />
     <Compile Include="Cuckoos\ArgCuckooAttribute.cs" />
+    <Compile Include="Cuckoos\ReturnChangingCuckoo2Attribute.cs" />
     <Compile Include="Cuckoos\ReturnChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\SimpleCuckooAttribute.cs" />
     <Compile Include="ClassWithStaticCtor.cs" />

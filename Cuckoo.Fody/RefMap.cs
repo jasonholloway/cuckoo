@@ -12,7 +12,7 @@ namespace Cuckoo.Fody
 {
     using Refl = System.Reflection;
 
-    class Ref
+    class RefMap
     {
         public readonly TypeReference ICallUsurper_TypeRef;
         public readonly TypeReference CallSite_TypeRef;
@@ -31,7 +31,7 @@ namespace Cuckoo.Fody
         public readonly MethodReference UsurpedAtt_mCtor;
         public readonly MethodReference MethodInfo_mGetMethodFromHandle;
 
-        public Ref(ModuleDefinition module, MethodDefinition method) {
+        public RefMap(ModuleDefinition module, MethodDefinition method) {
             ICallUsurper_TypeRef = module.ImportReference(typeof(ICallUsurper));
             CallSite_TypeRef = module.ImportReference(typeof(Cuckoo.Common.CallSite));
             CallArg_TypeRef = module.ImportReference(typeof(CallArg));
