@@ -11,11 +11,12 @@ namespace Cuckoo.TestAssembly.Cuckoos
     public class ArgChangingCuckooAttribute : CuckooAttribute
     {
         public override void Usurp(ICall call) {
-            var stringArgs = call.Args
-                                .Where(a => a.Parameter.ParameterType == typeof(string));
-
-            foreach(var stringArg in stringArgs) {
+            foreach(var stringArg in call.Args.Where(a => a.Type == typeof(string))) {
                 stringArg.Value = "Growl";
+            }
+
+            foreach(var intArg in call.Args.Where(a => a.Type == typeof(int))) {
+                intArg.Value = 13;
             }
 
             call.CallInner();

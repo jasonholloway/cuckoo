@@ -1,16 +1,29 @@
-﻿TO DO:
+﻿
+********************************************************************
+Multiple cuckoos:
+> CallSites to have arrays of usurpers
+> Array of respective call classes, with bottom one calling mUsurped
+> mUsurper calls only top usurper; invocation percolates down stack
 
-> Init to be called DONE ******
-> Cooler testing
-> Change returned value DONE ******
+
+********************************************************************
+TO DO:
 > Multiple cuckoos in one nest
+
 > Generic classes
 > Generic methods
-> Args wrapped in classes
-> out and ref parameters -> how about an exposed parameter class? This is needed to output these...
+> out and ref parameters
 > async
-> Cuckoos declared in other assemblies
-> Name-provision encapsulated DONE *****
 > Light-weight SyncLock on args creation
 > Use abstract CallBase class, with only sub-methods emitted
 > CallArgs should check type of value set
+> Cuckoos declared in other assemblies
+> TypeProvider class for niceness
+
+
+*******************************************************************
+DONE:
+> Init to be called DONE ******
+> Change returned value DONE ******
+> Args wrapped in classes DONE ******
+> Name-provision encapsulated DONE *****

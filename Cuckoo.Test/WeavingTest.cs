@@ -15,12 +15,10 @@ namespace Cuckoo.Test
     [TestClass]
     public class WeavingTest
     {
-        Assembly _assembly;
-        MethodInfo[] _usurpedMethods;
+        static Assembly _assembly;
+        static MethodInfo[] _usurpedMethods;
 
-        [TestInitialize]
-        public void Setup() {
-            
+        static WeavingTest() {
             string projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj"));
             string assemblyPath = Path.Combine(Path.GetDirectoryName(projectPath), @"bin\Debug\Cuckoo.TestAssembly.dll");
             string newAssemblyPath = assemblyPath.Replace(".dll", "2.dll");
@@ -116,7 +114,7 @@ namespace Cuckoo.Test
 
 
         [TestMethod]
-        public void MultipleCuckoosWorkTogether() {
+        public void CuckoosWorkTogether() {
             var method = GetUsurpedMethod("MethodReturnsInt");
 
             int result = (int)MethodTester.Test(method);

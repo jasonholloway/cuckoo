@@ -35,6 +35,27 @@ namespace Cuckoo.Fody
             var tICall = module.ImportReference(typeof(ICall));
             var tMethodInfo = module.ImportReference(typeof(Refl.MethodInfo));
             var tDeclaring = method.DeclaringType;
+            
+            var mCallArg_Ctor = module.ImportReference(
+                                        tCallArg.Resolve().GetConstructors().First());
+
+            var mCallArg_GetIsPristine = module.ImportReference(
+                                        tCallArg.GetMethod("get_IsPristine"));
+
+            var mCallArg_GetValue = module.ImportReference(
+                                        tCallArg.GetMethod("get_Value"));
+
+            var mCallSite_GetParams = module.ImportReference(
+                                        tCallSite.GetMethod("get_Parameters"));
+
+            var mCallSite_Ctor = module.ImportReference(
+                                        tCallSite.Resolve().GetConstructors().First());
+
+            var mICallUsurper_Init = module.ImportReference(
+                                        typeof(ICallUsurper).GetMethod("Init"));
+
+            var mUsurpedAtt_Ctor = module.ImportReference(
+                                        typeof(UsurpedAttribute).GetConstructor(new[] { typeof(string) }));
 
 
             //********************************************************************************************
@@ -46,7 +67,9 @@ namespace Cuckoo.Fody
             
             mUsurped.Attributes |= MethodAttributes.Private;
 
+            
 
+            //////////////////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Create static CallSite ///////////////////////////////////////////////////////////////////
             string callSiteName = nameProvider.GetElementName("CALLSITE", method.Name);
@@ -152,28 +175,23 @@ namespace Cuckoo.Fody
 
                     ////////////////////////////////////////////////////////////////////
                     //Construct and store CallSite
-                    var mCallSiteCtor = module.ImportReference(
-                                                    tCallSite.Resolve().GetConstructors().First()
-                                                    );
-
                     i.Emit(OpCodes.Ldloc, vMethodInfo);
                     i.Emit(OpCodes.Ldloc, vUsurper);
-                    i.Emit(OpCodes.Newobj, mCallSiteCtor);
+                    i.Emit(OpCodes.Newobj, mCallSite_Ctor);
                     i.Emit(OpCodes.Stsfld, fCallSite);
 
 
                     ////////////////////////////////////////////////////////////////////
                     //Init usurper ////////////////////////////////////////////////////
-                    var mUsurperInit = module.ImportReference(typeof(ICallUsurper).GetMethod("Init"));
-                    
                     i.Emit(OpCodes.Ldloc, vUsurper);
                     i.Emit(OpCodes.Ldloc, vMethodInfo);
-                    i.Emit(OpCodes.Call, mUsurperInit);
+                    i.Emit(OpCodes.Call, mICallUsurper_Init);
                 });
 
 
 
 
+            /////////////////////////////////////////////////////////////////////////////////////////////
             ////////////////////////////////////////////////////////////////////////////////////////////
             //Declare new ICall class /////////////////////////////////////////////////////////////////
             string callClassName = nameProvider.GetElementName("CALL", method.Name);
@@ -266,12 +284,6 @@ namespace Cuckoo.Fody
                         tICall,
                         "get_Args",
                         (i, m) => {
-                            var mCallArg_Ctor = module.ImportReference(
-                                                        tCallArg.Resolve().GetConstructors().First());
-
-                            var mCallSite_GetParams = module.ImportReference(
-                                                                tCallSite.GetMethod("get_Parameters"));
-                            
                             //if _rArgs not null, return that
                             var vArgs = m.Body.AddVariable<CallArg[]>();
                             var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
@@ -372,23 +384,23 @@ namespace Cuckoo.Fody
                         (i, m) => {                         
                             ///////////////////////////////////////////////////////////////
                             //Update arg fields if args not pristine
-                            var mCallArg_GetIsPristine = module.ImportReference(
-                                                                    tCallArg.GetMethod("get_IsPristine"));
-
-                            var mCallArg_GetValue = module.ImportReference(
-                                                                tCallArg.GetMethod("get_Value"));
-
                             var vArgs = i.Body.AddVariable<CallArg[]>();
                             var vArg = i.Body.AddVariable<CallArg>();
+                            var lbSkipAllArgUpdates = i.Create(OpCodes.Nop);
 
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Ldfld, fCall_Args);
                             i.Emit(OpCodes.Stloc_S, vArgs);
 
+                            i.Emit(OpCodes.Ldloc_S, vArgs);
+                            i.Emit(OpCodes.Ldnull);
+                            i.Emit(OpCodes.Ceq);
+                            i.Emit(OpCodes.Brtrue, lbSkipAllArgUpdates);
+
                             int iA = 0;
 
                             foreach(var fArgValue in rfCall_ArgValue) {
-                                var lbSkipUpdateArgValue = i.Create(OpCodes.Nop);
+                                var lbSkipArgUpdate = i.Create(OpCodes.Nop);
 
                                 i.Emit(OpCodes.Ldloc_S, vArgs);
                                 i.Emit(OpCodes.Ldc_I4, iA);
@@ -397,7 +409,7 @@ namespace Cuckoo.Fody
 
                                 i.Emit(OpCodes.Ldloc_S, vArg);
                                 i.Emit(OpCodes.Call, mCallArg_GetIsPristine);
-                                i.Emit(OpCodes.Brtrue_S, lbSkipUpdateArgValue);
+                                i.Emit(OpCodes.Brtrue_S, lbSkipArgUpdate);
 
                                 //update arg value here
                                 i.Emit(OpCodes.Ldarg_0);
@@ -410,12 +422,13 @@ namespace Cuckoo.Fody
 
                                 i.Emit(OpCodes.Stfld, fArgValue);
 
-                                i.Append(lbSkipUpdateArgValue);
+                                i.Append(lbSkipArgUpdate);
 
                                 iA++;
                             }
 
-
+                            i.Append(lbSkipAllArgUpdates);
+                            
                             ////////////////////////////////////////////////////////////
                             //Load args onto stack from typed fields
                             i.Emit(OpCodes.Ldarg_0);
@@ -425,6 +438,8 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Ldfld, fArgValue);
                             }
 
+                            ///////////////////////////////////////////////////////////
+                            //Call usurped and store returned value
                             i.Emit(OpCodes.Call, mUsurped);
 
                             if(fCall_Return != null) {
@@ -442,7 +457,7 @@ namespace Cuckoo.Fody
 
 
 
-
+            
             ///////////////////////////////////////////////////////////////////////////////////////////////
             //Write new body to cuckooed method //////////////////////////////////////////////////////////
             var mUsurper = method;
@@ -489,15 +504,9 @@ namespace Cuckoo.Fody
 
             ////////////////////////////////////////////////////////////////////////////////////////////////
             //Add a simple attribute to mark our usurpation ///////////////////////////////////////////////
-            var mUsurpedAttCtor = module.ImportReference( 
-                                            typeof(UsurpedAttribute).GetConstructor(new[] { typeof(string) })
-                                            );
-
-            var atUsurped = new CustomAttribute(mUsurpedAttCtor);
-
+            var atUsurped = new CustomAttribute(mUsurpedAtt_Ctor);
             atUsurped.ConstructorArguments.Add(
-                new CustomAttributeArgument(module.TypeSystem.String, mUsurped.Name)
-                );
+                            new CustomAttributeArgument(module.TypeSystem.String, mUsurped.Name));
 
             mUsurper.CustomAttributes.Add(atUsurped);
 
