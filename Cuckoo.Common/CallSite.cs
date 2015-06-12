@@ -11,12 +11,12 @@ namespace Cuckoo.Common
     {
         public MethodInfo Method { get; private set; }
         public ParameterInfo[] Parameters { get; private set; }
-        public ICallUsurper Usurper { get; private set; }
+        public ICallUsurper[] Usurpers { get; private set; }
 
-        public CallSite(MethodInfo method, ICallUsurper usurper) {
+        public CallSite(MethodInfo method, ICallUsurper[] usurpers) {
             this.Method = method;
             this.Parameters = method.GetParameters();
-            this.Usurper = usurper;
+            this.Usurpers = usurpers;
         }
     }
 }

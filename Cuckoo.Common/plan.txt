@@ -1,9 +1,10 @@
 ﻿
 ********************************************************************
 Multiple cuckoos:
-> CallSites to have arrays of usurpers
 > Array of respective call classes, with bottom one calling mUsurped
-> mUsurper calls only top usurper; invocation percolates down stack
+
+> mUsurper calls only top usurper DONE ****
+> CallSites to have arrays of usurpers DONE ****
 
 
 ********************************************************************
@@ -19,7 +20,8 @@ TO DO:
 > CallArgs should check type of value set
 > Cuckoos declared in other assemblies
 > TypeProvider class for niceness
-
+> Optional args in CuckooAttributes
+> Optional args in cuckooed methods
 
 *******************************************************************
 DONE:

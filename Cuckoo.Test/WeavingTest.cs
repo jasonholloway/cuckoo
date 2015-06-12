@@ -89,7 +89,8 @@ namespace Cuckoo.Test
 
                 var callSite = value as Cuckoo.Common.CallSite;
                 Assert.AreEqual(callSite.Method, method);
-                Assert.IsTrue(callSite.Usurper is CuckooAttribute);
+                Assert.IsTrue(callSite.Usurpers is ICallUsurper[]);
+                Assert.IsTrue(callSite.Usurpers.All(u => u is CuckooAttribute));
             }
         }
 
