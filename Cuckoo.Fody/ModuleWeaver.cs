@@ -17,12 +17,6 @@ namespace Cuckoo.Fody
         public void Execute() {
             var commonModule = ModuleDefinition.ReadModule("Cuckoo.Common.dll");
 
-            var context = new WeaveContext() {
-                                    FnLog = LogInfo,
-                                    CommonModule = commonModule,
-                                    Module = ModuleDefinition
-                                };
-
             var weaveSpecs = ModuleDefinition.Types
                                 .SelectMany(t => t.Methods)
                                     .Where(m => m.HasCustomAttributes && !m.IsAbstract)
@@ -34,14 +28,12 @@ namespace Cuckoo.Fody
                                                         })
                                                         .Where(spec => spec.CuckooAttributes.Any());
             var weaves = weaveSpecs
-                            .Select(spec => new Weave(spec, context))
+                            .Select(spec => new Weave(spec, LogInfo))
                             .ToArray(); //needed 
 
             foreach(var weave in weaves) {
                 weave.Apply();
             }
-
-            context.OnAfterWeave();
         }
 
         
