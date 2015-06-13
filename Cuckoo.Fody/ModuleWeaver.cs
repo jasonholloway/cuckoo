@@ -29,7 +29,7 @@ namespace Cuckoo.Fody
                                                         })
                                                         .Where(spec => spec.CuckooAttributes.Any());
             var weaves = weaveSpecs
-                            .Select(spec => new Weave(spec, LogInfo))
+                            .Select(spec => new Weaver(spec, LogInfo))
                             .ToArray(); //needed 
 
             foreach(var weave in weaves) {

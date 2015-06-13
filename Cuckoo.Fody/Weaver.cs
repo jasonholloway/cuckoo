@@ -13,12 +13,12 @@ namespace Cuckoo.Fody
 {
     using Refl = System.Reflection;
 
-    internal class Weave
+    internal class Weaver
     {
         WeaveSpec _spec;
         WeaveContext _ctx;
 
-        public Weave(WeaveSpec spec, Action<string> logger) 
+        public Weaver(WeaveSpec spec, Action<string> logger) 
         {
             _spec = spec;
 

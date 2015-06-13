@@ -63,9 +63,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GenericMethodTests.cs" />
     <Compile Include="Infrastructure\BuildRunner.cs" />
     <Compile Include="Infrastructure\MethodTester.cs" />
-    <Compile Include="WeavingTest.cs" />
+    <Compile Include="Infrastructure\WeavingTestBase.cs" />
+    <Compile Include="BasicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

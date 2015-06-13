@@ -1,26 +1,15 @@
 ﻿
 ********************************************************************
-GENERICS:
-> Call classes must also be generic (cos they store typed args)
-	> arg value field types go via typemapper
-	> Must pass generic args on construction
-> There must be mapping between generic params of different elements
-
-
-
-
-
-********************************************************************
 TO DO:
 > Generic classes
-> Generic methods: generic args + generic return
 > out and ref parameters
 > async
-> Light-weight SyncLock on args creation
+> Light-weight SyncLock on lazy args creation
 > CallArgs should check type of value set
 > Optional args in CuckooAttributes
 > Optional args in cuckooed methods
 > Test Cuckoos declared in other assemblies
+> Usurpers to be given specialised MethodInfo on generic calls
 
 
 *******************************************************************
@@ -36,3 +25,4 @@ DONE:
 > Change returned value DONE
 > Args wrapped in classes DONE
 > Name-provision encapsulated DONE
+> Generic methods: generic args + generic return DONE

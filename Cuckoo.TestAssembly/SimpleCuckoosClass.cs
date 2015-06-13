@@ -114,6 +114,14 @@ namespace Cuckoo.TestAssembly
             return default(T);
         }
 
+        [SimpleCuckoo]
+        [AddingCuckoo(10)]
+        [DeductingCuckoo(20)]
+        public int TreblyCuckooedMethodWithGenericArgs<A, B, C>(A a, B b, C c) {
+            return 100;
+        }
+
+
 
 
         /*

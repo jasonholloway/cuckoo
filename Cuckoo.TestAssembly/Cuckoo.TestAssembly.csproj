@@ -55,6 +55,7 @@
     <Compile Include="Cuckoos\ReturnChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\SimpleCuckooAttribute.cs" />
     <Compile Include="ClassWithStaticCtor.cs" />
+    <Compile Include="ExampleClass.cs" />
     <Compile Include="GenericClass.cs" />
     <Compile Include="SimpleCuckoosClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
