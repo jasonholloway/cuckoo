@@ -1,5 +1,6 @@
 ﻿using FizzWare.NBuilder;
 using FizzWare.NBuilder.Generators;
+using Sequences;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,13 @@ namespace Cuckoo.Test.Infrastructure
     {
         public static object Test(MethodInfo method) {
             object instance = null;
+
+            if(method.IsGenericMethodDefinition) {
+                var genArgs = Sequence.Fill(typeof(string), method.GetGenericArguments().Length)
+                                        .ToArray();
+
+                method = method.MakeGenericMethod(genArgs);
+            }
 
             if(!method.IsStatic) {
                 instance = Activator.CreateInstance(method.DeclaringType);

@@ -12,9 +12,11 @@ namespace Cuckoo.Fody
     abstract class CallClassWeaver
     {
         protected WeaveContext _ctx;
+        protected ScopeTypeMapper _types;
 
         protected FieldDefinition _fInstance;
         protected FieldDefinition _fCallSite;
+        protected FieldDefinition _fReturn;
         protected FieldDefinition[] _rfArgValues;
 
 
@@ -45,20 +47,23 @@ namespace Cuckoo.Fody
             t.BaseType = mod.TypeSystem.Object;
             t.Interfaces.Add(R.ICall_TypeRef);
 
+            _types = new ScopeTypeMapper(t);
+
+
             _fCallSite = t.AddField<Cuckoo.Common.CallSite>("_callSite");
             _fInstance = t.AddField<object>("_instance");
-
-
-            FieldDefinition fReturn = null;
-
+            
             if(mOuter.ReturnsValue()) {
-                fReturn = t.AddField(mOuter.ReturnType, "_return");
-                fReturn.Attributes = FieldAttributes.Public;
+                _fReturn = t.AddField(_types.Map(mOuter.ReturnType), "_return");
+                _fReturn.Attributes = FieldAttributes.Public;
             }
 
 
             _rfArgValues = mOuter.Parameters
-                                    .Select(p => t.AddField(p.ParameterType, "_argValue_" + p.Name))
+                                    .Select(p => t.AddField(
+                                                        _types.Map(p.ParameterType), 
+                                                        "_argValue_" + p.Name
+                                                        ) )
                                     .ToArray();
 
             var rCtorArgTypes = new[] { 
@@ -71,6 +76,9 @@ namespace Cuckoo.Fody
             t.AddCtor(
                 rCtorArgTypes,
                 (i, m) => {
+                    i.Emit(OpCodes.Ldarg_0);
+                    i.Emit(OpCodes.Call, R.Object_mCtor);
+                    
                     i.Emit(OpCodes.Ldarg_0);
                     i.Emit(OpCodes.Ldarg_1);
                     i.Emit(OpCodes.Stfld, _fCallSite);
@@ -180,12 +188,12 @@ namespace Cuckoo.Fody
                         R.ICall_TypeRef,
                         "get_ReturnValue",
                         (i, m) => {
-                            if(fReturn != null) {
+                            if(_fReturn != null) {
                                 i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fReturn);
+                                i.Emit(OpCodes.Ldfld, _fReturn);
 
-                                if(fReturn.FieldType.IsValueType) {
-                                    i.Emit(OpCodes.Box, fReturn.FieldType);
+                                if(_fReturn.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Box, _fReturn.FieldType);
                                 }
                             }
                             else {
@@ -199,16 +207,19 @@ namespace Cuckoo.Fody
                         R.ICall_TypeRef,
                         "set_ReturnValue",
                         (i, m) => {
-                            if(fReturn != null) {
+                            if(_fReturn != null) {
                                 i.Emit(OpCodes.Ldarg_0);
 
                                 i.Emit(OpCodes.Ldarg_1);
 
-                                if(fReturn.FieldType.IsValueType) {
-                                    i.Emit(OpCodes.Unbox_Any, fReturn.FieldType);
+                                if(_fReturn.FieldType.IsValueType) {
+                                    i.Emit(OpCodes.Unbox_Any, _fReturn.FieldType);
+                                }
+                                else {
+                                    i.Emit(OpCodes.Castclass, _fReturn.FieldType);
                                 }
 
-                                i.Emit(OpCodes.Stfld, fReturn);
+                                i.Emit(OpCodes.Stfld, _fReturn);
                             }
 
                             i.Emit(OpCodes.Ret);
@@ -252,8 +263,12 @@ namespace Cuckoo.Fody
 
                                 i.Emit(OpCodes.Ldloc_S, vArg);
                                 i.Emit(OpCodes.Call, R.CallArg_mGetValue);
+
                                 if(fArgValue.FieldType.IsValueType) {
                                     i.Emit(OpCodes.Unbox_Any, fArgValue.FieldType);
+                                }
+                                else {
+                                    i.Emit(OpCodes.Castclass, fArgValue.FieldType);
                                 }
 
                                 i.Emit(OpCodes.Stfld, fArgValue);
@@ -267,13 +282,13 @@ namespace Cuckoo.Fody
 
                             EmitInnerInvoke(i);
 
-                            if(fReturn != null) {
-                                var vReturn = m.Body.AddVariable(fReturn.FieldType);
+                            if(_fReturn != null) {
+                                var vReturn = m.Body.AddVariable(_fReturn.FieldType);
                                 i.Emit(OpCodes.Stloc, vReturn);
 
                                 i.Emit(OpCodes.Ldarg_0);
                                 i.Emit(OpCodes.Ldloc, vReturn);
-                                i.Emit(OpCodes.Stfld, fReturn);
+                                i.Emit(OpCodes.Stfld, _fReturn);
                             }
 
                             i.Emit(OpCodes.Ret);
@@ -321,7 +336,7 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Ldfld, _fInstance);
 
             foreach(var fArgValue in _rfArgValues) {
-                i.Emit(OpCodes.Ldarg_0);
+                i.Emit(OpCodes.Ldarg_0);                
                 i.Emit(OpCodes.Ldfld, fArgValue);
             }
 
@@ -331,10 +346,11 @@ namespace Cuckoo.Fody
             //feed to next usurper
             i.Emit(OpCodes.Ldloc_S, vUsurper);
             i.Emit(OpCodes.Ldloc_S, vCall);
-            i.Emit(OpCodes.Call, R.ICallUsurper_mUsurp);
+            i.Emit(OpCodes.Callvirt, R.ICallUsurper_mUsurp);
 
             if(NextCall_fReturn != null) {
-                i.Emit(OpCodes.Ldloc, vCall);
+                i.Emit(OpCodes.Ldloc, vCall); 
+                i.Emit(OpCodes.Castclass, _tNextCall);
                 i.Emit(OpCodes.Ldfld, NextCall_fReturn);
             }
         }
@@ -349,6 +365,7 @@ namespace Cuckoo.Fody
         protected override void EmitInnerInvoke(ILProcessor i) {
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
+            i.Emit(OpCodes.Castclass, _ctx.InnerMethod.DeclaringType);
 
             foreach(var fArgValue in _rfArgValues) {
                 i.Emit(OpCodes.Ldarg_0);

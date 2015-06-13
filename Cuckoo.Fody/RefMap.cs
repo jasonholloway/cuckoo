@@ -30,6 +30,7 @@ namespace Cuckoo.Fody
         public readonly MethodReference ICallUsurper_mUsurp;
         public readonly MethodReference UsurpedAtt_mCtor;
         public readonly MethodReference MethodInfo_mGetMethodFromHandle;
+        public readonly MethodReference Object_mCtor;
 
         public RefMap(ModuleDefinition module, MethodDefinition method) {
             ICallUsurper_TypeRef = module.ImportReference(typeof(ICallUsurper));
@@ -77,7 +78,8 @@ namespace Cuckoo.Fody
                                                     )
                                                 );
 
-
+            Object_mCtor = module.ImportReference(
+                                    module.TypeSystem.Object.ReferenceMethod(m => m.IsConstructor));
         }
     }
 

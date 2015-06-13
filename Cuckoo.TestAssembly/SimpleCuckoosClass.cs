@@ -30,7 +30,7 @@ namespace Cuckoo.TestAssembly
                 _b = "88";
             }
 
-            public void Blah() {
+            public void Blah<T>(T t) {
 
                 object i = 3;
 
@@ -89,6 +89,7 @@ namespace Cuckoo.TestAssembly
             return 13;
         }
 
+
         [ArgChangingCuckoo]
         public string MethodReturnsStrings(int a, string b, string c, float d, string e) {
             return string.Format("{0}! {1}! {2}!", b, c, e);
@@ -99,6 +100,18 @@ namespace Cuckoo.TestAssembly
         [ReturnChangingCuckoo2("Wow!")]
         public string MethodWithTwoCuckoos(string s, int b) {
             return s;
+        }
+
+
+        [SimpleCuckoo]
+        public int MethodWithGenericArgs<A, B>(A a, B b) {
+            return 999;
+        }
+
+
+        [SimpleCuckoo]
+        public T MethodWithGenericResult<T>(int a) {
+            return default(T);
         }
 
 

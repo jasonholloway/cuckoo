@@ -77,7 +77,9 @@ namespace Cuckoo.Fody
 
             var mInner = mOuter.CopyToNewSibling(innerName);
 
-            mInner.Attributes |= MethodAttributes.Private;
+            mInner.Attributes = MethodAttributes.Private 
+                                | MethodAttributes.HideBySig 
+                                | MethodAttributes.SpecialName;
 
             _ctx.InnerMethod = mInner;
 
@@ -110,12 +112,13 @@ namespace Cuckoo.Fody
 
             tContainer.AppendToStaticCtor(
                 (i, m) => {
-                    var vMethodInfo = m.Body.AddVariable<Refl.MethodInfo>();
+                    var vMethodInfo = m.Body.AddVariable(R.MethodInfo_TypeRef);
                     var vUsurper = m.Body.AddVariable<ICallUsurper>();
                     var vUsurpers = m.Body.AddVariable<ICallUsurper[]>();
 
                     i.Emit(OpCodes.Ldtoken, mOuter);
                     i.Emit(OpCodes.Call, R.MethodInfo_mGetMethodFromHandle);
+                    i.Emit(OpCodes.Castclass, R.MethodInfo_TypeRef);
                     i.Emit(OpCodes.Stloc, vMethodInfo);
 
                     /////////////////////////////////////////////////////////////////////
@@ -166,6 +169,7 @@ namespace Cuckoo.Fody
                                 var field = tAtt.Resolve().GetField(namedCtorArg.Name);
 
                                 i.Emit(OpCodes.Ldloc, vUsurper);
+                                i.Emit(OpCodes.Castclass, tAtt);
                                 i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
                                 i.Emit(OpCodes.Stfld, field);
                             }
@@ -178,6 +182,7 @@ namespace Cuckoo.Fody
                                                 .First(p => p.Name == propCtorArg.Name);
 
                                 i.Emit(OpCodes.Ldloc, vUsurper);
+                                i.Emit(OpCodes.Castclass, tAtt);
                                 i.EmitConstant(propCtorArg.Argument.Type, propCtorArg.Argument.Value);
                                 i.Emit(OpCodes.Call, prop.SetMethod);
                             }
@@ -208,7 +213,7 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldelem_Ref);
 
                         i.Emit(OpCodes.Ldloc, vMethodInfo);
-                        i.Emit(OpCodes.Call, R.ICallUsurper_mInit);
+                        i.Emit(OpCodes.Callvirt, R.ICallUsurper_mInit);
                     }
                 });
 
@@ -217,15 +222,19 @@ namespace Cuckoo.Fody
 
 
 
-        MethodDefinition UsurpOuterMethod(WeaveContext ctx, TypeDefinition tTopCall) {
+        MethodDefinition UsurpOuterMethod(WeaveContext ctx, TypeReference tTopCall) {
             var mOuter = ctx.OuterMethod;
             var R = ctx.RefMap;
             var fCallSite = ctx.CallSiteField;
 
-            mOuter.Body = new MethodBody(mOuter);
+            if(tTopCall.HasGenericParameters) {
+                tTopCall = tTopCall.MakeGenericInstanceType(mOuter.GenericParameters.ToArray());
+            }
 
-            var TopCall_mCtor = tTopCall.GetConstructors().First();
-            var TopCall_fReturn = tTopCall.Fields.FirstOrDefault(f => f.Name == "_return");
+            var TopCall_mCtor = tTopCall.ReferenceMethod(c => c.IsConstructor);
+            var TopCall_fReturn = tTopCall.ReferenceField("_return");
+
+            mOuter.Body = new MethodBody(mOuter);
 
             mOuter.Compose(
                 (i, m) => {
@@ -254,10 +263,11 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Ldloc, vCall);
 
-                    i.Emit(OpCodes.Call, R.ICallUsurper_mUsurp);
+                    i.Emit(OpCodes.Callvirt, R.ICallUsurper_mUsurp);
 
                     if(TopCall_fReturn != null) {
                         i.Emit(OpCodes.Ldloc, vCall);
+                        i.Emit(OpCodes.Castclass, tTopCall);
                         i.Emit(OpCodes.Ldfld, TopCall_fReturn);
                     }
 

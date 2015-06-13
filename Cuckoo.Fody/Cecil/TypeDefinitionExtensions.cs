@@ -117,6 +117,8 @@ namespace Cuckoo.Fody.Cecil
 
             m.Overrides.Add(baseMethodRef);
 
+            m.Body.InitLocals = true;
+
             fnIL(m.Body.GetILProcessor(), m);
 
             return m;
@@ -192,6 +194,8 @@ namespace Cuckoo.Fody.Cecil
                 mCtor.Parameters.Add(param);
             }
 
+            mCtor.Body.InitLocals = true;
+
             fnIL(mCtor.Body.GetILProcessor(), mCtor);
 
             @this.Methods.Add(mCtor);
@@ -246,6 +250,8 @@ namespace Cuckoo.Fody.Cecil
                 @this.Body = new MethodBody(@this);
             }
 
+            @this.Body.InitLocals = true;
+
             var il = @this.Body.GetILProcessor();
 
             fnIL(il, @this);
@@ -273,6 +279,8 @@ namespace Cuckoo.Fody.Cecil
 
                 @this.Methods.Add(mCtorStatic);
             }
+
+            mCtorStatic.Body.InitLocals = true;
 
             var insReturn = mCtorStatic.Body.Instructions.Last();
             mCtorStatic.Body.Instructions.Remove(insReturn);

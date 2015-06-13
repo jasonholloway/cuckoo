@@ -22,7 +22,15 @@ namespace Cuckoo.Fody.Cecil
             @this.DeclaringType.Methods.Add(mNew);
 
             foreach(var param in @this.Parameters) {
-                mNew.Parameters.Add(param);
+                mNew.Parameters.Add(param); //params probably need to be cloned, and updated if generic
+            }
+
+            foreach(var genParam in @this.GenericParameters) {
+                var newGenParam = new GenericParameter(
+                                                genParam.Name, 
+                                                mNew);
+
+                mNew.GenericParameters.Add(newGenParam);
             }
 
             mNew.CallingConvention = @this.CallingConvention;
