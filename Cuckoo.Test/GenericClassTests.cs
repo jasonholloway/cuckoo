@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Test.Infrastructure;
+using Cuckoo.TestAssembly;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,8 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodInGenericClass() {
-            var method = GetUsurpedMethod("MethodInGenericClass");
-
-            int result = (int)MethodTester.Test(method);
+            int result = Tester.WithClass<GenericClass<int, int>>()
+                                .Run(c => c.MethodInGenericClass(123));
 
             Assert.IsTrue(result == 12345);
         }
@@ -24,9 +24,8 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodWithGenArgsInGenClass() {
-            var method = GetUsurpedMethod("MethodWithGenericArgsInGenericClass");
-
-            int result = (int)MethodTester.Test(method);
+            int result = Tester.WithClass<GenericClass<int, int>>()
+                                .Run(c => c.MethodWithGenericArgsInGenericClass<string, string>("a", "b"));
 
             Assert.IsTrue(result == 887);
         }

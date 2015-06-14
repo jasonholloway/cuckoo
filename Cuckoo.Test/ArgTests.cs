@@ -18,9 +18,8 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooChangesArgs() {
-            var method = GetUsurpedMethod("MethodReturnsStrings");
-
-            string result = (string)MethodTester.Test(method);
+            var result = Tester.WithClass<Args>()
+                                .Run(a => a.MethodReturnsStrings(1, "", "", 1f, ""));
 
             Assert.IsTrue(result == "Growl! Growl! Growl!");
         }
@@ -29,9 +28,11 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooAllowsOutArg() {
-            var method = GetUsurpedMethod("MethodWithOutArg");
+            int x;
+            string y;
 
-            string result = (string)MethodTester.Test(method);
+            var result = Tester.WithClass<Args>()
+                                .Run(a => a.MethodWithOutArg(1, out x, out y));
 
             //TEST OUT ARG HERE!
 

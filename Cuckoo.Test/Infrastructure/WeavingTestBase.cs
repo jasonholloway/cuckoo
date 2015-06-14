@@ -18,6 +18,7 @@ namespace Cuckoo.Test.Infrastructure
         
         static Assembly _assembly;
         static MethodInfo[] _usurpedMethods;
+        static MethodTester _tester;
 
         static WeavingTestBase() {
             string projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj"));
@@ -33,12 +34,14 @@ namespace Cuckoo.Test.Infrastructure
                 ReadingMode = ReadingMode.Immediate 
             };
 
-            var moduleDefinition = ModuleDefinition
+            var module = ModuleDefinition
                                         .ReadModule(assemblyPath, readerParams);
 
+            module.Assembly.Name = new AssemblyNameDefinition("Woven", new Version());
+            module.Name = "Woven";
 
             var weaver = new ModuleWeaver() {
-                                        ModuleDefinition = moduleDefinition,
+                                        ModuleDefinition = module,
                                         LogInfo = _ => { }
                                     };
 
@@ -50,7 +53,7 @@ namespace Cuckoo.Test.Infrastructure
                 WriteSymbols = true
             };
 
-            moduleDefinition.Write(newAssemblyPath, writerParams);
+            module.Write(newAssemblyPath, writerParams);
 
 
             _assembly = Assembly.LoadFile(newAssemblyPath);
@@ -67,17 +70,29 @@ namespace Cuckoo.Test.Infrastructure
                                             .SelectMany(t => t.GetMethods())
                                             .Where(m => m.GetCustomAttribute<CuckooedAttribute>() != null)
                                             .ToArray();
+
+            _tester = new MethodTester(_assembly.Modules.First());
         }
-        
+
+
+        protected MethodTester Tester {
+            get { return _tester; }
+        }
+
+        /*
+        protected Module UsurpedModule {
+            get { return _assembly.Modules.First(); }
+        }*/
 
         protected IEnumerable<MethodInfo> UsurpedMethods {
             get { return _usurpedMethods; }
         }
 
+        /*
         protected MethodInfo GetUsurpedMethod(string name) {
             return _usurpedMethods.First(m => m.Name == name);
         }
-
+        */
 
     }
 }

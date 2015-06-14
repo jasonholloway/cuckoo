@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    class GenericClass<A, B>
+    public class GenericClass<A, B>
     {
 
         [BareCuckoo]

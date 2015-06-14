@@ -9,13 +9,14 @@ using Cuckoo.Fody;
 using Cuckoo.Common;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
+using System.Linq.Expressions;
 
 namespace Cuckoo.Test
 {
     [TestClass]
     public class BasicTests : WeavingTestBase
     {
-
+        /*
         [TestMethod]
         public void AllUsurpationsCallable() {
             Assert.IsTrue(UsurpedMethods.Any(), "No usurpations!");
@@ -24,7 +25,7 @@ namespace Cuckoo.Test
                 System.Diagnostics.Debug.WriteLine(method.Name);
                 MethodTester.Test(method); 
             }
-        }
+        }*/
 
 
         [TestMethod]
@@ -45,10 +46,9 @@ namespace Cuckoo.Test
         }
 
         [TestMethod]
-        public void CuckooReturnsValue() {
-            var method = GetUsurpedMethod("MethodReturnsString");
-
-            string result = (string)MethodTester.Test(method);
+        public void CuckooReturnsValue() {            
+            var result = Tester.WithClass<Basic>()
+                                .Run(b => b.MethodReturnsString());
 
             Assert.IsTrue(result == "Hello from down below!");
         }
@@ -56,9 +56,8 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooChangesReturnValue() {
-            var method = GetUsurpedMethod("MethodWithChangeableReturn");
-
-            string result = (string)MethodTester.Test(method);
+            string result = Tester.WithClass<Basic>()
+                                    .Run(b => b.MethodWithChangeableReturn());
 
             Assert.IsTrue(result == "CHANGED!");
         }
@@ -66,19 +65,17 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckoosWorkTogether() {
-            var method = GetUsurpedMethod("MethodReturnsInt");
-
-            int result = (int)MethodTester.Test(method);
-
+            int result = Tester.WithClass<Basic>()
+                                .Run(b => b.MethodReturnsInt());
+            
             Assert.IsTrue(result == 13 + 8 - 10);
         }
 
         [TestMethod]
         public void CuckoosWorkTogetherInCorrectOrder() {
-            var method = GetUsurpedMethod("MethodWithTwoCuckoos");
-
-            string result = (string)MethodTester.Test(method);
-
+            string result = Tester.WithClass<Basic>()
+                                    .Run(b => b.MethodWithTwoCuckoos("blah", 123));
+            
             Assert.IsTrue(result == "Wow!");
         }
 

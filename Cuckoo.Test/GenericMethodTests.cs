@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Test.Infrastructure;
+using Cuckoo.TestAssembly;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -14,30 +15,28 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodWithGenericArgs() {
-            var method = GetUsurpedMethod("MethodWithGenericArgs");
+            int r = Tester.WithClass<GenericArgs>()
+                            .Run(g => g.MethodWithGenericArgs<string, float>("", 2F));
 
-            int result = (int)MethodTester.Test(method);
 
-            Assert.IsTrue(result == 999);
+            Assert.IsTrue(r == 999);
         }
 
 
         [TestMethod]
         public void CuckooOnMethodWithGenericResult() {
-            var method = GetUsurpedMethod("MethodWithGenericResult");
+            int r = Tester.WithClass<GenericArgs>()
+                            .Run(g => g.MethodWithGenericResult<int>(99));
 
-            string result = (string)MethodTester.Test(method);
-
-            Assert.IsTrue(result == default(string));
+            Assert.IsTrue(r == default(int));
         }
 
         [TestMethod]
         public void CuckoosCooperateOnMethodWithGenericArgs() {
-            var method = GetUsurpedMethod("TreblyCuckooedMethodWithGenericArgs");
+            int r = Tester.WithClass<GenericArgs>()
+                            .Run(g => g.TreblyCuckooedMethodWithGenericArgs(1, 2, 3));
 
-            int result = (int)MethodTester.Test(method);
-
-            Assert.IsTrue(result == 90);
+            Assert.IsTrue(r == 90);
         }
 
 
