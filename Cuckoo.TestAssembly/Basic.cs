@@ -15,7 +15,7 @@ namespace Cuckoo.TestAssembly
         public void Dummy1() { }
 
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public string MethodWithSimpleCuckoo(string recipient1, string recipient2) {
             string greeting = "Yip Yip!";
 
@@ -38,7 +38,7 @@ namespace Cuckoo.TestAssembly
         }
 
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public string MethodReturnsString() {
             return "Hello from down below!";
         }

@@ -21,9 +21,21 @@ namespace Cuckoo.Fody
         protected FieldDefinition _fInstance;
         protected FieldDefinition _fRoost;
         protected FieldDefinition _fReturn;
-        protected FieldDefinition[] _rfArgValues;
 
         protected TypeReference[] _rtContGenArgs;
+
+
+        protected class Arg
+        {
+            public ParameterDefinition Param { get; set; }
+            public FieldDefinition Field { get; set; }
+            public TypeReference ParamType { get { return Param.ParameterType; } }
+            public TypeReference FieldType { get { return Field.FieldType; } }
+        }
+
+        protected Arg[] _args;
+
+
 
         public CallWeaver(WeaveContext ctx) {
             _ctx = ctx;
@@ -31,6 +43,9 @@ namespace Cuckoo.Fody
 
 
         protected abstract void EmitInnerInvoke(ILProcessor il);
+
+
+
 
 
         public TypeDefinition Build() {
@@ -64,26 +79,29 @@ namespace Cuckoo.Fody
 
 
 
-            _fRoost = _tCall.AddField<Cuckoo.Common.Roost>("_callSite");
+            _fRoost = _tCall.AddField<Roost>("_roost");
             _fInstance = _tCall.AddField<object>("_instance");
             
             if(mOuter.ReturnsValue()) {
                 _fReturn = _tCall.AddField(_types.Map(mOuter.ReturnType), "_return");
                 _fReturn.Attributes = FieldAttributes.Public;
             }
-
-
-            _rfArgValues = mOuter.Parameters
-                                    .Select(p => _tCall.AddField(
-                                                            _types.Map(p.ParameterType), 
-                                                            "_argValue_" + p.Name ))
-                                    .ToArray();
+            
+            _args = mOuter.Parameters
+                            .Select(p => new Arg() {
+                                Param = p,
+                                Field = _tCall.AddField(
+                                                    _types.Map(p.ParameterType.GetElementType()),
+                                                    "_arg_" + p.Name
+                                                    )
+                            })
+                            .ToArray();
 
             var rCtorArgTypes = new[] { 
                                         R.Roost_TypeRef,
                                         mod.TypeSystem.Object //instance
                                     }
-                                .Concat(_rfArgValues.Select(f => f.FieldType))
+                                .Concat(_args.Select(a => a.FieldType))
                                 .ToArray();
 
             _tCall.AddCtor(
@@ -100,16 +118,42 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldarg_2);
                         i.Emit(OpCodes.Stfld, _fInstance);
 
-                        //put args into special fields
-                        int iP = 2;
-                        var rParams = m.Parameters.ToArray();
+                        var myArgs = _args.Zip(m.Parameters.Skip(2), 
+                                                    (a, p) => new {
+                                                            CtorParam = p,
+                                                            Param = a.Param,
+                                                            Field = a.Field
+                                                        });
 
-                        foreach(var fArgValue in _rfArgValues) {
+                        foreach(var a in myArgs) {
                             i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldarg_S, rParams[iP]);
-                            i.Emit(OpCodes.Stfld, fArgValue);
-                            iP++;
+
+                            i.Emit(OpCodes.Ldarg_S, a.CtorParam);
+
+                            //if(a.Param.ParameterType.IsByReference) {
+                            //    i.Emit(OpCodes.Ldobj, a.Field.FieldType);
+                            //}
+
+                            i.Emit(OpCodes.Stfld, a.Field);
                         }
+                        
+                        //int iP = 2;
+                        //var rParams = m.Parameters.ToArray();
+
+                        //foreach(var fArg in _rfArgs) {
+                        //    var param = rParams[iP];
+
+                        //    i.Emit(OpCodes.Ldarg_0);
+
+                        //    i.Emit(OpCodes.Ldarg_S, param);
+
+                        //    if(param.ParameterType.IsByReference) {
+                        //        i.Emit(OpCodes.Ldind_Ref);
+                        //    }
+
+                        //    i.Emit(OpCodes.Stfld, fArg);
+                        //    iP++;
+                        //}
 
                         i.Emit(OpCodes.Ret);
                     });
@@ -158,7 +202,7 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ret);
 
                             i.Append(lbCreateArgs);
-                            i.Emit(OpCodes.Ldc_I4, _rfArgValues.Length);
+                            i.Emit(OpCodes.Ldc_I4, _args.Length);
                             i.Emit(OpCodes.Newarr, R.CallArg_TypeRef);
                             i.Emit(OpCodes.Stloc_S, vArgs);
 
@@ -167,7 +211,7 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Call, R.Roost_mGetParams);
                             i.Emit(OpCodes.Stloc_S, vParams);
 
-                            for(int iA = 0; iA < _rfArgValues.Length; iA++) {
+                            for(int iA = 0; iA < _args.Length; iA++) {
                                 i.Emit(OpCodes.Ldloc_S, vArgs);
                                 i.Emit(OpCodes.Ldc_I4, iA);
 
@@ -177,10 +221,10 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Ldelem_Ref);
 
                                 //load value & box
-                                var fArgValue = _rfArgValues[iA];
+                                var arg = _args[iA];
                                 i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fArgValue);
-                                i.Emit(OpCodes.Box, fArgValue.FieldType);
+                                i.Emit(OpCodes.Ldfld, arg.Field);
+                                i.Emit(OpCodes.Box, arg.FieldType);
 
                                 i.Emit(OpCodes.Newobj, R.CallArg_mCtor);
 
@@ -246,7 +290,7 @@ namespace Cuckoo.Fody
 
                             int iA = 0;
 
-                            foreach(var fArgValue in _rfArgValues) {
+                            foreach(var arg in _args) {
                                 var lbSkipArgUpdate = i.Create(OpCodes.Nop);
 
                                 i.Emit(OpCodes.Ldloc_S, vArgs);
@@ -263,9 +307,9 @@ namespace Cuckoo.Fody
 
                                 i.Emit(OpCodes.Ldloc_S, vArg);
                                 i.Emit(OpCodes.Call, R.CallArg_mGetValue);
-                                i.Emit(OpCodes.Unbox_Any, fArgValue.FieldType);
+                                i.Emit(OpCodes.Unbox_Any, arg.FieldType);
 
-                                i.Emit(OpCodes.Stfld, fArgValue);
+                                i.Emit(OpCodes.Stfld, arg.Field);
 
                                 i.Append(lbSkipArgUpdate);
 
@@ -334,9 +378,9 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
 
-            foreach(var fArgValue in _rfArgValues) {
+            foreach(var arg in _args) {
                 i.Emit(OpCodes.Ldarg_0);                
-                i.Emit(OpCodes.Ldfld, fArgValue);
+                i.Emit(OpCodes.Ldfld, arg.Field);
             }
 
             i.Emit(OpCodes.Newobj, NextCall_mCtor);
@@ -378,11 +422,17 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Ldfld, _fInstance);
             i.Emit(OpCodes.Castclass, _tContRef);
 
-            foreach(var fArgValue in _rfArgValues) {
+            foreach(var arg in _args) {
                 i.Emit(OpCodes.Ldarg_0);
-                i.Emit(OpCodes.Ldfld, fArgValue);
-            }
 
+                if(arg.ParamType.IsByReference) {
+                    i.Emit(OpCodes.Ldflda, arg.Field);
+                }
+                else {
+                    i.Emit(OpCodes.Ldfld, arg.Field);
+                }
+            }
+            
             i.Emit(OpCodes.Call, mInner);
         }
     }

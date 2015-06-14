@@ -1,0 +1,5 @@
+
+Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+All Classes and Methods in ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll Verified.

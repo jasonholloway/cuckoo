@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly.Cuckoos
 {
-    public class SimpleCuckooAttribute : CuckooAttribute
+    public class BareCuckooAttribute : CuckooAttribute
     {
         public override void Init(MethodInfo method) {
             //...

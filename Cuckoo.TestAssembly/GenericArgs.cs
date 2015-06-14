@@ -10,17 +10,17 @@ namespace Cuckoo.TestAssembly
     class GenericArgs
     {
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public int MethodWithGenericArgs<A, B>(A a, B b) {
             return 999;
         }
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public T MethodWithGenericResult<T>(int a) {
             return default(T);
         }
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         [AddingCuckoo(10)]
         [DeductingCuckoo(20)]
         public int TreblyCuckooedMethodWithGenericArgs<A, B, C>(A a, B b, C c) {

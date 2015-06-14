@@ -272,6 +272,10 @@ namespace Cuckoo.Fody
 
                     foreach(var param in m.Parameters) {
                         i.Emit(OpCodes.Ldarg_S, param);
+
+                        if(param.ParameterType.IsByReference) {
+                            i.Emit(OpCodes.Ldobj, param.ParameterType.GetElementType());
+                        }
                     }
 
                     i.Emit(OpCodes.Newobj, TopCall_mCtor);

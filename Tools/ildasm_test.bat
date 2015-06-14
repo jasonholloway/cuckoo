@@ -1,0 +1,1 @@
+start "" ildasm ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll

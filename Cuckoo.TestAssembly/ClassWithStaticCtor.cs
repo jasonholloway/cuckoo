@@ -20,7 +20,7 @@ namespace Cuckoo.TestAssembly
 
         }
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public string Hello(string recipient1, string recipient2) {
             string greeting = "Yip Yip!";
 

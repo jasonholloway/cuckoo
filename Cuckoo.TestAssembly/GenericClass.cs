@@ -10,14 +10,14 @@ namespace Cuckoo.TestAssembly
     class GenericClass<A, B>
     {
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         public int MethodInGenericClass(int i) {
             A a = default(A);
             return 12345;
         }
 
 
-        [SimpleCuckoo]
+        [BareCuckoo]
         [DeductingCuckoo(100)]
         public int MethodWithGenericArgsInGenericClass<C, D>(C c, D d) {
             var cc = c;
