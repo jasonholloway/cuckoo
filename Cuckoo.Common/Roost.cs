@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Common
 {
-    public class CallSite
+    public class Roost
     {
         public MethodInfo Method { get; private set; }
         public ParameterInfo[] Parameters { get; private set; }
-        public ICallUsurper[] Usurpers { get; private set; }
+        public ICuckoo[] Cuckoos { get; private set; }
 
-        public CallSite(MethodInfo method, ICallUsurper[] usurpers) {
+        public Roost(MethodInfo method, ICuckoo[] cuckoos) {
             this.Method = method;
             this.Parameters = method.GetParameters();
-            this.Usurpers = usurpers;
+            this.Cuckoos = cuckoos;
         }
     }
 }

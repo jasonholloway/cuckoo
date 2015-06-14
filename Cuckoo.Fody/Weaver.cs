@@ -23,7 +23,7 @@ namespace Cuckoo.Fody
             _spec = spec;
 
             _ctx = new WeaveContext() {
-                DecType = spec.Method.DeclaringType,
+                ContType = spec.Method.DeclaringType,
                 Module = spec.Method.Module,
                 OuterMethod = spec.Method,
                 NameSource = new NameSource(_spec.Method.DeclaringType),
@@ -35,9 +35,9 @@ namespace Cuckoo.Fody
         
         public void Apply() 
         {
-            CopyOuterToInner(_ctx);
+            CreateRoost(_ctx);
             
-            CreateCallSite(_ctx);
+            TransplantOuterToInner(_ctx);
             
             var tCall = new FinalCallWeaver(_ctx).Build();
 
@@ -47,20 +47,20 @@ namespace Cuckoo.Fody
 
             UsurpOuterMethod(_ctx, tCall);
 
-            AddUsurpedAttributeToOuter(_ctx);
+            AddCuckooedAttribute(_ctx);
 
             _ctx.Logger(string.Format("Mod applied to {0}!", _ctx.OuterMethod.FullName));
         }
 
 
 
-        void AddUsurpedAttributeToOuter(WeaveContext ctx) {
+        void AddCuckooedAttribute(WeaveContext ctx) {
             var R = ctx.RefMap;
             var mod = ctx.Module;
             var mInner = ctx.InnerMethod;
             var mOuter = ctx.OuterMethod;
 
-            var atUsurped = new CustomAttribute(R.UsurpedAtt_mCtor);
+            var atUsurped = new CustomAttribute(R.CuckooedAtt_mCtor);
             atUsurped.ConstructorArguments.Add(
                             new CustomAttributeArgument(mod.TypeSystem.String, mInner.Name));
 
@@ -69,11 +69,11 @@ namespace Cuckoo.Fody
 
 
 
-        MethodDefinition CopyOuterToInner(WeaveContext ctx) {
+        MethodDefinition TransplantOuterToInner(WeaveContext ctx) {
             var mOuter = ctx.OuterMethod;
             var names = ctx.NameSource;
 
-            string innerName = names.GetElementName("USURPED", mOuter.Name);
+            string innerName = names.GetElementName("CUCKOOED", mOuter.Name);
 
             var mInner = mOuter.CopyToNewSibling(innerName);
 
@@ -87,44 +87,45 @@ namespace Cuckoo.Fody
         }
 
 
-        FieldReference CreateCallSite(WeaveContext ctx) {
+        FieldReference CreateRoost(WeaveContext ctx) {
             var mod = ctx.Module;
             var R = ctx.RefMap;
             var mOuter = ctx.OuterMethod;
             var mInner = ctx.InnerMethod;
             var names = ctx.NameSource;
-            var tDec = ctx.DecType;
+            var tCont = ctx.ContType;
 
-            var tDecRef = tDec.HasGenericParameters
-                            ? tDec.MakeGenericInstanceType(tDec.GenericParameters.ToArray())
-                            : (TypeReference)tDec;
+            var tContRef = tCont.HasGenericParameters
+                            ? tCont.MakeGenericInstanceType(tCont.GenericParameters.ToArray())
+                            : (TypeReference)tCont;
 
-            ctx.DecTypeRef = tDecRef;
+            ctx.ContTypeRef = tContRef;
 
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Create static CallSite ///////////////////////////////////////////////////////////////////
-            string callSiteName = names.GetElementName("CALLSITE", mOuter.Name);
+            string callSiteName = names.GetElementName("ROOST", mOuter.Name);
 
-            var f = tDec.AddField(
-                                R.CallSite_TypeRef,
-                                callSiteName);
+            var fRoost = tCont.AddField(
+                                    R.Roost_TypeRef,
+                                    callSiteName);
 
-            f.Attributes = FieldAttributes.Private
+            fRoost.Attributes = FieldAttributes.Private
                                         | FieldAttributes.Static
                                         | FieldAttributes.InitOnly;
 
-            ctx.CallSiteField = f;
+            ctx.RoostField = fRoost;
 
-            var fCallSite = f.CloneWithNewDeclaringType(tDecRef);
+            var fRoostRef = fRoost.CloneWithNewDeclaringType(tContRef);
 
-            tDec.AppendToStaticCtor(
+
+            tCont.AppendToStaticCtor(
                 (i, m) => {
                     var vMethodInfo = m.Body.AddVariable(R.MethodInfo_TypeRef);
-                    var vUsurper = m.Body.AddVariable<ICallUsurper>();
-                    var vUsurpers = m.Body.AddVariable<ICallUsurper[]>();
+                    var vCuckoo = m.Body.AddVariable<ICuckoo>();
+                    var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
                     
                     i.Emit(OpCodes.Ldtoken, mOuter);
-                    i.Emit(OpCodes.Ldtoken, tDecRef);
+                    i.Emit(OpCodes.Ldtoken, tContRef);
                     i.Emit(OpCodes.Call, R.MethodInfo_mGetMethodFromHandle);
                     i.Emit(OpCodes.Castclass, R.MethodInfo_TypeRef);
                     i.Emit(OpCodes.Stloc, vMethodInfo);
@@ -132,8 +133,8 @@ namespace Cuckoo.Fody
                     /////////////////////////////////////////////////////////////////////
                     //Load usurper instances into array ////////////////////////////////
                     i.Emit(OpCodes.Ldc_I4, _spec.CuckooAttributes.Length);
-                    i.Emit(OpCodes.Newarr, R.ICallUsurper_TypeRef);
-                    i.Emit(OpCodes.Stloc_S, vUsurpers);
+                    i.Emit(OpCodes.Newarr, R.ICuckoo_TypeRef);
+                    i.Emit(OpCodes.Stloc_S, vCuckoos);
                     
                     int iA = 0;
 
@@ -169,14 +170,14 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Newobj, mCtor);
                         }
 
-                        i.Emit(OpCodes.Stloc, vUsurper);
+                        i.Emit(OpCodes.Stloc, vCuckoo);
 
 
                         if(att.HasFields) {
                             foreach(var namedCtorArg in att.Fields) {
                                 var field = tAtt.Resolve().GetField(namedCtorArg.Name);
 
-                                i.Emit(OpCodes.Ldloc, vUsurper);
+                                i.Emit(OpCodes.Ldloc, vCuckoo);
                                 i.Emit(OpCodes.Castclass, tAtt);
                                 i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
                                 i.Emit(OpCodes.Stfld, field);
@@ -189,42 +190,42 @@ namespace Cuckoo.Fody
                                                 .Where(p => p.SetMethod != null)
                                                 .First(p => p.Name == propCtorArg.Name);
 
-                                i.Emit(OpCodes.Ldloc, vUsurper);
+                                i.Emit(OpCodes.Ldloc, vCuckoo);
                                 i.Emit(OpCodes.Castclass, tAtt);
                                 i.EmitConstant(propCtorArg.Argument.Type, propCtorArg.Argument.Value);
                                 i.Emit(OpCodes.Call, prop.SetMethod);
                             }
                         }
 
-                        i.Emit(OpCodes.Ldloc_S, vUsurpers);
+                        i.Emit(OpCodes.Ldloc_S, vCuckoos);
                         i.Emit(OpCodes.Ldc_I4, iA);
-                        i.Emit(OpCodes.Ldloc_S, vUsurper);
+                        i.Emit(OpCodes.Ldloc_S, vCuckoo);
                         i.Emit(OpCodes.Stelem_Ref);
 
                         iA++;
                     }
                     
                     ////////////////////////////////////////////////////////////////////
-                    //Construct and store CallSite
+                    //Construct and emplace Roost
                     i.Emit(OpCodes.Ldloc, vMethodInfo);
-                    i.Emit(OpCodes.Ldloc, vUsurpers);
-                    i.Emit(OpCodes.Newobj, R.CallSite_mCtor);
-                    i.Emit(OpCodes.Stsfld, fCallSite);
+                    i.Emit(OpCodes.Ldloc, vCuckoos);
+                    i.Emit(OpCodes.Newobj, R.Roost_mCtor);
+                    i.Emit(OpCodes.Stsfld, fRoostRef);
 
 
                     ////////////////////////////////////////////////////////////////////
-                    //Init usurpers ///////////////////////////////////////////////////
-                    for(int iU = 0; iU < _spec.CuckooAttributes.Length; iU++) {
-                        i.Emit(OpCodes.Ldloc, vUsurpers);
-                        i.Emit(OpCodes.Ldc_I4, iU);
+                    //Init Cuckoos ////////////////////////////////////////////////////
+                    for(int iC = 0; iC < _spec.CuckooAttributes.Length; iC++) {
+                        i.Emit(OpCodes.Ldloc, vCuckoos);
+                        i.Emit(OpCodes.Ldc_I4, iC);
                         i.Emit(OpCodes.Ldelem_Ref);
 
                         i.Emit(OpCodes.Ldloc, vMethodInfo);
-                        i.Emit(OpCodes.Callvirt, R.ICallUsurper_mInit);
+                        i.Emit(OpCodes.Callvirt, R.ICuckoo_mInit);
                     }
                 });
 
-            return fCallSite;
+            return fRoostRef;
         }
 
 
@@ -235,16 +236,16 @@ namespace Cuckoo.Fody
         MethodDefinition UsurpOuterMethod(WeaveContext ctx, TypeReference tTopCall) {
             var mOuter = ctx.OuterMethod;
             var R = ctx.RefMap;
-            var fCallSite = ctx.CallSiteField;
-            var tDec = ctx.DecType;
-            var tDecRef = ctx.DecTypeRef;
+            var fRoost = ctx.RoostField;
+            var tCont = ctx.ContType;
+            var tContRef = ctx.ContTypeRef;
 
-            var fCallSiteRef = tDec.HasGenericParameters
-                                ? fCallSite.CloneWithNewDeclaringType(tDecRef)
-                                : fCallSite;
+            var fRoostRef = tCont.HasGenericParameters
+                                ? fRoost.CloneWithNewDeclaringType(tContRef)
+                                : fRoost;
 
             if(tTopCall.HasGenericParameters) {
-                var rtCallGenTypes = tDec.GenericParameters
+                var rtCallGenTypes = tCont.GenericParameters
                                                 .Concat(mOuter.GenericParameters)
                                                 .ToArray();
                 
@@ -260,7 +261,7 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable<ICall>();
 
-                    i.Emit(OpCodes.Ldsfld, fCallSiteRef);
+                    i.Emit(OpCodes.Ldsfld, fRoostRef);
 
                     if(m.HasThis) {
                         i.Emit(OpCodes.Ldarg_0);
@@ -276,14 +277,14 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Newobj, TopCall_mCtor);
                     i.Emit(OpCodes.Stloc_S, vCall);
 
-                    i.Emit(OpCodes.Ldsfld, fCallSiteRef);
-                    i.Emit(OpCodes.Call, R.CallSite_mGetUsurpers);
+                    i.Emit(OpCodes.Ldsfld, fRoostRef);
+                    i.Emit(OpCodes.Call, R.Roost_mGetUsurpers);
                     i.Emit(OpCodes.Ldc_I4_0);
                     i.Emit(OpCodes.Ldelem_Ref);
 
                     i.Emit(OpCodes.Ldloc, vCall);
 
-                    i.Emit(OpCodes.Callvirt, R.ICallUsurper_mUsurp);
+                    i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
                     if(TopCall_fReturn != null) {
                         i.Emit(OpCodes.Ldloc, vCall);

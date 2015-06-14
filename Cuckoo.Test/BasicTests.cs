@@ -28,19 +28,19 @@ namespace Cuckoo.Test
 
 
         [TestMethod]
-        public void CallSitesInPlace() {
+        public void RoostsInPlace() {
             foreach(var method in UsurpedMethods) {
-                var fCallSite = method.DeclaringType.GetField(
-                                                        "<CALLSITE>_" + method.Name, 
-                                                        BindingFlags.Static | BindingFlags.NonPublic);
+                var fRoost = method.DeclaringType.GetField(
+                                                    "<ROOST>_" + method.Name, 
+                                                    BindingFlags.Static | BindingFlags.NonPublic);
 
-                object value = fCallSite.GetValue(null);
-                Assert.IsTrue(value is Cuckoo.Common.CallSite);
+                object value = fRoost.GetValue(null);
+                Assert.IsTrue(value is Roost);
 
-                var callSite = value as Cuckoo.Common.CallSite;
-                Assert.AreEqual(callSite.Method, method);
-                Assert.IsTrue(callSite.Usurpers is ICallUsurper[]);
-                Assert.IsTrue(callSite.Usurpers.All(u => u is CuckooAttribute));
+                var roost = value as Roost;
+                Assert.AreEqual(roost.Method, method);
+                Assert.IsTrue(roost.Cuckoos is ICuckoo[]);
+                Assert.IsTrue(roost.Cuckoos.All(u => u is CuckooAttribute));
             }
         }
 
@@ -83,15 +83,6 @@ namespace Cuckoo.Test
         }
 
 
-
-        [TestMethod]
-        public void CuckooChangesArgs() {
-            var method = GetUsurpedMethod("MethodReturnsStrings");
-
-            string result = (string)MethodTester.Test(method);
-
-            Assert.IsTrue(result == "Growl! Growl! Growl!");
-        }
 
 
 

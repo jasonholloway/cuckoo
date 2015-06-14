@@ -57,11 +57,6 @@ namespace Cuckoo.TestAssembly
         }
 
 
-        [ArgChangingCuckoo]
-        public string MethodReturnsStrings(int a, string b, string c, float d, string e) {
-            return string.Format("{0}! {1}! {2}!", b, c, e);
-        }
-
 
         [ReturnChangingCuckoo("BLAH")]
         [ReturnChangingCuckoo2("Wow!")]

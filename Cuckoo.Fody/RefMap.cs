@@ -14,8 +14,8 @@ namespace Cuckoo.Fody
 
     class RefMap
     {
-        public readonly TypeReference ICallUsurper_TypeRef;
-        public readonly TypeReference CallSite_TypeRef;
+        public readonly TypeReference ICuckoo_TypeRef;
+        public readonly TypeReference Roost_TypeRef;
         public readonly TypeReference CallArg_TypeRef;
         public readonly TypeReference ICall_TypeRef;
         public readonly TypeReference MethodInfo_TypeRef;
@@ -23,18 +23,18 @@ namespace Cuckoo.Fody
         public readonly MethodReference CallArg_mCtor;
         public readonly MethodReference CallArg_mGetIsPristine;
         public readonly MethodReference CallArg_mGetValue;
-        public readonly MethodReference CallSite_mGetParams;
-        public readonly MethodReference CallSite_mGetUsurpers;
-        public readonly MethodReference CallSite_mCtor;
-        public readonly MethodReference ICallUsurper_mInit;
-        public readonly MethodReference ICallUsurper_mUsurp;
-        public readonly MethodReference UsurpedAtt_mCtor;
+        public readonly MethodReference Roost_mCtor;
+        public readonly MethodReference Roost_mGetParams;
+        public readonly MethodReference Roost_mGetUsurpers;
+        public readonly MethodReference ICuckoo_mInit;
+        public readonly MethodReference ICuckoo_mUsurp;
+        public readonly MethodReference CuckooedAtt_mCtor;
         public readonly MethodReference MethodInfo_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
 
         public RefMap(ModuleDefinition module, MethodDefinition method) {
-            ICallUsurper_TypeRef = module.ImportReference(typeof(ICallUsurper));
-            CallSite_TypeRef = module.ImportReference(typeof(Cuckoo.Common.CallSite));
+            ICuckoo_TypeRef = module.ImportReference(typeof(ICuckoo));
+            Roost_TypeRef = module.ImportReference(typeof(Roost));
             CallArg_TypeRef = module.ImportReference(typeof(CallArg));
             ICall_TypeRef = module.ImportReference(typeof(ICall));
             MethodInfo_TypeRef = module.ImportReference(typeof(Refl.MethodInfo));
@@ -48,23 +48,23 @@ namespace Cuckoo.Fody
             CallArg_mGetValue = module.ImportReference(
                                         CallArg_TypeRef.GetMethod("get_Value"));
 
-            CallSite_mGetParams = module.ImportReference(
-                                        CallSite_TypeRef.GetMethod("get_Parameters"));
+            Roost_mGetParams = module.ImportReference(
+                                        Roost_TypeRef.GetMethod("get_Parameters"));
 
-            CallSite_mGetUsurpers = module.ImportReference(
-                                        CallSite_TypeRef.GetMethod("get_Usurpers"));
+            Roost_mGetUsurpers = module.ImportReference(
+                                        Roost_TypeRef.GetMethod("get_Cuckoos"));
 
-            CallSite_mCtor = module.ImportReference(
-                                        CallSite_TypeRef.Resolve().GetConstructors().First());
+            Roost_mCtor = module.ImportReference(
+                                        Roost_TypeRef.Resolve().GetConstructors().First());
 
-            ICallUsurper_mInit = module.ImportReference(
-                                        typeof(ICallUsurper).GetMethod("Init"));
+            ICuckoo_mInit = module.ImportReference(
+                                        typeof(ICuckoo).GetMethod("Init"));
 
-            ICallUsurper_mUsurp = module.ImportReference(
-                                        typeof(ICallUsurper).GetMethod("Usurp"));
+            ICuckoo_mUsurp = module.ImportReference(
+                                        typeof(ICuckoo).GetMethod("Usurp"));
 
-            UsurpedAtt_mCtor = module.ImportReference(
-                                        typeof(UsurpedAttribute).GetConstructor(new[] { typeof(string) }));
+            CuckooedAtt_mCtor = module.ImportReference(
+                                        typeof(CuckooedAttribute).GetConstructor(new[] { typeof(string) }));
 
             MethodInfo_mGetMethodFromHandle =
                     module.ImportReference(typeof(Refl.MethodBase)

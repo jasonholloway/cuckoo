@@ -1,5 +1,12 @@
 ﻿
 ********************************************************************
+OUT & REF PARAMS:
+> If there are any out or ref params, CallInner must update args array (if made) on return to cuckoo
+
+
+
+
+********************************************************************
 TO DO:
 > Usurpers to be given specialised MethodInfo on generic calls
 > out and ref parameters

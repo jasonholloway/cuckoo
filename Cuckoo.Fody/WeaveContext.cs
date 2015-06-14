@@ -10,11 +10,11 @@ namespace Cuckoo.Fody
     class WeaveContext
     {
         public ModuleDefinition Module;
-        public TypeDefinition DecType;
-        public TypeReference DecTypeRef;
+        public TypeDefinition ContType;
+        public TypeReference ContTypeRef;
         public MethodDefinition InnerMethod;
         public MethodDefinition OuterMethod;
-        public FieldDefinition CallSiteField;
+        public FieldDefinition RoostField;
 
         public NameSource NameSource;
         public RefMap RefMap;

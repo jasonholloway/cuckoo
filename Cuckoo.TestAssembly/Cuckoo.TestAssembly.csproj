@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Args.cs" />
     <Compile Include="Cuckoos\ArgChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\AddingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\DeductingCuckooAttribute.cs" />

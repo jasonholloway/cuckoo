@@ -15,15 +15,15 @@ namespace Cuckoo.Fody
         protected ScopeTypeMapper _types;
 
         protected TypeDefinition _tCall;
-        protected TypeDefinition _tDec;
-        protected TypeReference _tDecRef;
+        protected TypeDefinition _tCont;
+        protected TypeReference _tContRef;
 
         protected FieldDefinition _fInstance;
-        protected FieldDefinition _fCallSite;
+        protected FieldDefinition _fRoost;
         protected FieldDefinition _fReturn;
         protected FieldDefinition[] _rfArgValues;
 
-        protected TypeReference[] _rtDecGenTypes;
+        protected TypeReference[] _rtContGenArgs;
 
         public CallWeaver(WeaveContext ctx) {
             _ctx = ctx;
@@ -37,34 +37,34 @@ namespace Cuckoo.Fody
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
             var mOuter = _ctx.OuterMethod;
-            _tDec = _ctx.DecType;
+            _tCont = _ctx.ContType;
 
             string callClassName = _ctx.NameSource.GetElementName("CALL", mOuter.Name);
 
             _tCall = new TypeDefinition(
-                                _tDec.Namespace,
+                                _tCont.Namespace,
                                 callClassName,
                                 TypeAttributes.Class | TypeAttributes.NestedPrivate
                                 );
 
-            _tDec.NestedTypes.Add(_tCall);
+            _tCont.NestedTypes.Add(_tCall);
 
             _tCall.BaseType = mod.TypeSystem.Object;
             _tCall.Interfaces.Add(R.ICall_TypeRef);
 
             _types = new ScopeTypeMapper(_tCall);
 
-            _rtDecGenTypes = _tDec.GenericParameters
+            _rtContGenArgs = _tCont.GenericParameters
                                         .Select(p => _types.Map(p))
                                         .ToArray();
 
-            _tDecRef = _tDec.HasGenericParameters
-                            ? _tDec.MakeGenericInstanceType(_rtDecGenTypes)
-                            : (TypeReference)_tDec;
+            _tContRef = _tCont.HasGenericParameters
+                            ? _tCont.MakeGenericInstanceType(_rtContGenArgs)
+                            : (TypeReference)_tCont;
 
 
 
-            _fCallSite = _tCall.AddField<Cuckoo.Common.CallSite>("_callSite");
+            _fRoost = _tCall.AddField<Cuckoo.Common.Roost>("_callSite");
             _fInstance = _tCall.AddField<object>("_instance");
             
             if(mOuter.ReturnsValue()) {
@@ -80,7 +80,7 @@ namespace Cuckoo.Fody
                                     .ToArray();
 
             var rCtorArgTypes = new[] { 
-                                        R.CallSite_TypeRef,
+                                        R.Roost_TypeRef,
                                         mod.TypeSystem.Object //instance
                                     }
                                 .Concat(_rfArgValues.Select(f => f.FieldType))
@@ -94,7 +94,7 @@ namespace Cuckoo.Fody
                     
                         i.Emit(OpCodes.Ldarg_0);
                         i.Emit(OpCodes.Ldarg_1);
-                        i.Emit(OpCodes.Stfld, _fCallSite);
+                        i.Emit(OpCodes.Stfld, _fRoost);
 
                         i.Emit(OpCodes.Ldarg_0);
                         i.Emit(OpCodes.Ldarg_2);
@@ -128,9 +128,9 @@ namespace Cuckoo.Fody
                         "get_Method",
                         (i, m) => {
                             var mCallSite_GetMethod = mod.ImportReference(
-                                                                R.CallSite_TypeRef.Resolve().GetMethod("get_Method"));
+                                                                R.Roost_TypeRef.Resolve().GetMethod("get_Method"));
                             i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldfld, _fCallSite);
+                            i.Emit(OpCodes.Ldfld, _fRoost);
                             i.Emit(OpCodes.Call, mCallSite_GetMethod);
                             i.Emit(OpCodes.Ret);
                         });
@@ -163,8 +163,8 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Stloc_S, vArgs);
 
                             i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldfld, _fCallSite);
-                            i.Emit(OpCodes.Call, R.CallSite_mGetParams);
+                            i.Emit(OpCodes.Ldfld, _fRoost);
+                            i.Emit(OpCodes.Call, R.Roost_mGetParams);
                             i.Emit(OpCodes.Stloc_S, vParams);
 
                             for(int iA = 0; iA < _rfArgValues.Length; iA++) {
@@ -296,13 +296,13 @@ namespace Cuckoo.Fody
     class MediateCallWeaver : CallWeaver
     {
         TypeReference _tNextCall;
-        int _iUsurper;
+        int _iCuckoo;
 
-        public MediateCallWeaver(WeaveContext ctx, TypeReference tNextCall, int iUsurper)
+        public MediateCallWeaver(WeaveContext ctx, TypeReference tNextCall, int iCuckoo)
             : base(ctx) 
         {
             _tNextCall = tNextCall;
-            _iUsurper = iUsurper;
+            _iCuckoo = iCuckoo;
         }
 
         protected override void EmitInnerInvoke(ILProcessor i) {
@@ -316,20 +316,20 @@ namespace Cuckoo.Fody
             var NextCall_fReturn = tNextCall.ReferenceField("_return");
 
             //get next usurper by index
-            var vUsurper = i.Body.AddVariable<ICallUsurper>();
-            var vCallSite = i.Body.AddVariable<Cuckoo.Common.CallSite>();
+            var vCuckoo = i.Body.AddVariable<ICuckoo>();
+            var vRoost = i.Body.AddVariable<Roost>();
             var vCall = i.Body.AddVariable<ICall>();
 
             i.Emit(OpCodes.Ldarg_0);
-            i.Emit(OpCodes.Ldfld, _fCallSite);
-            i.Emit(OpCodes.Call, R.CallSite_mGetUsurpers);
-            i.Emit(OpCodes.Ldc_I4, _iUsurper);
+            i.Emit(OpCodes.Ldfld, _fRoost);
+            i.Emit(OpCodes.Call, R.Roost_mGetUsurpers);
+            i.Emit(OpCodes.Ldc_I4, _iCuckoo);
             i.Emit(OpCodes.Ldelem_Ref);
-            i.Emit(OpCodes.Stloc_S, vUsurper);
+            i.Emit(OpCodes.Stloc_S, vCuckoo);
             
             //load various args for next call ctor
             i.Emit(OpCodes.Ldarg_0);
-            i.Emit(OpCodes.Ldfld, _fCallSite);
+            i.Emit(OpCodes.Ldfld, _fRoost);
 
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
@@ -343,9 +343,9 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Stloc_S, vCall);
 
             //feed to next usurper
-            i.Emit(OpCodes.Ldloc_S, vUsurper);
+            i.Emit(OpCodes.Ldloc_S, vCuckoo);
             i.Emit(OpCodes.Ldloc_S, vCall);
-            i.Emit(OpCodes.Callvirt, R.ICallUsurper_mUsurp);
+            i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
             if(NextCall_fReturn != null) {
                 i.Emit(OpCodes.Ldloc, vCall); 
@@ -364,11 +364,11 @@ namespace Cuckoo.Fody
         protected override void EmitInnerInvoke(ILProcessor i) 
         {
             var mInner = (MethodReference)_ctx.InnerMethod
-                                                .CloneWithNewDeclaringType(_tDecRef);
+                                                .CloneWithNewDeclaringType(_tContRef);
 
             if(mInner.HasGenericParameters) {
                 var rtMethodGenTypes = _tCall.GenericParameters
-                                                .Skip(_rtDecGenTypes.Length)
+                                                .Skip(_rtContGenArgs.Length)
                                                 .ToArray();
 
                 mInner = mInner.MakeGenericInstanceMethod(rtMethodGenTypes);
@@ -376,7 +376,7 @@ namespace Cuckoo.Fody
             
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
-            i.Emit(OpCodes.Castclass, _tDecRef);
+            i.Emit(OpCodes.Castclass, _tContRef);
 
             foreach(var fArgValue in _rfArgValues) {
                 i.Emit(OpCodes.Ldarg_0);

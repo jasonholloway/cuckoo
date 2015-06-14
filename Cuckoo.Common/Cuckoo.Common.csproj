@@ -42,11 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallArg.cs" />
-    <Compile Include="CallSite.cs" />
-    <Compile Include="ICallUsurper.cs" />
+    <Compile Include="Roost.cs" />
+    <Compile Include="ICuckoo.cs" />
     <Compile Include="ICall.cs" />
     <Compile Include="CuckooAttribute.cs" />
-    <Compile Include="UsurpedAttribute.cs" />
+    <Compile Include="CuckooedAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

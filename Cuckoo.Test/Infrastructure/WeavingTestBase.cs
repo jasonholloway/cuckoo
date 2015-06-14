@@ -65,7 +65,7 @@ namespace Cuckoo.Test.Infrastructure
                                                 return t;
                                             })
                                             .SelectMany(t => t.GetMethods())
-                                            .Where(m => m.GetCustomAttribute<UsurpedAttribute>() != null)
+                                            .Where(m => m.GetCustomAttribute<CuckooedAttribute>() != null)
                                             .ToArray();
         }
         

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Cuckoo.Common
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class UsurpedAttribute : Attribute
+    public class CuckooedAttribute : Attribute
     {
         public string InnerMethodName { get; private set; }
 
-        public UsurpedAttribute(string innerMethodName) {
+        public CuckooedAttribute(string innerMethodName) {
             InnerMethodName = innerMethodName;
         }
     }

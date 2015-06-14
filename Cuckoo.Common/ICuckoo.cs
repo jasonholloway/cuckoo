@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Common
 {
-    public interface ICallUsurper
+    public interface ICuckoo
     {
         void Init(MethodInfo methodInfo);
         void Usurp(ICall call);
