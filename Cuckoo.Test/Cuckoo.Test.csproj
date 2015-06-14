@@ -63,6 +63,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GenericClassTests.cs" />
     <Compile Include="GenericMethodTests.cs" />
     <Compile Include="Infrastructure\BuildRunner.cs" />
     <Compile Include="Infrastructure\MethodTester.cs" />

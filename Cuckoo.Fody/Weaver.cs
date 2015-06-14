@@ -23,7 +23,7 @@ namespace Cuckoo.Fody
             _spec = spec;
 
             _ctx = new WeaveContext() {
-                DeclaringType = spec.Method.DeclaringType,
+                DecType = spec.Method.DeclaringType,
                 Module = spec.Method.Module,
                 OuterMethod = spec.Method,
                 NameSource = new NameSource(_spec.Method.DeclaringType),
@@ -34,15 +34,15 @@ namespace Cuckoo.Fody
 
         
         public void Apply() 
-        {            
+        {
             CopyOuterToInner(_ctx);
             
             CreateCallSite(_ctx);
             
-            var tCall = new FinalCallClassWeaver(_ctx).Build();
+            var tCall = new FinalCallWeaver(_ctx).Build();
 
             for(int iU = 1; iU < _spec.CuckooAttributes.Length; iU++) {
-                tCall = new MediateCallClassWeaver(_ctx, tCall, iU).Build();
+                tCall = new MediateCallWeaver(_ctx, tCall, iU).Build();
             }
 
             UsurpOuterMethod(_ctx, tCall);
@@ -87,20 +87,25 @@ namespace Cuckoo.Fody
         }
 
 
-        FieldDefinition CreateCallSite(WeaveContext ctx) {
+        FieldReference CreateCallSite(WeaveContext ctx) {
             var mod = ctx.Module;
+            var R = ctx.RefMap;
             var mOuter = ctx.OuterMethod;
             var mInner = ctx.InnerMethod;
             var names = ctx.NameSource;
-            var tContainer = ctx.DeclaringType;
-            var R = ctx.RefMap;
+            var tDec = ctx.DecType;
 
-            //////////////////////////////////////////////////////////////////////////////////////////////
+            var tDecRef = tDec.HasGenericParameters
+                            ? tDec.MakeGenericInstanceType(tDec.GenericParameters.ToArray())
+                            : (TypeReference)tDec;
+
+            ctx.DecTypeRef = tDecRef;
+
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Create static CallSite ///////////////////////////////////////////////////////////////////
             string callSiteName = names.GetElementName("CALLSITE", mOuter.Name);
 
-            var f = tContainer.AddField(
+            var f = tDec.AddField(
                                 R.CallSite_TypeRef,
                                 callSiteName);
 
@@ -110,23 +115,26 @@ namespace Cuckoo.Fody
 
             ctx.CallSiteField = f;
 
-            tContainer.AppendToStaticCtor(
+            var fCallSite = f.CloneWithNewDeclaringType(tDecRef);
+
+            tDec.AppendToStaticCtor(
                 (i, m) => {
                     var vMethodInfo = m.Body.AddVariable(R.MethodInfo_TypeRef);
                     var vUsurper = m.Body.AddVariable<ICallUsurper>();
                     var vUsurpers = m.Body.AddVariable<ICallUsurper[]>();
-
+                    
                     i.Emit(OpCodes.Ldtoken, mOuter);
+                    i.Emit(OpCodes.Ldtoken, tDecRef);
                     i.Emit(OpCodes.Call, R.MethodInfo_mGetMethodFromHandle);
                     i.Emit(OpCodes.Castclass, R.MethodInfo_TypeRef);
                     i.Emit(OpCodes.Stloc, vMethodInfo);
-
+                    
                     /////////////////////////////////////////////////////////////////////
                     //Load usurper instances into array ////////////////////////////////
                     i.Emit(OpCodes.Ldc_I4, _spec.CuckooAttributes.Length);
                     i.Emit(OpCodes.Newarr, R.ICallUsurper_TypeRef);
                     i.Emit(OpCodes.Stloc_S, vUsurpers);
-
+                    
                     int iA = 0;
 
                     foreach(var att in _spec.CuckooAttributes) {
@@ -195,14 +203,13 @@ namespace Cuckoo.Fody
 
                         iA++;
                     }
-
-
+                    
                     ////////////////////////////////////////////////////////////////////
                     //Construct and store CallSite
                     i.Emit(OpCodes.Ldloc, vMethodInfo);
                     i.Emit(OpCodes.Ldloc, vUsurpers);
                     i.Emit(OpCodes.Newobj, R.CallSite_mCtor);
-                    i.Emit(OpCodes.Stsfld, f);
+                    i.Emit(OpCodes.Stsfld, fCallSite);
 
 
                     ////////////////////////////////////////////////////////////////////
@@ -217,8 +224,11 @@ namespace Cuckoo.Fody
                     }
                 });
 
-            return f;
+            return fCallSite;
         }
+
+
+
 
 
 
@@ -226,9 +236,19 @@ namespace Cuckoo.Fody
             var mOuter = ctx.OuterMethod;
             var R = ctx.RefMap;
             var fCallSite = ctx.CallSiteField;
+            var tDec = ctx.DecType;
+            var tDecRef = ctx.DecTypeRef;
+
+            var fCallSiteRef = tDec.HasGenericParameters
+                                ? fCallSite.CloneWithNewDeclaringType(tDecRef)
+                                : fCallSite;
 
             if(tTopCall.HasGenericParameters) {
-                tTopCall = tTopCall.MakeGenericInstanceType(mOuter.GenericParameters.ToArray());
+                var rtCallGenTypes = tDec.GenericParameters
+                                                .Concat(mOuter.GenericParameters)
+                                                .ToArray();
+                
+                tTopCall = tTopCall.MakeGenericInstanceType(rtCallGenTypes);
             }
 
             var TopCall_mCtor = tTopCall.ReferenceMethod(c => c.IsConstructor);
@@ -240,7 +260,7 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable<ICall>();
 
-                    i.Emit(OpCodes.Ldsfld, fCallSite);
+                    i.Emit(OpCodes.Ldsfld, fCallSiteRef);
 
                     if(m.HasThis) {
                         i.Emit(OpCodes.Ldarg_0);
@@ -256,7 +276,7 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Newobj, TopCall_mCtor);
                     i.Emit(OpCodes.Stloc_S, vCall);
 
-                    i.Emit(OpCodes.Ldsfld, fCallSite);
+                    i.Emit(OpCodes.Ldsfld, fCallSiteRef);
                     i.Emit(OpCodes.Call, R.CallSite_mGetUsurpers);
                     i.Emit(OpCodes.Ldc_I4_0);
                     i.Emit(OpCodes.Ldelem_Ref);

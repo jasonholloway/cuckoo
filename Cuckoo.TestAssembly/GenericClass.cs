@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cuckoo.TestAssembly.Cuckoos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,19 +7,26 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    class GenericClass<T>
+    class GenericClass<A, B>
     {
-        public T Hello() {
-            return default(T);
+
+        [SimpleCuckoo]
+        public int MethodInGenericClass(int i) {
+            A a = default(A);
+            return 12345;
         }
-    }
 
 
-    static class GenericClassCaller
-    {
-        public static void Test() {
-            var c = new GenericClass<object>();
-            c.Hello();
+        [SimpleCuckoo]
+        [DeductingCuckoo(100)]
+        public int MethodWithGenericArgsInGenericClass<C, D>(C c, D d) {
+            var cc = c;
+            var dd = d;
+            return 987;
         }
+
+
+
     }
+
 }

@@ -6,13 +6,31 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    class ExampleClass
+
+
+    static class ExampleClassCaller
+    {
+        public static void Caller() {
+            var o = new ExampleClass<int>();
+
+
+            o.SimpleMethod(123);
+
+            //o.BoxOrNotBox<string>("GAH!");
+        }
+    }
+
+
+    class ExampleClass<T>
     {
 
-        public T BoxOrNotBox<T>(object obj) {
-            return (T)obj;
+        public T SimpleMethod(int i) {
+            return default(T);
         }
 
+        public B BoxOrNotBox<B>(object obj) {
+            return (B)obj;
+        }
 
     }
 }

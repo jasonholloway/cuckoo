@@ -45,7 +45,7 @@
     <Compile Include="Cecil\ReferenceExtensions.cs" />
     <Compile Include="ScopeTypeMapper.cs" />
     <Compile Include="WeaveContext.cs" />
-    <Compile Include="CallClassWeaver.cs" />
+    <Compile Include="CallWeaver.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />
     <Compile Include="NameSource.cs" />

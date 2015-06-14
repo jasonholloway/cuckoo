@@ -17,10 +17,11 @@ namespace Cuckoo.Test
     {
 
         [TestMethod]
-        public void UsurpationsInPlaceAndCallable() {
+        public void AllUsurpationsCallable() {
             Assert.IsTrue(UsurpedMethods.Any(), "No usurpations!");
 
             foreach(var method in UsurpedMethods) {
+                System.Diagnostics.Debug.WriteLine(method.Name);
                 MethodTester.Test(method); 
             }
         }

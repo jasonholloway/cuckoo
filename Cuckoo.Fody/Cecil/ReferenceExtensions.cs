@@ -1,4 +1,4 @@
-﻿// Courtesy of Gábor Kozár
+﻿// Courtesy of Gábor Kozár plus additions
 
 using System;
 using System.Collections.Generic;
@@ -10,22 +10,36 @@ namespace Cuckoo.Fody.Cecil
 {
     public static class ReferenceExtensions
     {
-        private static MethodReference _CloneMethodWithDeclaringType(MethodDefinition methodDef, TypeReference declaringTypeRef) {
-            if(!declaringTypeRef.IsGenericInstance || methodDef == null) {
-                return methodDef;
+
+        public static FieldReference CloneWithNewDeclaringType(this FieldDefinition @this, TypeReference declaringTypeRef) {
+            if(!declaringTypeRef.IsGenericInstance || @this == null) {
+                return @this;
             }
 
-            var methodRef = new MethodReference(methodDef.Name, methodDef.ReturnType, declaringTypeRef) {
-                CallingConvention = methodDef.CallingConvention,
-                HasThis = methodDef.HasThis,
-                ExplicitThis = methodDef.ExplicitThis
+            var fieldRef = new FieldReference(@this.Name, @this.FieldType, declaringTypeRef) {
+                //...
             };
 
-            foreach(ParameterDefinition paramDef in methodDef.Parameters) {
+            return fieldRef;
+        }
+        
+
+        public static MethodReference CloneWithNewDeclaringType(this MethodDefinition @this, TypeReference declaringTypeRef) {
+            if(!declaringTypeRef.IsGenericInstance || @this == null) {
+                return @this;
+            }
+
+            var methodRef = new MethodReference(@this.Name, @this.ReturnType, declaringTypeRef) {
+                CallingConvention = @this.CallingConvention,
+                HasThis = @this.HasThis,
+                ExplicitThis = @this.ExplicitThis
+            };
+
+            foreach(ParameterDefinition paramDef in @this.Parameters) {
                 methodRef.Parameters.Add(new ParameterDefinition(paramDef.Name, paramDef.Attributes, paramDef.ParameterType));
             }
 
-            foreach(GenericParameter genParamDef in methodDef.GenericParameters) {
+            foreach(GenericParameter genParamDef in @this.GenericParameters) {
                 methodRef.GenericParameters.Add(new GenericParameter(genParamDef.Name, methodRef));
             }
 
@@ -33,7 +47,9 @@ namespace Cuckoo.Fody.Cecil
         }
 
         public static MethodReference ReferenceMethod(this TypeReference typeRef, Func<MethodDefinition, bool> methodSelector) {
-            return _CloneMethodWithDeclaringType(typeRef.Resolve().Methods.FirstOrDefault(methodSelector), typeRef);
+            return typeRef.Resolve().Methods
+                                        .FirstOrDefault(methodSelector)
+                                        .CloneWithNewDeclaringType(typeRef);
         }
 
         public static MethodReference ReferenceMethod(this TypeReference typeRef, string methodName) {
@@ -67,7 +83,7 @@ namespace Cuckoo.Fody.Cecil
                 return null;
             }
 
-            return _CloneMethodWithDeclaringType(propDef.GetMethod, typeRef);
+            return propDef.GetMethod.CloneWithNewDeclaringType(typeRef);
         }
 
         public static MethodReference ReferencePropertyGetter(this TypeReference typeRef, string propertyName) {
@@ -80,7 +96,7 @@ namespace Cuckoo.Fody.Cecil
                 return null;
             }
 
-            return _CloneMethodWithDeclaringType(propDef.SetMethod, typeRef);
+            return propDef.SetMethod.CloneWithNewDeclaringType(typeRef);
         }
 
         public static MethodReference ReferencePropertySetter(this TypeReference typeRef, string propertyName) {

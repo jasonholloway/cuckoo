@@ -9,41 +9,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class SimpleCuckoosClass
+    public class Basic
     {
-
-
-        class Nested
-        {
-            int _a;
-            string _b;
-            object[] _r;
-
-            public Nested(int a, string b) {
-                _a = a;
-                _b = b;
-
-                if(_r != null) {
-                    _a = 99;
-                }
-
-                _b = "88";
-            }
-
-            public void Blah<T>(T t) {
-
-                object i = 3;
-
-                int[] rInts = new int[10];
-
-                rInts[5] = (int)i;
-
-
-
-                //...
-            }
-        }
-
 
         public void Dummy1() { }
 
@@ -101,35 +68,6 @@ namespace Cuckoo.TestAssembly
         public string MethodWithTwoCuckoos(string s, int b) {
             return s;
         }
-
-
-        [SimpleCuckoo]
-        public int MethodWithGenericArgs<A, B>(A a, B b) {
-            return 999;
-        }
-
-
-        [SimpleCuckoo]
-        public T MethodWithGenericResult<T>(int a) {
-            return default(T);
-        }
-
-        [SimpleCuckoo]
-        [AddingCuckoo(10)]
-        [DeductingCuckoo(20)]
-        public int TreblyCuckooedMethodWithGenericArgs<A, B, C>(A a, B b, C c) {
-            return 100;
-        }
-
-
-
-
-        /*
-        [SimpleCuckoo]
-        public T GenericMethod<T>() {
-            return default(T);
-        }
-        */
 
 
 

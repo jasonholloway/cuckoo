@@ -2,6 +2,7 @@
 using Cuckoo.Fody;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
+using Sequences;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,14 @@ namespace Cuckoo.Test.Infrastructure
             _assembly = Assembly.LoadFile(newAssemblyPath);
 
             _usurpedMethods = _assembly.GetTypes()
+                                            .Select(t => {
+                                                if(t.ContainsGenericParameters) {
+                                                    var rtGenTypes = Sequence.Fill(typeof(int), t.GetGenericArguments().Length).ToArray();
+                                                    t = t.MakeGenericType(rtGenTypes);
+                                                }
+
+                                                return t;
+                                            })
                                             .SelectMany(t => t.GetMethods())
                                             .Where(m => m.GetCustomAttribute<UsurpedAttribute>() != null)
                                             .ToArray();

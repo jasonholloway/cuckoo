@@ -9,18 +9,23 @@ namespace Cuckoo.Fody
 {
     using Refl = System.Reflection;
     
-    abstract class CallClassWeaver
+    abstract class CallWeaver
     {
         protected WeaveContext _ctx;
         protected ScopeTypeMapper _types;
 
         protected TypeDefinition _tCall;
+        protected TypeDefinition _tDec;
+        protected TypeReference _tDecRef;
+
         protected FieldDefinition _fInstance;
         protected FieldDefinition _fCallSite;
         protected FieldDefinition _fReturn;
         protected FieldDefinition[] _rfArgValues;
 
-        public CallClassWeaver(WeaveContext ctx) {
+        protected TypeReference[] _rtDecGenTypes;
+
+        public CallWeaver(WeaveContext ctx) {
             _ctx = ctx;
         }
 
@@ -31,23 +36,32 @@ namespace Cuckoo.Fody
         public TypeDefinition Build() {
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
-            var tContainer = _ctx.DeclaringType;
             var mOuter = _ctx.OuterMethod;
+            _tDec = _ctx.DecType;
 
             string callClassName = _ctx.NameSource.GetElementName("CALL", mOuter.Name);
 
             _tCall = new TypeDefinition(
-                                tContainer.Namespace,
+                                _tDec.Namespace,
                                 callClassName,
                                 TypeAttributes.Class | TypeAttributes.NestedPrivate
                                 );
 
-            tContainer.NestedTypes.Add(_tCall);
+            _tDec.NestedTypes.Add(_tCall);
 
             _tCall.BaseType = mod.TypeSystem.Object;
             _tCall.Interfaces.Add(R.ICall_TypeRef);
 
             _types = new ScopeTypeMapper(_tCall);
+
+            _rtDecGenTypes = _tDec.GenericParameters
+                                        .Select(p => _types.Map(p))
+                                        .ToArray();
+
+            _tDecRef = _tDec.HasGenericParameters
+                            ? _tDec.MakeGenericInstanceType(_rtDecGenTypes)
+                            : (TypeReference)_tDec;
+
 
 
             _fCallSite = _tCall.AddField<Cuckoo.Common.CallSite>("_callSite");
@@ -279,12 +293,12 @@ namespace Cuckoo.Fody
     }
 
 
-    class MediateCallClassWeaver : CallClassWeaver
+    class MediateCallWeaver : CallWeaver
     {
         TypeReference _tNextCall;
         int _iUsurper;
 
-        public MediateCallClassWeaver(WeaveContext ctx, TypeReference tNextCall, int iUsurper)
+        public MediateCallWeaver(WeaveContext ctx, TypeReference tNextCall, int iUsurper)
             : base(ctx) 
         {
             _tNextCall = tNextCall;
@@ -342,19 +356,27 @@ namespace Cuckoo.Fody
     }
 
 
-    class FinalCallClassWeaver : CallClassWeaver
+    class FinalCallWeaver : CallWeaver
     {
-        public FinalCallClassWeaver(WeaveContext ctx)
+        public FinalCallWeaver(WeaveContext ctx)
             : base(ctx) { }
 
-        protected override void EmitInnerInvoke(ILProcessor i) {
-            var mInner = _ctx.InnerMethod.HasGenericParameters
-                            ? _ctx.InnerMethod.MakeGenericInstanceMethod(_tCall.GenericParameters.ToArray())
-                            : (MethodReference)_ctx.InnerMethod;
+        protected override void EmitInnerInvoke(ILProcessor i) 
+        {
+            var mInner = (MethodReference)_ctx.InnerMethod
+                                                .CloneWithNewDeclaringType(_tDecRef);
 
+            if(mInner.HasGenericParameters) {
+                var rtMethodGenTypes = _tCall.GenericParameters
+                                                .Skip(_rtDecGenTypes.Length)
+                                                .ToArray();
+
+                mInner = mInner.MakeGenericInstanceMethod(rtMethodGenTypes);
+            }
+            
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fInstance);
-            i.Emit(OpCodes.Castclass, mInner.DeclaringType);
+            i.Emit(OpCodes.Castclass, _tDecRef);
 
             foreach(var fArgValue in _rfArgValues) {
                 i.Emit(OpCodes.Ldarg_0);

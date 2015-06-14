@@ -1,7 +1,7 @@
 ﻿
 ********************************************************************
 TO DO:
-> Generic classes
+> Usurpers to be given specialised MethodInfo on generic calls
 > out and ref parameters
 > async
 > Light-weight SyncLock on lazy args creation
@@ -9,7 +9,9 @@ TO DO:
 > Optional args in CuckooAttributes
 > Optional args in cuckooed methods
 > Test Cuckoos declared in other assemblies
-> Usurpers to be given specialised MethodInfo on generic calls
+> Static methods
+> Static classes
+> interface + abstract methods
 
 
 *******************************************************************
@@ -20,6 +22,7 @@ NOT REALLY NEEDED:
 
 *******************************************************************
 DONE:
+> Generic classes DONE
 > Multiple cuckoos in one nest DONE
 > Init to be called DONE
 > Change returned value DONE

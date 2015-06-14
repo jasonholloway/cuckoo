@@ -73,11 +73,11 @@ namespace Cuckoo.Fody
                                                     Refl.BindingFlags.Static
                                                         | Refl.BindingFlags.Public,
                                                     null,
-                                                    new[] { typeof(RuntimeMethodHandle) },
+                                                    new[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) },
                                                     null
                                                     )
                                                 );
-
+            
             Object_mCtor = module.ImportReference(
                                     module.TypeSystem.Object.ReferenceMethod(m => m.IsConstructor));
         }
