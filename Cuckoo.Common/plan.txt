@@ -10,14 +10,12 @@ OUT & REF PARAMS:
 
 
 
-
-
 ********************************************************************
 TO DO:
 
 METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made in visitor
 
-> Usurpers to be given specialised MethodInfo on generic calls
+> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > out and ref parameters
 > async
 > Light-weight SyncLock on lazy args creation
@@ -28,16 +26,17 @@ METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made
 > Static methods
 > Static classes
 > interface + abstract methods
+> MethodTester.Mapper still a bit bitty: but good enough for now
 
 
 *******************************************************************
 NOT REALLY NEEDED:
 > Use abstract CallBase class, with only sub-methods emitted
-> TypeProvider class for niceness
 
 
 *******************************************************************
 DONE:
+> Cooler lambda-based MethodTester DONE
 > Generic classes DONE
 > Multiple cuckoos in one nest DONE
 > Init to be called DONE

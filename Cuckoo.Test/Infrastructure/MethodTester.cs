@@ -70,6 +70,7 @@ namespace Cuckoo.Test.Infrastructure
         }
         */
         
+
         class Mapper
         {
             Dictionary<Type, Type> _dTypes;
@@ -78,32 +79,87 @@ namespace Cuckoo.Test.Infrastructure
 
             public Mapper(Module module) {
                 _dTypes = module.GetTypes()
+                                    .OrderBy(t => t.FullName)
                                     .ToDictionary(t => t, TypeComparer.Instance);
                 
                 _dMethods = _dTypes.Values.SelectMany(t => t.GetMethods())
                                             .Distinct(MethodComparer.Instance)
+                                            .OrderBy(m => m.DeclaringType.FullName + "." + m.Name)
                                             .ToDictionary(m => m, MethodComparer.Instance);
 
                 _dMembers = _dTypes.Values.SelectMany(t => t.GetMembers())
                                             .Distinct(MemberComparer.Instance)
+                                            .OrderBy(m => m.DeclaringType.FullName + "." + m.Name)
                                             .ToDictionary(m => m, MemberComparer.Instance);
             }
 
             internal Type Map(Type type) {
+                Type[] genArgs = null;
+
+                if(type.IsGenericType) {
+                    genArgs = type.GetGenericArguments()
+                                    .Select(t => Map(t))
+                                    .ToArray();
+
+                    type = type.GetGenericTypeDefinition();
+                }
+
                 Type foundType;
 
                 if(_dTypes.TryGetValue(type, out foundType)) {
-                    return foundType;
+                    type = foundType;
+                }
+
+                if(genArgs != null) {
+                    type = type.MakeGenericType(genArgs);
                 }
 
                 return type;
             }
             
             internal MethodInfo Map(MethodInfo method) {
+                //a given method must be reduced to its basic form, without generic args
+
+                Type[] genArgs = null;
+
+                if(method.IsGenericMethod) {
+                    genArgs = method.GetGenericArguments()
+                                        .Select(t => Map(t))
+                                        .ToArray();
+
+                    method = method.GetGenericMethodDefinition();
+                }
+
+
+                Type[] contGenArgs = null;
+
+                if(method.DeclaringType.IsGenericType) {
+                    contGenArgs = method.DeclaringType.GetGenericArguments()
+                                                        .Select(t => Map(t))
+                                                        .ToArray();
+
+                    method = method.DeclaringType.GetGenericTypeDefinition()
+                                                    .GetMethods()
+                                                    .First(m => method.Name == m.Name); // MethodComparer.Instance.Equals(method, m));
+                }
+                
+                                
                 MethodInfo foundMethod;
 
                 if(_dMethods.TryGetValue(method, out foundMethod)) {
-                    return foundMethod;
+                    method = foundMethod;
+                }
+
+
+                if(contGenArgs != null) {
+                    method = method.DeclaringType.MakeGenericType(contGenArgs)
+                                                    .GetMethods()
+                                                    .First(m => m.Name == method.Name); // MethodComparer.Instance.Equals(method, m));
+                }
+
+
+                if(genArgs != null) {
+                    method = method.MakeGenericMethod(genArgs);
                 }
 
                 return method;
@@ -111,6 +167,8 @@ namespace Cuckoo.Test.Infrastructure
 
             internal MemberInfo Map(MemberInfo member) {
                 MemberInfo foundMember;
+
+                //should do same as with methods...
 
                 if(_dMembers.TryGetValue(member, out foundMember)) {
                     return foundMember;

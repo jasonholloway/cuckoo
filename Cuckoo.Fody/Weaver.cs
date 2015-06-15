@@ -253,7 +253,7 @@ namespace Cuckoo.Fody
             }
 
             var TopCall_mCtor = tTopCall.ReferenceMethod(c => c.IsConstructor);
-            var TopCall_fReturn = tTopCall.ReferenceField("_return");
+            var TopCall_fReturnRef = tTopCall.ReferenceField("_return");
 
             mOuter.Body = new MethodBody(mOuter);
 
@@ -290,10 +290,10 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
-                    if(TopCall_fReturn != null) {
+                    if(TopCall_fReturnRef != null) {
                         i.Emit(OpCodes.Ldloc, vCall);
                         i.Emit(OpCodes.Castclass, tTopCall);
-                        i.Emit(OpCodes.Ldfld, TopCall_fReturn);
+                        i.Emit(OpCodes.Ldfld, TopCall_fReturnRef);
                     }
 
                     i.Emit(OpCodes.Ret);
