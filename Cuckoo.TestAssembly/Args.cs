@@ -23,6 +23,17 @@ namespace Cuckoo.TestAssembly
             return "hello";
         }
 
+
+        [BareCuckoo]
+        [ArgCuckoo("")]
+        public string MethodWithOutArgAndManyCuckoos(int a, out int b, out string s) {
+            b = 666;
+            s = "Surprise!";
+            return "hello";
+        }
+
+
+
         //[BareCuckoo]
         //public string MethodWithRefArg(ref string s) {
         //    s = "dreariment";

@@ -21,5 +21,9 @@ namespace Cuckoo.Fody.Cecil
         }
 
 
+        public static bool ReturnsValue(this MethodReference @this) {
+            return @this.ReturnType != @this.Module.TypeSystem.Void;
+        }
+
     }
 }

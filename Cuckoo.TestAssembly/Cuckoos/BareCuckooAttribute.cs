@@ -15,13 +15,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
         public override void Usurp(ICall call) {
 
-            var fReturn = call.GetType().GetField("_return");
-
-            object vBefore = fReturn.GetValue(call);
-
             call.CallInner();
-
-            object vAfter = fReturn.GetValue(call);
 
         }
     }

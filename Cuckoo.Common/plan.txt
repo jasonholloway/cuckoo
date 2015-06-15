@@ -1,9 +1,9 @@
 ﻿
 ********************************************************************
 OUT & REF PARAMS:
-> If there are any out or ref params, CallInner must update args array (if made) on return to cuckoo
+> If there are any out or ref params, CallInner must update args array (if made) on return to call
+> 
 
-> ArgFields should shed the ByRef attribute
 
 
 
@@ -15,8 +15,9 @@ TO DO:
 
 METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made in visitor
 
-> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > out and ref parameters
+> Use abstract CallBase class, with only sub-methods emitted
+> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > async
 > Light-weight SyncLock on lazy args creation
 > CallArgs should check type of value set
@@ -26,12 +27,12 @@ METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made
 > Static methods
 > Static classes
 > interface + abstract methods
+> Beware array types: these too are just specs i reckon
 > MethodTester.Mapper still a bit bitty: but good enough for now
 
 
 *******************************************************************
 NOT REALLY NEEDED:
-> Use abstract CallBase class, with only sub-methods emitted
 
 
 *******************************************************************

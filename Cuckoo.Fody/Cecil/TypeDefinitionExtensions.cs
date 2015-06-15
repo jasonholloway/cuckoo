@@ -292,9 +292,6 @@ namespace Cuckoo.Fody.Cecil
         }
 
 
-        public static bool ReturnsValue(this MethodDefinition @this) {
-            return @this.ReturnType != @this.Module.TypeSystem.Void;
-        }
 
 
     }

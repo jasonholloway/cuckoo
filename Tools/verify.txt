@@ -2,4 +2,6 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-All Classes and Methods in ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll Verified.
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL>_MethodInGenericClass[A,B]::CallInner][offset 0x0000004A][found ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'][expected ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'] Unexpected type on the stack.
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL2>_MethodWithGenericArgsInGenericClass[A,B,C,D]::CallInner][offset 0x00000076][found ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'][expected ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'] Unexpected type on the stack.
+2 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll

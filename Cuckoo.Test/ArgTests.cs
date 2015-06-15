@@ -28,16 +28,30 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooAllowsOutArg() {
-            int x;
-            string y;
+            int x = 0;
+            string y = "";
 
             var result = Tester.WithClass<Args>()
                                 .Run(a => a.MethodWithOutArg(1, out x, out y));
 
-            //TEST OUT ARG HERE!
-
+            Assert.IsTrue(x == 666);
+            Assert.IsTrue(y == "Surprise!");
             Assert.IsTrue(result == "hello");
         }
+
+        [TestMethod]
+        public void TieredCuckoosAllowOutArg() {
+            int x = 0;
+            string y = "";
+
+            var result = Tester.WithClass<Args>()
+                                .Run(a => a.MethodWithOutArgAndManyCuckoos(1, out x, out y));
+
+            Assert.IsTrue(x == 666);
+            Assert.IsTrue(y == "Surprise!");
+            Assert.IsTrue(result == "hello");
+        }
+
 
 
         //[TestMethod]
