@@ -46,7 +46,7 @@ namespace Cuckoo.Fody
         }
 
         
-        public void Apply() 
+        public void Weave() 
         {
             var ctx = CreateContext(_spec);
 
@@ -266,8 +266,6 @@ namespace Cuckoo.Fody
                             ? mOuter.MakeGenericInstanceMethod(mOuter.GenericParameters.ToArray())
                             : (MethodReference)mOuter;
 
-            var call = topCallWeaver.Weave(mOuterRef);
-
 
             var contGenArgs = tContRef is GenericInstanceType
                                 ? ((GenericInstanceType)tContRef).GenericArguments.ToArray()
@@ -277,30 +275,19 @@ namespace Cuckoo.Fody
                                 ? ((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray()
                                 : new TypeReference[0];
 
-            var Call_TypeRef = call.tCall.HasGenericParameters
-                                ? call.tCall.MakeGenericInstanceType(contGenArgs.Concat(methodGenArgs).ToArray())
-                                : (TypeReference)call.tCall;
 
-            var Call_mCtor = Call_TypeRef.ReferenceMethod(m => m.IsConstructor);
-            var Call_fReturnRef = Call_TypeRef.ReferenceField(call.fReturn.Name);
+            var call = topCallWeaver.Weave(mOuterRef);
 
+            if(call.RequiresInstanciation) {
+                call = call.Instanciate(contGenArgs.Concat(methodGenArgs));
+            }
 
-            //if(tTopCall.HasGenericParameters) {             //maybe we need to be more explicit about various refs n gen instances
-            //    var rtCallGenTypes = tCont.GenericParameters
-            //                                    .Concat(mOuter.GenericParameters)
-            //                                    .ToArray();
-                
-            //    tTopCall = tTopCall.MakeGenericInstanceType(rtCallGenTypes);
-            //}
-
-            //var TopCall_mCtor = tTopCall.ReferenceMethod(c => c.IsConstructor);
-            //var TopCall_fReturnRef = tTopCall.ReferenceField("_return");
 
             mOuter.Body = new MethodBody(mOuter);
 
             mOuter.Compose(
                 (i, m) => {
-                    var vCall = m.Body.AddVariable<ICall>();
+                    var vCall = m.Body.AddVariable(call.Type);
 
                     i.Emit(OpCodes.Ldsfld, fRoostRef);
 
@@ -313,13 +300,9 @@ namespace Cuckoo.Fody
 
                     foreach(var param in m.Parameters) {
                         i.Emit(OpCodes.Ldarg_S, param);
-
-                        if(param.ParameterType.IsByReference) {
-                            i.Emit(OpCodes.Ldobj, param.ParameterType.GetElementType());
-                        }
                     }
 
-                    i.Emit(OpCodes.Newobj, Call_mCtor);
+                    i.Emit(OpCodes.Newobj, call.CtorMethod);
                     i.Emit(OpCodes.Stloc_S, vCall);
 
                     i.Emit(OpCodes.Ldsfld, fRoostRef);
@@ -330,14 +313,17 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Ldloc, vCall);
 
                     i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
-                    
-                    //access all the byref arg fields, and copy values back to addresses given by mOuter args
-                    //...
 
-                    if(Call_fReturnRef != null) {
+                    //foreach(var callArg in call.Args.Where(a => a.IsByRef)) {
+                    //    i.Emit(OpCodes.Ldarg, callArg.MethodParam.Index + 1);
+                    //    i.Emit(OpCodes.Ldloc, vCall);
+                    //    i.Emit(OpCodes.Ldfld, callArg.Field);
+                    //    i.Emit(OpCodes.Stind_Ref);
+                    //}
+                    
+                    if(call.ReturnsValue) {
                         i.Emit(OpCodes.Ldloc, vCall);
-                        i.Emit(OpCodes.Castclass, Call_TypeRef);
-                        i.Emit(OpCodes.Ldfld, Call_fReturnRef);
+                        i.Emit(OpCodes.Ldfld, call.ReturnField);
                     }
 
                     i.Emit(OpCodes.Ret);

@@ -174,7 +174,7 @@ namespace Cuckoo.Fody.Cecil
 
         public static MethodDefinition AddCtor(
             this TypeDefinition @this,
-            TypeReference[] rArgTypeRefs,
+            IEnumerable<ParameterDefinition> paramDefs,
             Action<ILProcessor, MethodDefinition> fnIL ) 
         {
             var mCtor = new MethodDefinition(
@@ -186,12 +186,8 @@ namespace Cuckoo.Fody.Cecil
                                 @this.Module.TypeSystem.Void
                                 );
 
-            var rParams = rArgTypeRefs
-                            .Select(t => new ParameterDefinition(@this.Module.ImportReference(t)))
-                            .ToArray();
-
-            foreach(var param in rParams) {
-                mCtor.Parameters.Add(param);
+            foreach(var paramDef in paramDefs) {
+                mCtor.Parameters.Add(paramDef);
             }
 
             mCtor.Body.InitLocals = true;
@@ -201,6 +197,19 @@ namespace Cuckoo.Fody.Cecil
             @this.Methods.Add(mCtor);
 
             return mCtor;
+
+        }
+
+
+        public static MethodDefinition AddCtor(
+            this TypeDefinition @this,
+            IEnumerable<TypeReference> argTypes,
+            Action<ILProcessor, MethodDefinition> fnIL ) 
+        {
+            var paramDefs = argTypes
+                            .Select(t => new ParameterDefinition(@this.Module.ImportReference(t)));
+
+            return @this.AddCtor(paramDefs, fnIL);
         }
 
 

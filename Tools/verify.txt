@@ -2,6 +2,28 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL>_MethodInGenericClass[A,B]::CallInner][offset 0x0000004A][found ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'][expected ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'] Unexpected type on the stack.
-[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL2>_MethodWithGenericArgsInGenericClass[A,B,C,D]::CallInner][offset 0x00000076][found ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'][expected ref 'Cuckoo.TestAssembly.GenericClass`2[A,B]'] Unexpected type on the stack.
-2 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2[A,B]::MethodWithGenericArgsInGenericClass[C,D]]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL>_MethodWithGenericArgsInGenericClass[A,B,C,D]::CallInner]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL>_MethodWithGenericArgsInGenericClass[A,B,C,D]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericClass`2+Cuckoo.TestAssembly.<CALL2>_MethodWithGenericArgsInGenericClass[A,B,C,D]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs::MethodWithGenericArgs[A,B]]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs::TreblyCuckooedMethodWithGenericArgs[A,B,C]]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL>_MethodWithGenericArgs[A,B]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL>_TreblyCuckooedMethodWithGenericArgs[A,B,C]::CallInner]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL>_TreblyCuckooedMethodWithGenericArgs[A,B,C]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL2>_TreblyCuckooedMethodWithGenericArgs[A,B,C]::CallInner]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL2>_TreblyCuckooedMethodWithGenericArgs[A,B,C]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.GenericArgs+Cuckoo.TestAssembly.<CALL3>_TreblyCuckooedMethodWithGenericArgs[A,B,C]::.ctor]  [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+12 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll

@@ -20,6 +20,11 @@ namespace Cuckoo.Fody
         }
 
         public TypeReference Map(TypeReference foreignType) {
+
+            //NEED TO STRIP OF ADDITIONAL SPECS N MAP ONLY ELEMENT TYPE
+            //THEN RETURN MAPPED TYPE APPROPRIATELY ACCOUTRED WITH SPECS
+            //...
+
             TypeReference localType = null;
 
             if(!_dMap.TryGetValue(foreignType, out localType)) {

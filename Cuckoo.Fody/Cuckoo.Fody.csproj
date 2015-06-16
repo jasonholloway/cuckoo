@@ -41,8 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CallSpec.cs" />
-    <Compile Include="CallWeaveResult.cs" />
+    <Compile Include="CallInfo.cs" />
     <Compile Include="Cecil\MethodReferenceExtensions.cs" />
     <Compile Include="Cecil\ReferenceExtensions.cs" />
     <Compile Include="ScopeTypeMapper.cs" />

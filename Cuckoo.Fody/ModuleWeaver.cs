@@ -33,7 +33,7 @@ namespace Cuckoo.Fody
                             .ToArray(); //needed 
 
             foreach(var weave in weaves) {
-                weave.Apply();
+                weave.Weave();
             }
         }
 
