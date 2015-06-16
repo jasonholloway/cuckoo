@@ -23,8 +23,7 @@ namespace Cuckoo.Test
 
             Assert.IsTrue(result == "Growl! Growl! Growl!");
         }
-
-
+        
 
         [TestMethod]
         public void CuckooAllowsOutArg() {
@@ -39,6 +38,7 @@ namespace Cuckoo.Test
             Assert.IsTrue(result == "hello");
         }
 
+
         [TestMethod]
         public void TieredCuckoosAllowOutArg() {
             int x = 0;
@@ -51,28 +51,34 @@ namespace Cuckoo.Test
             Assert.IsTrue(y == "Surprise!");
             Assert.IsTrue(result == "hello");
         }
+        
+
+        [TestMethod]
+        public void CuckooAllowsRefArg() {
+            string s = "";
+            int i = 0;
+
+            var result = Tester.WithClass<Args>()
+                                  .Run(a => a.MethodWithRefArg(ref s, ref i));
+
+            Assert.IsTrue(result == "yup");
+            Assert.IsTrue(s == "dreariment");
+            Assert.IsTrue(i == 999);
+        }
 
 
+        [TestMethod]
+        public void CuckooChangesOutArg() {
+            string s = "";
+            int i = 0;
 
-        //[TestMethod]
-        //public void CuckooAllowsRefArg() {
-        //    var method = GetUsurpedMethod("MethodWithRefArg");
+            var result = Tester.WithClass<Args>()
+                                  .Run(a => a.MethodWithChangedRefArgs(ref s, ref i));
 
-        //    string result = (string)MethodTester.Test(method);
-
-        //    //TEST BYREF ARG HERE!
-
-        //    Assert.IsTrue(result == "yup");
-        //}
-
-
-
-
-
-        //[TestMethod]
-        //public void CuckooChangesOutArg() {
-        //    throw new NotImplementedException();
-        //}
+            Assert.IsTrue(result == "yup");
+            Assert.IsTrue(s == "glug");
+            Assert.IsTrue(i == 666);
+        }
 
 
         //[TestMethod]

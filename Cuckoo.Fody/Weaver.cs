@@ -314,12 +314,8 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
-                    //foreach(var callArg in call.Args.Where(a => a.IsByRef)) {
-                    //    i.Emit(OpCodes.Ldarg, callArg.MethodParam.Index + 1);
-                    //    i.Emit(OpCodes.Ldloc, vCall);
-                    //    i.Emit(OpCodes.Ldfld, callArg.Field);
-                    //    i.Emit(OpCodes.Stind_Ref);
-                    //}
+                    i.Emit(OpCodes.Ldloc, vCall);
+                    i.Emit(OpCodes.Call, call.PostCuckooMethod);
                     
                     if(call.ReturnsValue) {
                         i.Emit(OpCodes.Ldloc, vCall);

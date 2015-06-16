@@ -34,12 +34,21 @@ namespace Cuckoo.TestAssembly
 
 
 
-        //[BareCuckoo]
-        //public string MethodWithRefArg(ref string s) {
-        //    s = "dreariment";
-        //    return "yup";
-        //}
+        [BareCuckoo]
+        public string MethodWithRefArg(ref string s, ref int i) {
+            s = "dreariment";
+            i = 999;
+            return "yup";
+        }
 
+
+        [ChangeByRefStringCuckoo("glug")]
+        [ChangeByRefIntCuckoo(666)]
+        public string MethodWithChangedRefArgs(ref string s, ref int i) {
+            s = "dreariment";
+            i = 999;
+            return "yup";
+        }
 
 
 

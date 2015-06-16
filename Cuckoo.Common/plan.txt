@@ -1,8 +1,34 @@
 ﻿
 ********************************************************************
-OUT & REF PARAMS:
-> If there are any out or ref params, CallInner must update args array (if made) on return to call
+BYREF PARAMS:
 
+> Need to change so that each mPostCuckoo updates byrefs
+	For this mPostCuckoo needs access to the arg addresses: the only way to pass these around is via ctors.
+	Therefore, when each dispatcher calls mPostCuckoo, it needs to pass these addresses (and only these!)
+	to its constructor for it to potentially populate.
+
+	Therefore each arg will have CallArgIndex and PostCuckooArgIndex 
+
+	
+
+
+
+
+
+
+
+> Arg classes to cope with byrefs - population and reading to be updated
+> Call.mPostCuckoo to copy changed args & return value to correct place
+> Arg.IsPristine flags to be correctly managed: to be reset before inner invoke; allows to be tested for changes mPostCuckoo
+> Also should be sensitive to changes of byref args by inner func itself
+
+When a call invoker invokes, it creates a call and passes it to the active usurper.
+The usurper potentially changes the Arg objects of the passed call.
+
+It's up to the invoker - that is the creator and the dispatcher of the call - to detect changed Arg objects
+after ICuckoo.Usurp() and to copy their values to the correct place
+
+It would seem that the Call should be responsible for this; just as the Call cares for updating 
 
 
 
@@ -14,12 +40,13 @@ TO DO:
 
 METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made in visitor
 
-> out and ref parameters
+> byref parameters
 > Use abstract CallBase class, with only sub-methods emitted
 > Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > async
 > Light-weight SyncLock on lazy args creation
 > CallArgs should check type of value set
+> CallArgs to only accept new values post-cuckoo if ByRef
 > Optional args in CuckooAttributes
 > Optional args in cuckooed methods
 > Test Cuckoos declared in other assemblies

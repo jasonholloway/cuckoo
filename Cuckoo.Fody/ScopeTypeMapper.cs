@@ -20,6 +20,8 @@ namespace Cuckoo.Fody
         }
 
         public TypeReference Map(TypeReference sourceType) {
+            var sourceTypeSpec = sourceType as TypeSpecification;
+
             if(sourceType is TypeSpecification) {
                 sourceType = Map(sourceType.GetElementType());
             }
@@ -50,12 +52,12 @@ namespace Cuckoo.Fody
                 _dMap[sourceType] = type;
             }
 
-            if(sourceType is ByReferenceType) {
+            if(sourceTypeSpec is ByReferenceType) {
                 type = new ByReferenceType(type);
             }
 
-            if(sourceType is ArrayType) {
-                type = new ArrayType(type, ((ArrayType)sourceType).Rank);
+            if(sourceTypeSpec is ArrayType) {
+                type = new ArrayType(type, ((ArrayType)sourceTypeSpec).Rank);
             }
 
             return type;

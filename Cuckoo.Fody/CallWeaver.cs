@@ -32,9 +32,13 @@ namespace Cuckoo.Fody
         protected FieldDefinition _fReturn;
         protected FieldReference _fReturnRef;
 
+        protected FieldReference _fArgsChanged;
+
 
         protected class Arg
         {
+            public bool IsByRef { get; set; }
+            public int Index { get; set; }
             public ParameterDefinition MethodParam { get; set; }
             public ParameterDefinition CallParam { get; set; }
             public FieldDefinition Field { get; set; }
@@ -121,24 +125,28 @@ namespace Cuckoo.Fody
                 _fReturn = _tCall.AddField(_types.Map(mOuterRef.ReturnType), "_return");
                 _fReturn.Attributes = FieldAttributes.Public;
             }
-            
+
+            int iArg = 0;
+
             _args = mOuterRef.Parameters
-                                .Select(p => {
-                                    var f = _tCall.AddField(
-                                                        _types.Map(p.ParameterType.GetElementType()),
-                                                        "_arg_" + p.Name
-                                                        );
+                                .Select(p => {                                    
+                                    var paramType = _types.Map(p.ParameterType);
 
-                                    f.Attributes = FieldAttributes.Public;
-
-                                    //But what if mOuter parameters are generic:
-                                    //they need mapping into the call
-
-                                    return new Arg() {
+                                    var arg = new Arg() {
+                                        Index = iArg++,
                                         MethodParam = p,
-                                        Field = f,
-                                        CallParam = new ParameterDefinition(_types.Map(p.ParameterType))
+                                        CallParam = new ParameterDefinition(paramType),
+                                        IsByRef = paramType.IsByReference,
                                     };
+
+                                    arg.Field = _tCall.AddField(
+                                                    paramType.GetElementType(),
+                                                    "_arg_" + p.Name
+                                                    );
+
+                                    arg.Field.Attributes = FieldAttributes.Public;
+
+                                    return arg;
                                 }) 
                                 .ToArray();
             
@@ -163,23 +171,12 @@ namespace Cuckoo.Fody
 
 
 
-
-            var ctorParams = new[] {
-                                new ParameterDefinition(R.Roost_TypeRef),
-                                new ParameterDefinition(mod.TypeSystem.Object) //should be strongly types
-                            }
-                            .Concat(_args.Select(a => a.CallParam));
-            
-
-            //var rCtorArgTypes = new[] { 
-            //                            R.Roost_TypeRef,
-            //                            mod.TypeSystem.Object //instance
-            //                        }
-            //                    .Concat(_args.Select(a => a.FieldType))
-            //                    .ToArray();
-
             _mCtor = _tCall.AddCtor(
-                        ctorParams, // rCtorArgTypes,
+                        new[] {
+                            new ParameterDefinition(R.Roost_TypeRef),
+                            new ParameterDefinition(mod.TypeSystem.Object)
+                            }
+                            .Concat(_args.Select(a => a.CallParam)),
                         (i, m) => {
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Call, R.Object_mCtor);
@@ -191,13 +188,6 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Ldarg_2);
                             i.Emit(OpCodes.Stfld, _fInstanceRef);
-
-                            //var myArgs = _args.Zip(m.Parameters.Skip(2), 
-                            //                            (a, p) => new {
-                            //                                    CtorParam = p,
-                            //                                    Param = a.MethodParam,
-                            //                                    FieldRef = a.FieldRef
-                            //                                });
                             
                             foreach(var arg in _args) {
                                 i.Emit(OpCodes.Ldarg_0);
@@ -210,36 +200,6 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Stfld, arg.FieldRef);
                             }
 
-                            //foreach(var a in myArgs) {
-                            //    i.Emit(OpCodes.Ldarg_0);
-
-                            //    i.Emit(OpCodes.Ldarg_S, a.CtorParam);
-
-                            //    //if(a.Param.ParameterType.IsByReference) {
-                            //    //    i.Emit(OpCodes.Ldobj, a.Field.FieldType);
-                            //    //}
-
-                            //    i.Emit(OpCodes.Stfld, a.FieldRef);
-                            //}
-                        
-                            //int iP = 2;
-                            //var rParams = m.Parameters.ToArray();
-
-                            //foreach(var fArg in _rfArgs) {
-                            //    var param = rParams[iP];
-
-                            //    i.Emit(OpCodes.Ldarg_0);
-
-                            //    i.Emit(OpCodes.Ldarg_S, param);
-
-                            //    if(param.ParameterType.IsByReference) {
-                            //        i.Emit(OpCodes.Ldind_Ref);
-                            //    }
-
-                            //    i.Emit(OpCodes.Stfld, fArg);
-                            //    iP++;
-                            //}
-
                             i.Emit(OpCodes.Ret);
                         });
             
@@ -249,8 +209,8 @@ namespace Cuckoo.Fody
 
 
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "get_Instance",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Ldfld, _fInstanceRef);
@@ -258,8 +218,8 @@ namespace Cuckoo.Fody
                         });
 
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "get_Method",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             var Roost_mGetMethod = mod.ImportReference(
                                                                 R.Roost_TypeRef.Resolve().GetMethod("get_Method"));
@@ -274,8 +234,8 @@ namespace Cuckoo.Fody
             var fArgsRef = _tCallRef.ReferenceField(f => f.Name == fArgs.Name);
 
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "get_Args",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             var vArgs = m.Body.AddVariable<CallArg[]>();
                             var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
@@ -331,8 +291,8 @@ namespace Cuckoo.Fody
                         });
 
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "get_ReturnValue",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             if(_fReturn != null) {
                                 i.Emit(OpCodes.Ldarg_0);
@@ -347,8 +307,8 @@ namespace Cuckoo.Fody
                         });
 
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "set_ReturnValue",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             if(_fReturn != null) {
                                 i.Emit(OpCodes.Ldarg_0);
@@ -360,9 +320,53 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ret);
                         });
 
+
+            var mPostCuckoo = _tCall.AddMethod(
+                                    "PostCuckoo",
+                                    new ParameterDefinition[0],
+                                    mod.TypeSystem.Void,
+                                    (i, m) => {         
+                                        var lbSkipArgFieldUpdate = i.Create(OpCodes.Nop);
+
+                                        i.Emit(OpCodes.Ldarg_0);
+                                        i.Emit(OpCodes.Ldfld, fArgsRef);
+                                        i.Emit(OpCodes.Ldnull);
+                                        i.Emit(OpCodes.Ceq);
+                                        i.Emit(OpCodes.Brtrue, lbSkipArgFieldUpdate);
+
+                                        //All ByRef Arg objects to have values copied to passed address
+                                        //...
+
+                                        foreach(var arg in _args.Where(a => a.IsByRef)) {
+
+                                            //problem of how to access address...
+                                            //can't have pointer field in safe mode...
+
+                                            //i.Emit(OpCodes.Ldarg_0);
+                                            //i.Emit(OpCodes.Ldfld, fArgs);
+                                            //i.Emit(OpCodes.Ldc_I4, arg.Index);
+                                            //i.Emit(OpCodes.Ldelem_Ref);
+
+                                            //i.Emit(OpCodes.Call, R.CallArg_mGetValue);
+                                            //i.Emit(OpCodes.Unbox_Any, arg.ParamType.GetElementType());
+
+                                            
+                                            //use index to key into created arg object array
+                                            //...
+                                        }
+
+
+
+                                        i.Append(lbSkipArgFieldUpdate);
+                                        i.Emit(OpCodes.Ret);
+                                    });
+
+
+
+
             _tCall.OverrideMethod(
-                        R.ICall_TypeRef,
                         "CallInner",
+                        R.ICall_TypeRef,
                         (i, m) => {
                             ///////////////////////////////////////////////////////////////
                             //Update arg fields if args not pristine
@@ -413,10 +417,9 @@ namespace Cuckoo.Fody
 
                             EmitInnerInvoke(i, mOuterRef);
 
-                            //Subclass retrieves changed args & return value from called inner
-
                             if(_fReturn != null) {
                                 var vReturn = m.Body.AddVariable(_fReturnRef.FieldType);
+
                                 i.Emit(OpCodes.Stloc, vReturn);
 
                                 i.Emit(OpCodes.Ldarg_0);
@@ -424,21 +427,26 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Stfld, _fReturnRef);
                             }
 
+
+                            //**********************************************************************
+                            //ByRef arg fields are copied over to their respective CallArg objects
+                            //so as to expose changes to prevailing Cuckoo
+                            //...
+                            //**********************************************************************
+
+
                             i.Emit(OpCodes.Ret);
                         });
 
 
             return new CallInfo(_tCall,
                                     _mCtor,
-                                    _fReturn,
-                                    _args.Select(a => new CallArgInfo( 
-                                                                a.Field,
-                                                                a.MethodParam,
-                                                                a.CallParam
-                                                                ))
+                                    mPostCuckoo,
+                                    _fReturn
                                     );
         }
     }
+
 
 
     class MediateCallWeaver : CallWeaver
@@ -474,7 +482,7 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Ldelem_Ref);
             i.Emit(OpCodes.Stloc_S, vCuckoo);
             
-            //load various args for nextcall ctor
+            //load args and construct NextCall
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fRoostRef);
 
@@ -495,21 +503,15 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Newobj, nextCall.CtorMethod);
             i.Emit(OpCodes.Stloc_S, vCall);
 
-            //feed to next usurper
             i.Emit(OpCodes.Ldloc_S, vCuckoo);
             i.Emit(OpCodes.Ldloc_S, vCall);
             i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
-            //foreach(var nextCallArg in nextCall.Args.Where(a => a.IsByRef)) {
-            //    i.Emit(OpCodes.Ldarg, nextCallArg.MethodParam.Index + 3);
-            //    i.Emit(OpCodes.Ldloc, vCall);
-            //    i.Emit(OpCodes.Ldfld, nextCallArg.Field);
-            //    i.Emit(OpCodes.Stind_Ref);
-            //}                    
+            i.Emit(OpCodes.Ldloc, vCall);
+            i.Emit(OpCodes.Call, nextCall.PostCuckooMethod);
 
             if(nextCall.ReturnsValue) {
                 i.Emit(OpCodes.Ldloc, vCall); 
-                //i.Emit(OpCodes.Castclass, nextCall.Type);
                 i.Emit(OpCodes.Ldfld, nextCall.ReturnField);
             }
         }
@@ -553,6 +555,13 @@ namespace Cuckoo.Fody
             }
             
             i.Emit(OpCodes.Call, mInnerRef);
+
+
+            //**********************************************
+            //copy interior arg fields back to byref params
+            //as there is no mPostCuckoo to call on interior method!
+            //...
+            //**********************************************
 
         }
     }

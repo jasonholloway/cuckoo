@@ -126,8 +126,8 @@ namespace Cuckoo.Fody.Cecil
 
         public static MethodDefinition OverrideMethod(
             this TypeDefinition @this,
-            TypeReference declaringTypeRef,
             string methodName,
+            TypeReference declaringTypeRef,
             Action<ILProcessor, MethodDefinition> fnIL) 
         {
             var decType = declaringTypeRef.Resolve();
