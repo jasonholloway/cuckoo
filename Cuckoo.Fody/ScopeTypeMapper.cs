@@ -19,17 +19,16 @@ namespace Cuckoo.Fody
             _dMap = new Dictionary<TypeReference, TypeReference>(TypeRefEqualityComparer.Default);
         }
 
-        public TypeReference Map(TypeReference foreignType) {
+        public TypeReference Map(TypeReference sourceType) {
+            if(sourceType is TypeSpecification) {
+                sourceType = Map(sourceType.GetElementType());
+            }
 
-            //NEED TO STRIP OF ADDITIONAL SPECS N MAP ONLY ELEMENT TYPE
-            //THEN RETURN MAPPED TYPE APPROPRIATELY ACCOUTRED WITH SPECS
-            //...
+            TypeReference type = null;
 
-            TypeReference localType = null;
-
-            if(!_dMap.TryGetValue(foreignType, out localType)) {
-                if(foreignType.IsGenericParameter) {
-                    var oldGen = (GenericParameter)foreignType;
+            if(!_dMap.TryGetValue(sourceType, out type)) {
+                if(sourceType.IsGenericParameter) {
+                    var oldGen = (GenericParameter)sourceType;
                     var newGen = new GenericParameter(oldGen.Name, _genProv);
 
                     newGen.HasDefaultConstructorConstraint = oldGen.HasDefaultConstructorConstraint;
@@ -42,16 +41,24 @@ namespace Cuckoo.Fody
 
                     _genProv.GenericParameters.Add(newGen);
 
-                    localType = newGen;
+                    type = newGen;
                 }
                 else {
-                    localType = _module.ImportReference(foreignType);
+                    type = _module.ImportReference(sourceType);
                 }
 
-                _dMap[foreignType] = localType;
+                _dMap[sourceType] = type;
             }
 
-            return localType;
+            if(sourceType is ByReferenceType) {
+                type = new ByReferenceType(type);
+            }
+
+            if(sourceType is ArrayType) {
+                type = new ArrayType(type, ((ArrayType)sourceType).Rank);
+            }
+
+            return type;
         }
         
 
