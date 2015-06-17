@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,11 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _message = message;
         }
 
-        public override void Init(MethodInfo method) {
-            _returnsString = method.ReturnType == typeof(string);
+        public override void OnRoost(IRoost roost) {
+            _returnsString = roost.Method.ReturnType == typeof(string);
         }
 
-        public override void Usurp(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             if(_returnsString) {

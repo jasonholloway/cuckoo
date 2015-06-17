@@ -10,6 +10,8 @@ using Cuckoo.Common;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
 using System.Linq.Expressions;
+using Cuckoo.Common.Infrastructure;
+using Cuckoo.Common.Attributes;
 
 namespace Cuckoo.Test
 {

@@ -238,8 +238,8 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldc_I4, iC);
                         i.Emit(OpCodes.Ldelem_Ref);
 
-                        i.Emit(OpCodes.Ldloc, vMethodInfo);
-                        i.Emit(OpCodes.Callvirt, R.ICuckoo_mInit);
+                        i.Emit(OpCodes.Ldsfld, fRoostRef);
+                        i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnRoost);
                     }
                 });
 
@@ -318,7 +318,7 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Ldloc, vCall);
 
-                    i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
+                    i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnCall);
 
                     i.Emit(OpCodes.Ldloc, vCall);
                     i.Emit(OpCodes.Call, call.AfterUsurpMethod);

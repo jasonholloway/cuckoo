@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common
+namespace Cuckoo.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public abstract class CuckooAttribute : Attribute, ICuckoo
     {
-        public virtual void Init(MethodInfo method) { }
-        public abstract void Usurp(ICall call);
+        public virtual void OnRoost(IRoost roost) { }
+        public abstract void OnCall(ICall call);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using Cuckoo.Fody;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;

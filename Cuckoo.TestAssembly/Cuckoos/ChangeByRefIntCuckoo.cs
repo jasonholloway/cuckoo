@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _i = i;
         }
 
-        public override void Usurp(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(int))) {

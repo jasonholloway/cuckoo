@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common
+namespace Cuckoo.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class CuckooedAttribute : Attribute

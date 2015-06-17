@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,11 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _subtrahend = subtrahend;
         }
 
-        public override void Init(MethodInfo method) {
-            _returnsInt = method.ReturnType == typeof(int);
+        public override void OnRoost(IRoost roost) {
+            _returnsInt = roost.Method.ReturnType == typeof(int);
         }
 
-        public override void Usurp(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             if(_returnsInt) {

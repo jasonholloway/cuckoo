@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
+    using Cuckoo.Common.Attributes;
+    using Cuckoo.Common.Infrastructure;
     using Refl = System.Reflection;
 
     class RefMap
@@ -30,8 +32,8 @@ namespace Cuckoo.Fody
         public readonly MethodReference Roost_mCtor;
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetUsurpers;
-        public readonly MethodReference ICuckoo_mInit;
-        public readonly MethodReference ICuckoo_mUsurp;
+        public readonly MethodReference ICuckoo_mOnRoost;
+        public readonly MethodReference ICuckoo_mOnCall;
         public readonly MethodReference CuckooedAtt_mCtor;
         public readonly MethodReference MethodInfo_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
@@ -48,11 +50,11 @@ namespace Cuckoo.Fody
             CallArg_Type = module.ImportReference(typeof(CallArg<>));
 
 
-            ICuckoo_mInit = module.ImportReference(
-                                        typeof(ICuckoo).GetMethod("Init"));
+            ICuckoo_mOnRoost = module.ImportReference(
+                                        typeof(ICuckoo).GetMethod("OnRoost"));
 
-            ICuckoo_mUsurp = module.ImportReference(
-                                        typeof(ICuckoo).GetMethod("Usurp"));
+            ICuckoo_mOnCall = module.ImportReference(
+                                        typeof(ICuckoo).GetMethod("OnCall"));
 
 
             Roost_mCtor = module.ImportReference(

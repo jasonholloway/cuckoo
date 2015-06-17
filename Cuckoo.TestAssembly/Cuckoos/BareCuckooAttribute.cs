@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,9 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class BareCuckooAttribute : CuckooAttribute
     {
-        public override void Init(MethodInfo method) {
-            //...
-        }
-        public override void Usurp(ICall call) {
+        
+
+        public override void OnCall(ICall call) {
 
             call.CallInner();
 

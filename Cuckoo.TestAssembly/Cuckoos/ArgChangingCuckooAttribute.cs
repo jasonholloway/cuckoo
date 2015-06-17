@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class ArgChangingCuckooAttribute : CuckooAttribute
     {
-        public override void Usurp(ICall call) {
+        public override void OnCall(ICall call) {
             foreach(var stringArg in call.Args.Where(a => a.Type == typeof(string))) {
                 stringArg.Value = "Growl";
             }

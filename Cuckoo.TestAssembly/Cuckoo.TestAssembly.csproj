@@ -49,7 +49,6 @@
     <Compile Include="Args.cs" />
     <Compile Include="Cuckoos\ChangeByRefStringCuckoo.cs" />
     <Compile Include="Cuckoos\ChangeByRefIntCuckoo.cs" />
-    <Compile Include="Cuckoos\RefArgChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\OutArgChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\ArgChangingCuckooAttribute.cs" />
     <Compile Include="Cuckoos\AddingCuckooAttribute.cs" />

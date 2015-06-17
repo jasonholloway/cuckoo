@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Cuckoo.Fody
 {
+    using Cuckoo.Common.Infrastructure;
     using Refl = System.Reflection;
     
     abstract class CallWeaver
@@ -512,7 +513,7 @@ namespace Cuckoo.Fody
 
             i.Emit(OpCodes.Ldloc_S, vCuckoo);
             i.Emit(OpCodes.Ldloc_S, vCall);
-            i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
+            i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnCall);
 
             i.Emit(OpCodes.Ldloc, vCall);
             i.Emit(OpCodes.Call, nextCall.AfterUsurpMethod);

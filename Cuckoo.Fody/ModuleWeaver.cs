@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using Mono.Cecil;
 using Mono.Cecil.Metadata;
 using System;

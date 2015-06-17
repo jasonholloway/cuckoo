@@ -1,37 +1,30 @@
 ﻿
-SWITCH TO TYPEDCALLARG
-
-
-
-
-
-
 
 
 ********************************************************************
 TO DO:
 
-> TypedCallArg classes, deriving from abstract base CallArg: should mean minimal boxing
-> CallArgs should check type of value set
-> CallArgs to only accept new values post-cuckoo if ByRef
+> Optional args in cuckooed methods
+> Optional args in CuckooAttributes
 > Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
-> Use abstract CallBase class, with only sub-methods emitted
 > async
+> Use abstract CallBase class, with only sub-methods emitted
 > Light-weight SyncLock on lazy args creation
 	- args are only created once per call, but cuckoo may thread off and access args from there...
-> Optional args in CuckooAttributes
-> Optional args in cuckooed methods
 > Test Cuckoos declared in other assemblies
 > Static methods
 > Static classes
 > interface + abstract methods
 > Beware array types: these too are just specs i reckon
 > MethodTester.Mapper still a bit bitty: but good enough for now
+> CallArgs to only accept new values post-cuckoo if ByRef
 
 
 
 *******************************************************************
 DONE:
+> CallArg<T> classes, deriving from exposed ICallArg DONE
+> CallArgs should check type of value set DONE
 > ByRef parameters DONE
 > Cooler lambda-based MethodTester DONE
 > Generic classes DONE

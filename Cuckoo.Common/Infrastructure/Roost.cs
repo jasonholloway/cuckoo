@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common
+namespace Cuckoo.Common.Infrastructure
 {
-    public class Roost
+    public class Roost : IRoost
     {
         public MethodInfo Method { get; private set; }
         public ParameterInfo[] Parameters { get; private set; }

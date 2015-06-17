@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class OutArgChangingCuckooAttribute : CuckooAttribute
     {
-        public override void Usurp(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             var intOutArgs = call.Args.Where(a => a.Parameter.IsOut 
