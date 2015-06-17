@@ -147,11 +147,12 @@ namespace Cuckoo.Fody.Cecil
         public static FieldDefinition AddField(
             this TypeDefinition @this, 
             TypeReference typeRef, 
-            string name ) 
+            string name,
+            FieldAttributes atts = FieldAttributes.Private ) 
         {
             var f = new FieldDefinition(
                             name,
-                            FieldAttributes.Private,
+                            atts,
                             @this.Module.ImportReference(typeRef)
                             );
 
@@ -162,9 +163,10 @@ namespace Cuckoo.Fody.Cecil
 
         public static FieldDefinition AddField<T>(
             this TypeDefinition @this, 
-            string name ) 
+            string name,
+            FieldAttributes atts = FieldAttributes.Private) 
         {
-            return @this.AddField(@this.Module.ImportReference(typeof(T)), name);
+            return @this.AddField(@this.Module.ImportReference(typeof(T)), name, atts);
         }
 
         #endregion

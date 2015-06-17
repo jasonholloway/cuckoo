@@ -3,13 +3,24 @@
 BYREF PARAMS:
 
 > Need to change so that each mPostCuckoo updates byrefs
-	For this mPostCuckoo needs access to the arg addresses: the only way to pass these around is via ctors.
+	For this mPostUsurp needs access to the arg addresses: the only way to pass these around is via ctors.
 	Therefore, when each dispatcher calls mPostCuckoo, it needs to pass these addresses (and only these!)
 	to its constructor for it to potentially populate.
 
-	Therefore each arg will have CallArgIndex and PostCuckooArgIndex 
+	Therefore each arg will have CallArgIndex and PostUsurpArgIndex 
 
 	
+	THE PROBLEM (AGAIN):
+	The dispatcher itself doesn't have access to the byref addresses, if it is a MediateClass.
+	Dead end.
+
+	So, this being so, we have to take the opposite tack, meaning that the dispatcher will read byref arg values
+	from the dispatched, as it currently does with return values exposed via public field.
+
+	Not a biggy!
+
+	SO:
+	CallInfo must expose and specialise CallArgInfo objects
 
 
 
@@ -18,7 +29,7 @@ BYREF PARAMS:
 
 
 > Arg classes to cope with byrefs - population and reading to be updated
-> Call.mPostCuckoo to copy changed args & return value to correct place
+> Call.mPostUsurp to copy changed args & return value to correct place
 > Arg.IsPristine flags to be correctly managed: to be reset before inner invoke; allows to be tested for changes mPostCuckoo
 > Also should be sensitive to changes of byref args by inner func itself
 

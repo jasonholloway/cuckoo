@@ -299,7 +299,13 @@ namespace Cuckoo.Fody
                     }
 
                     foreach(var param in m.Parameters) {
-                        i.Emit(OpCodes.Ldarg_S, param);
+                        if(param.ParameterType.IsByReference) {
+                            i.Emit(OpCodes.Ldarg_S, param);
+                            i.Emit(OpCodes.Ldobj, param.ParameterType.GetElementType());
+                        }
+                        else {
+                            i.Emit(OpCodes.Ldarg_S, param);
+                        }
                     }
 
                     i.Emit(OpCodes.Newobj, call.CtorMethod);
@@ -315,8 +321,15 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
                     i.Emit(OpCodes.Ldloc, vCall);
-                    i.Emit(OpCodes.Call, call.PostCuckooMethod);
-                    
+                    i.Emit(OpCodes.Call, call.PostUsurpMethod);
+
+                    foreach(var arg in call.Args.Where(a => a.IsByRef)) {
+                        i.Emit(OpCodes.Ldarg_S, arg.MethodParam);
+                        i.Emit(OpCodes.Ldloc_S, vCall);
+                        i.Emit(OpCodes.Ldfld, arg.Field);
+                        i.Emit(OpCodes.Stobj, arg.Field.FieldType);
+                    }
+
                     if(call.ReturnsValue) {
                         i.Emit(OpCodes.Ldloc, vCall);
                         i.Emit(OpCodes.Ldfld, call.ReturnField);
