@@ -1,45 +1,7 @@
 ﻿
-********************************************************************
-BYREF PARAMS:
-
-> Need to change so that each mPostCuckoo updates byrefs
-	For this mPostUsurp needs access to the arg addresses: the only way to pass these around is via ctors.
-	Therefore, when each dispatcher calls mPostCuckoo, it needs to pass these addresses (and only these!)
-	to its constructor for it to potentially populate.
-
-	Therefore each arg will have CallArgIndex and PostUsurpArgIndex 
-
-	
-	THE PROBLEM (AGAIN):
-	The dispatcher itself doesn't have access to the byref addresses, if it is a MediateClass.
-	Dead end.
-
-	So, this being so, we have to take the opposite tack, meaning that the dispatcher will read byref arg values
-	from the dispatched, as it currently does with return values exposed via public field.
-
-	Not a biggy!
-
-	SO:
-	CallInfo must expose and specialise CallArgInfo objects
 
 
 
-
-
-
-
-> Arg classes to cope with byrefs - population and reading to be updated
-> Call.mPostUsurp to copy changed args & return value to correct place
-> Arg.IsPristine flags to be correctly managed: to be reset before inner invoke; allows to be tested for changes mPostCuckoo
-> Also should be sensitive to changes of byref args by inner func itself
-
-When a call invoker invokes, it creates a call and passes it to the active usurper.
-The usurper potentially changes the Arg objects of the passed call.
-
-It's up to the invoker - that is the creator and the dispatcher of the call - to detect changed Arg objects
-after ICuckoo.Usurp() and to copy their values to the correct place
-
-It would seem that the Call should be responsible for this; just as the Call cares for updating 
 
 
 
@@ -49,15 +11,14 @@ It would seem that the Call should be responsible for this; just as the Call car
 ********************************************************************
 TO DO:
 
-METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made in visitor
-
-> byref parameters
-> Use abstract CallBase class, with only sub-methods emitted
-> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
-> async
-> Light-weight SyncLock on lazy args creation
+> TypedCallArg classes, deriving from abstract base CallArg: should mean minimal boxing
 > CallArgs should check type of value set
 > CallArgs to only accept new values post-cuckoo if ByRef
+> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
+> Use abstract CallBase class, with only sub-methods emitted
+> async
+> Light-weight SyncLock on lazy args creation
+	- args are only created once per call, but cuckoo may thread off and access args from there...
 > Optional args in CuckooAttributes
 > Optional args in cuckooed methods
 > Test Cuckoos declared in other assemblies
@@ -68,12 +29,10 @@ METHOD REPLACEMENT NOT WORKING FOR GENERIC METHODS! Prob small change to be made
 > MethodTester.Mapper still a bit bitty: but good enough for now
 
 
-*******************************************************************
-NOT REALLY NEEDED:
-
 
 *******************************************************************
 DONE:
+> ByRef parameters DONE
 > Cooler lambda-based MethodTester DONE
 > Generic classes DONE
 > Multiple cuckoos in one nest DONE

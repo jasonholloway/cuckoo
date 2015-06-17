@@ -10,17 +10,59 @@ using Refl = System.Reflection;
 namespace Cuckoo.Common
 {
 
+    public abstract class CallArg2
+    {
+        public ParameterInfo Parameter { get; protected set; }
+        public string Name { get; protected set; }
+        public Type Type { get; protected set; }
 
-    public class CallArg
+        public abstract object Value { get; set; }
+    }
+
+    public class TypedCallArg<TVal> : CallArg2
+    {
+        TVal _value;
+
+        public TypedCallArg(TVal value) {
+            _value = value;
+        }
+
+        public TVal TypedValue {
+            get {
+                throw new NotImplementedException();
+            }
+            set {
+                //...
+            }
+        }
+
+        public override object Value {
+            get {
+                throw new NotImplementedException();
+            }
+            set {
+                //check is byref here
+                //...
+
+                //check correct type here
+                //...
+
+                throw new NotImplementedException();
+            }
+        }
+
+    }
+
+
+    public class CallArg : ICallArgStatus 
     {
         ParameterInfo _paramInfo;
         object _value;
-        bool _isPristine;
+        bool _hasChanged = false;
 
         public CallArg(ParameterInfo paramInfo, object value) {
             _paramInfo = paramInfo;
             _value = value;
-            _isPristine = false;
         }
 
         public ParameterInfo Parameter {
@@ -35,10 +77,6 @@ namespace Cuckoo.Common
             get { return _paramInfo.ParameterType; }
         }
 
-        public bool IsPristine {
-            get { return _isPristine; }
-        }
-
         public object Value {
             get {
                 return _value;
@@ -46,10 +84,13 @@ namespace Cuckoo.Common
             set {
                 if(value != _value) {
                     _value = value;
-                    _isPristine = false;
+                    _hasChanged = true;
                 }
             }
         }
 
+        bool ICallArgStatus.HasChanged {
+            get { return _hasChanged; }
+        }
     }
 }

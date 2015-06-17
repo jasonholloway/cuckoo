@@ -32,7 +32,7 @@ namespace Cuckoo.Fody
     {
         public TypeReference Type { get; private set; }
         public MethodReference CtorMethod { get; private set; }
-        public MethodReference PostUsurpMethod { get; private set; }
+        public MethodReference AfterUsurpMethod { get; private set; }
         public FieldReference ReturnField { get; private set; }
         public CallArgInfo[] Args { get; private set; }
         public bool RequiresInstanciation { get; private set; }
@@ -47,7 +47,7 @@ namespace Cuckoo.Fody
         {
             Type = type;
             CtorMethod = ctorMethod;
-            PostUsurpMethod = postUsurpMethod;
+            AfterUsurpMethod = postUsurpMethod;
             ReturnField = returnField;
             Args = args.ToArray();
             RequiresInstanciation = Type.HasGenericParameters;
@@ -60,7 +60,7 @@ namespace Cuckoo.Fody
 
             return new CallInfo(tCallRef,
                                         mCtorRef,
-                                        tCallRef.ReferenceMethod(PostUsurpMethod.Name),
+                                        tCallRef.ReferenceMethod(AfterUsurpMethod.Name),
                                         ReturnsValue 
                                             ? tCallRef.ReferenceField(ReturnField.Name) 
                                             : null,

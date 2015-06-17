@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallArg.cs" />
+    <Compile Include="ICallArgStatus.cs" />
     <Compile Include="Roost.cs" />
     <Compile Include="ICuckoo.cs" />
     <Compile Include="ICall.cs" />

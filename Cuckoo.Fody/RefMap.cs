@@ -17,12 +17,14 @@ namespace Cuckoo.Fody
         public readonly TypeReference ICuckoo_TypeRef;
         public readonly TypeReference Roost_TypeRef;
         public readonly TypeReference CallArg_TypeRef;
+        public readonly TypeReference ICallArgStatus_TypeRef;
         public readonly TypeReference ICall_TypeRef;
         public readonly TypeReference MethodInfo_TypeRef;
 
         public readonly MethodReference CallArg_mCtor;
-        public readonly MethodReference CallArg_mGetIsPristine;
         public readonly MethodReference CallArg_mGetValue;
+        public readonly MethodReference CallArg_mSetValue;
+        public readonly MethodReference ICallArgStatus_mGetHasChanged;
         public readonly MethodReference Roost_mCtor;
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetUsurpers;
@@ -36,17 +38,21 @@ namespace Cuckoo.Fody
             ICuckoo_TypeRef = module.ImportReference(typeof(ICuckoo));
             Roost_TypeRef = module.ImportReference(typeof(Roost));
             CallArg_TypeRef = module.ImportReference(typeof(CallArg));
+            ICallArgStatus_TypeRef = module.ImportReference(typeof(ICallArgStatus));
             ICall_TypeRef = module.ImportReference(typeof(ICall));
             MethodInfo_TypeRef = module.ImportReference(typeof(Refl.MethodInfo));
 
             CallArg_mCtor = module.ImportReference(
                                         CallArg_TypeRef.Resolve().GetConstructors().First());
 
-            CallArg_mGetIsPristine = module.ImportReference(
-                                        CallArg_TypeRef.GetMethod("get_IsPristine"));
+            ICallArgStatus_mGetHasChanged = module.ImportReference(
+                                                ICallArgStatus_TypeRef.Resolve().GetMethod("get_HasChanged"));
 
             CallArg_mGetValue = module.ImportReference(
                                         CallArg_TypeRef.GetMethod("get_Value"));
+
+            CallArg_mSetValue = module.ImportReference(
+                                        CallArg_TypeRef.GetMethod("set_Value"));
 
             Roost_mGetParams = module.ImportReference(
                                         Roost_TypeRef.GetMethod("get_Parameters"));
@@ -81,6 +87,7 @@ namespace Cuckoo.Fody
             Object_mCtor = module.ImportReference(
                                     module.TypeSystem.Object.ReferenceMethod(m => m.IsConstructor));
         }
+
     }
 
 }

@@ -168,35 +168,7 @@ namespace Cuckoo.Fody
 
 
 
-            _mCtor = _tCall.AddCtor(
-                        new[] {
-                            new ParameterDefinition(R.Roost_TypeRef),
-                            new ParameterDefinition(mod.TypeSystem.Object)
-                            }
-                            .Concat(_args.Select(a => a.CtorParam)),
-                        (i, m) => {
-                            i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Call, R.Object_mCtor);
-
-                            i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldarg_1);
-                            i.Emit(OpCodes.Stfld, _fRoostRef);
-
-                            i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldarg_2);
-                            i.Emit(OpCodes.Stfld, _fInstanceRef);
-                            
-                            foreach(var arg in _args) {
-                                i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldarg_S, arg.CtorParam);
-                                i.Emit(OpCodes.Stfld, arg.FieldRef);
-                            }
-
-                            i.Emit(OpCodes.Ret);
-                        });
-            
-            _mCtorRef = _tCallRef.ReferenceMethod(c => c.IsConstructor);
-
+           
 
             _tCall.OverrideMethod(
                         "get_Instance",
@@ -311,89 +283,107 @@ namespace Cuckoo.Fody
                         });
 
 
-            var mPostUsurp = _tCall.AddMethod(
-                                        "PostUsurp",
-                                        new ParameterDefinition[0],
-                                        mod.TypeSystem.Void,
-                                        (i, m) => {         
-                                            var lbSkipArgFieldUpdate = i.Create(OpCodes.Nop);
-
-                                            i.Emit(OpCodes.Ldarg_0);
-                                            i.Emit(OpCodes.Ldfld, fCallArgsRef);
-                                            i.Emit(OpCodes.Ldnull);
-                                            i.Emit(OpCodes.Ceq);
-                                            i.Emit(OpCodes.Brtrue, lbSkipArgFieldUpdate);
-
-                                            //All ByRef Arg objects to have values copied to passed address
-                                            //...
-
-                                            foreach(var arg in _byrefArgs) {
-                                                //use index to key into created arg object array
-                                                //...
-                                            }
-
-                                            i.Append(lbSkipArgFieldUpdate);
-                                            i.Emit(OpCodes.Ret);
-                                        });
 
 
+
+
+
+
+            _mCtor = _tCall.AddCtor(
+                        new[] {
+                            new ParameterDefinition(R.Roost_TypeRef),
+                            new ParameterDefinition(mod.TypeSystem.Object)
+                            }
+                            .Concat(_args.Select(a => a.CtorParam)),
+                        (i, m) => {
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Call, R.Object_mCtor);
+
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldarg_1);
+                            i.Emit(OpCodes.Stfld, _fRoostRef);
+
+                            i.Emit(OpCodes.Ldarg_0);
+                            i.Emit(OpCodes.Ldarg_2);
+                            i.Emit(OpCodes.Stfld, _fInstanceRef);
+
+                            foreach(var arg in _args) {
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldarg_S, arg.CtorParam);
+                                i.Emit(OpCodes.Stfld, arg.FieldRef);
+                            }
+
+                            i.Emit(OpCodes.Ret);
+                        });
+            
 
 
             _tCall.OverrideMethod(
                         "CallInner",
                         R.ICall_TypeRef,
                         (i, m) => {
-                            ///////////////////////////////////////////////////////////////
-                            //Update arg fields if args not pristine
-                            var vArgs = i.Body.AddVariable<CallArg[]>();
-                            var vArg = i.Body.AddVariable<CallArg>();
-                            var lbSkipAllArgUpdates = i.Create(OpCodes.Nop);
+                            var vCallArgs = i.Body.AddVariable<CallArg[]>();
+                            var vCallArg = i.Body.AddVariable<CallArg>();
+
+                            var lbSkipAllArgs = i.Create(OpCodes.Nop);
 
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Ldfld, fCallArgsRef);
-                            i.Emit(OpCodes.Stloc_S, vArgs);
+                            i.Emit(OpCodes.Stloc_S, vCallArgs);
 
-                            i.Emit(OpCodes.Ldloc_S, vArgs);
+                            i.Emit(OpCodes.Ldloc_S, vCallArgs);
                             i.Emit(OpCodes.Ldnull);
                             i.Emit(OpCodes.Ceq);
-                            i.Emit(OpCodes.Brtrue, lbSkipAllArgUpdates);
-
-                            int iA = 0;
+                            i.Emit(OpCodes.Brtrue, lbSkipAllArgs);
 
                             foreach(var arg in _args) {
-                                var lbSkipArgUpdate = i.Create(OpCodes.Nop);
+                                var lbSkipThisArg = i.Create(OpCodes.Nop);
 
-                                i.Emit(OpCodes.Ldloc_S, vArgs);
-                                i.Emit(OpCodes.Ldc_I4, iA);
+                                i.Emit(OpCodes.Ldloc_S, vCallArgs);
+                                i.Emit(OpCodes.Ldc_I4, arg.Index);
                                 i.Emit(OpCodes.Ldelem_Ref);
-                                i.Emit(OpCodes.Stloc_S, vArg);
+                                i.Emit(OpCodes.Stloc_S, vCallArg);
 
-                                i.Emit(OpCodes.Ldloc_S, vArg);
-                                i.Emit(OpCodes.Call, R.CallArg_mGetIsPristine);
-                                i.Emit(OpCodes.Brtrue_S, lbSkipArgUpdate);
+                                i.Emit(OpCodes.Ldloc_S, vCallArg);
+                                i.Emit(OpCodes.Callvirt, R.ICallArgStatus_mGetHasChanged);
+                                i.Emit(OpCodes.Brfalse_S, lbSkipThisArg);
 
-                                //update arg value here
-                                i.Emit(OpCodes.Ldarg_0);
-
-                                i.Emit(OpCodes.Ldloc_S, vArg);
-                                i.Emit(OpCodes.Call, R.CallArg_mGetValue);
-                                i.Emit(OpCodes.Unbox_Any, arg.FieldType);
-
-                                i.Emit(OpCodes.Stfld, arg.FieldRef);
-
-                                //should reset pristine flag here
-                                //...
-
-                                i.Append(lbSkipArgUpdate);
-
-                                iA++;
+                                    i.Emit(OpCodes.Ldarg_0);
+                                    i.Emit(OpCodes.Ldloc_S, vCallArg);
+                                    i.Emit(OpCodes.Call, R.CallArg_mGetValue);
+                                    i.Emit(OpCodes.Unbox_Any, arg.FieldType);
+                                    i.Emit(OpCodes.Stfld, arg.FieldRef);
+                                
+                                i.Append(lbSkipThisArg);
                             }
 
-                            i.Append(lbSkipAllArgUpdates);
+                            i.Append(lbSkipAllArgs);
 
-                            //Subclass loads args and calls inner
 
                             EmitInnerInvoke(i, mOuterRef);
+
+
+                            var lbSkipAllArgs2 = i.Create(OpCodes.Nop);
+
+                            i.Emit(OpCodes.Ldloc_S, vCallArgs);
+                            i.Emit(OpCodes.Ldnull);
+                            i.Emit(OpCodes.Ceq);
+                            i.Emit(OpCodes.Brtrue_S, lbSkipAllArgs2);
+
+                            foreach(var arg in _byrefArgs) {
+                                i.Emit(OpCodes.Ldloc_S, vCallArgs);
+                                i.Emit(OpCodes.Ldc_I4, arg.Index);
+                                i.Emit(OpCodes.Ldelem_Ref);
+
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldfld, arg.FieldRef);
+                                i.Emit(OpCodes.Box, arg.FieldType);
+
+                                i.Emit(OpCodes.Call, R.CallArg_mSetValue);
+                            }
+
+                            i.Append(lbSkipAllArgs2);
+
 
                             if(_fReturn != null) {
                                 var vReturn = m.Body.AddVariable(_fReturnRef.FieldType);
@@ -405,21 +395,59 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Stfld, _fReturnRef);
                             }
 
-
-                            //**********************************************************************
-                            //ByRef arg fields are copied over to their respective CallArg objects
-                            //so as to expose changes to prevailing Cuckoo
-                            //...
-                            //**********************************************************************
-
-
                             i.Emit(OpCodes.Ret);
                         });
 
 
+
+            var mAfterUsurp = _tCall.AddMethod(
+                                        "AfterUsurp",
+                                        new ParameterDefinition[0],
+                                        mod.TypeSystem.Void,
+                                        (i, m) => {
+                                            var vCallArgs = i.Body.AddVariable<CallArg[]>();
+                                            var vCallArg = i.Body.AddVariable<CallArg>();
+
+                                            var lbSkipAll = i.Create(OpCodes.Nop);
+
+                                            i.Emit(OpCodes.Ldarg_0);
+                                            i.Emit(OpCodes.Ldfld, fCallArgsRef);
+                                            i.Emit(OpCodes.Stloc_S, vCallArgs);
+
+                                            i.Emit(OpCodes.Ldloc_S, vCallArgs);
+                                            i.Emit(OpCodes.Ldnull);
+                                            i.Emit(OpCodes.Ceq);
+                                            i.Emit(OpCodes.Brtrue, lbSkipAll);
+
+                                            foreach(var arg in _byrefArgs) {
+                                                var lbSkipThis = i.Create(OpCodes.Nop);
+
+                                                i.Emit(OpCodes.Ldloc_S, vCallArgs);
+                                                i.Emit(OpCodes.Ldc_I4, arg.Index);
+                                                i.Emit(OpCodes.Ldelem_Ref);
+                                                i.Emit(OpCodes.Stloc_S, vCallArg);
+
+                                                i.Emit(OpCodes.Ldloc_S, vCallArg);
+                                                i.Emit(OpCodes.Callvirt, R.ICallArgStatus_mGetHasChanged);
+                                                i.Emit(OpCodes.Brfalse_S, lbSkipThis);
+
+                                                i.Emit(OpCodes.Ldarg_0);
+                                                i.Emit(OpCodes.Ldloc_S, vCallArg);
+                                                i.Emit(OpCodes.Call, R.CallArg_mGetValue);
+                                                i.Emit(OpCodes.Unbox_Any, arg.FieldType);
+                                                i.Emit(OpCodes.Stfld, arg.FieldRef);
+
+                                                i.Append(lbSkipThis);
+                                            }
+
+                                            i.Append(lbSkipAll);
+                                            i.Emit(OpCodes.Ret);
+                                        });
+
+
             return new CallInfo(_tCall,
                                     _mCtor,
-                                    mPostUsurp,
+                                    mAfterUsurp,
                                     _fReturn,
                                     _args.Select(a => new CallArgInfo(
                                                             a.Field,
@@ -485,7 +513,7 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Callvirt, R.ICuckoo_mUsurp);
 
             i.Emit(OpCodes.Ldloc, vCall);
-            i.Emit(OpCodes.Call, nextCall.PostUsurpMethod);
+            i.Emit(OpCodes.Call, nextCall.AfterUsurpMethod);
 
             foreach(var nextCallArg in nextCall.Args.Where(a => a.IsByRef)) {
                 i.Emit(OpCodes.Ldarg_0);
@@ -539,11 +567,6 @@ namespace Cuckoo.Fody
             }
             
             i.Emit(OpCodes.Call, mInnerRef);
-                       
-            //Our byref arg fields should be sorted
-
-            //No mPostUsurp of course - need to cover for this HERE
-            //...
         }
     }
 

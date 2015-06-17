@@ -19,8 +19,9 @@ namespace Cuckoo.TestAssembly.Cuckoos
         public override void Usurp(ICall call) {
             call.CallInner();
 
-            //change byref int args
-            //...
+            foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(int))) {
+                arg.Value = _i;
+            }
         }
     }
 }

@@ -47,6 +47,8 @@ namespace Cuckoo.Fody.Cecil
 
             @this.Methods.Add(m);
 
+            m.Body.InitLocals = true;
+
             fnIL(m.Body.GetILProcessor(), rParams);
 
             return m;
