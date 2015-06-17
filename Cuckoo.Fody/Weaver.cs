@@ -124,7 +124,7 @@ namespace Cuckoo.Fody
             string callSiteName = names.GetElementName("ROOST", mOuter.Name);
 
             var fRoost = tCont.AddField(
-                                    R.Roost_TypeRef,
+                                    R.Roost_Type,
                                     callSiteName);
 
             fRoost.Attributes = FieldAttributes.Private
@@ -138,20 +138,20 @@ namespace Cuckoo.Fody
 
             tCont.AppendToStaticCtor(
                 (i, m) => {
-                    var vMethodInfo = m.Body.AddVariable(R.MethodInfo_TypeRef);
+                    var vMethodInfo = m.Body.AddVariable(R.MethodInfo_Type);
                     var vCuckoo = m.Body.AddVariable<ICuckoo>();
                     var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
                     
                     i.Emit(OpCodes.Ldtoken, mOuter);
                     i.Emit(OpCodes.Ldtoken, tContRef);
                     i.Emit(OpCodes.Call, R.MethodInfo_mGetMethodFromHandle);
-                    i.Emit(OpCodes.Castclass, R.MethodInfo_TypeRef);
+                    i.Emit(OpCodes.Castclass, R.MethodInfo_Type);
                     i.Emit(OpCodes.Stloc, vMethodInfo);
                     
                     /////////////////////////////////////////////////////////////////////
                     //Load usurper instances into array ////////////////////////////////
                     i.Emit(OpCodes.Ldc_I4, _spec.CuckooAttributes.Length);
-                    i.Emit(OpCodes.Newarr, R.ICuckoo_TypeRef);
+                    i.Emit(OpCodes.Newarr, R.ICuckoo_Type);
                     i.Emit(OpCodes.Stloc_S, vCuckoos);
                     
                     int iA = 0;

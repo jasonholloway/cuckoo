@@ -36,7 +36,11 @@ namespace Cuckoo.Fody.Cecil
             };
 
             foreach(ParameterDefinition paramDef in @this.Parameters) {
-                methodRef.Parameters.Add(new ParameterDefinition(paramDef.Name, paramDef.Attributes, paramDef.ParameterType));
+                methodRef.Parameters.Add(new ParameterDefinition(
+                                                            paramDef.Name, 
+                                                            paramDef.Attributes, 
+                                                            declaringTypeRef.Module.ImportReference(paramDef.ParameterType, methodRef)
+                                                            ));
             }
 
             foreach(GenericParameter genParamDef in @this.GenericParameters) {

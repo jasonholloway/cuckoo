@@ -14,17 +14,19 @@ namespace Cuckoo.Fody
 
     class RefMap
     {
-        public readonly TypeReference ICuckoo_TypeRef;
-        public readonly TypeReference Roost_TypeRef;
-        public readonly TypeReference CallArg_TypeRef;
-        public readonly TypeReference ICallArgStatus_TypeRef;
-        public readonly TypeReference ICall_TypeRef;
-        public readonly TypeReference MethodInfo_TypeRef;
+        public readonly TypeReference ICuckoo_Type;
+        public readonly TypeReference Roost_Type;
+        public readonly TypeReference ICall_Type;
+        public readonly TypeReference ICallArg_Type;
+        public readonly TypeReference CallArg_Type;
+        public readonly TypeReference MethodInfo_Type;
+        public readonly TypeReference ParamInfo_Type;
 
         public readonly MethodReference CallArg_mCtor;
-        public readonly MethodReference CallArg_mGetValue;
-        public readonly MethodReference CallArg_mSetValue;
-        public readonly MethodReference ICallArgStatus_mGetHasChanged;
+        public readonly MethodReference CallArg_mGetTypedValue;
+        public readonly MethodReference CallArg_mSetTypedValue;
+        public readonly MethodReference CallArg_mGetHasChanged;
+
         public readonly MethodReference Roost_mCtor;
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetUsurpers;
@@ -34,40 +36,47 @@ namespace Cuckoo.Fody
         public readonly MethodReference MethodInfo_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
 
-        public RefMap(ModuleDefinition module, MethodDefinition method) {
-            ICuckoo_TypeRef = module.ImportReference(typeof(ICuckoo));
-            Roost_TypeRef = module.ImportReference(typeof(Roost));
-            CallArg_TypeRef = module.ImportReference(typeof(CallArg));
-            ICallArgStatus_TypeRef = module.ImportReference(typeof(ICallArgStatus));
-            ICall_TypeRef = module.ImportReference(typeof(ICall));
-            MethodInfo_TypeRef = module.ImportReference(typeof(Refl.MethodInfo));
+        public RefMap(ModuleDefinition module, MethodDefinition method) 
+        {
+            MethodInfo_Type = module.ImportReference(typeof(Refl.MethodInfo));
+            ParamInfo_Type = module.ImportReference(typeof(Refl.ParameterInfo));
 
-            CallArg_mCtor = module.ImportReference(
-                                        CallArg_TypeRef.Resolve().GetConstructors().First());
+            ICuckoo_Type = module.ImportReference(typeof(ICuckoo));
+            Roost_Type = module.ImportReference(typeof(Roost));
+            ICall_Type = module.ImportReference(typeof(ICall));
+            ICallArg_Type = module.ImportReference(typeof(ICallArg));
+            CallArg_Type = module.ImportReference(typeof(CallArg<>));
 
-            ICallArgStatus_mGetHasChanged = module.ImportReference(
-                                                ICallArgStatus_TypeRef.Resolve().GetMethod("get_HasChanged"));
-
-            CallArg_mGetValue = module.ImportReference(
-                                        CallArg_TypeRef.GetMethod("get_Value"));
-
-            CallArg_mSetValue = module.ImportReference(
-                                        CallArg_TypeRef.GetMethod("set_Value"));
-
-            Roost_mGetParams = module.ImportReference(
-                                        Roost_TypeRef.GetMethod("get_Parameters"));
-
-            Roost_mGetUsurpers = module.ImportReference(
-                                        Roost_TypeRef.GetMethod("get_Cuckoos"));
-
-            Roost_mCtor = module.ImportReference(
-                                        Roost_TypeRef.Resolve().GetConstructors().First());
 
             ICuckoo_mInit = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("Init"));
 
             ICuckoo_mUsurp = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("Usurp"));
+
+
+            Roost_mCtor = module.ImportReference(
+                                        Roost_Type.Resolve().GetConstructors().First());
+
+            Roost_mGetParams = module.ImportReference(
+                                        Roost_Type.GetMethod("get_Parameters"));
+
+            Roost_mGetUsurpers = module.ImportReference(
+                                        Roost_Type.GetMethod("get_Cuckoos"));
+
+
+            CallArg_mCtor = module.ImportReference(
+                                        CallArg_Type.Resolve().GetConstructors().First());
+
+            CallArg_mGetHasChanged = module.ImportReference(
+                                        CallArg_Type.Resolve().GetMethod("get_HasChanged"));
+
+            CallArg_mGetTypedValue = module.ImportReference(
+                                        CallArg_Type.GetMethod("get_TypedValue"));
+
+            CallArg_mSetTypedValue = module.ImportReference(
+                                        CallArg_Type.GetMethod("set_TypedValue"));
+
 
             CuckooedAtt_mCtor = module.ImportReference(
                                         typeof(CuckooedAttribute).GetConstructor(new[] { typeof(string) }));
