@@ -6,7 +6,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using Cuckoo.Fody;
-using Cuckoo.Common;
+using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
 
@@ -80,11 +80,21 @@ namespace Cuckoo.Test
             Assert.IsTrue(i == 666);
         }
 
+        [TestMethod]
+        public void CuckoosAllowOptionalArgs() {
+            var method = Tester.WithClass<Args>()
+                                    .GetMethod(m => m.Name == "MethodWithOptionalArgs");
 
-        //[TestMethod]
-        //public void CuckooChangesRefArg() {
-        //    throw new NotImplementedException();
-        //}
+            Assert.IsTrue(method.GetParameters().Count(p => p.IsOptional) == 1);
+
+            var result = Tester.WithClass<Args>()
+                                    .Run(a => a.MethodWithOptionalArgs(1, 123));
+
+            Assert.IsTrue(result == "123");
+        }
+
+
+
 
 
 

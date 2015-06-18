@@ -1,4 +1,4 @@
-﻿using Cuckoo.Common;
+﻿using Cuckoo;
 using Cuckoo.TestAssembly.Cuckoos;
 using System;
 using System.Collections.Generic;

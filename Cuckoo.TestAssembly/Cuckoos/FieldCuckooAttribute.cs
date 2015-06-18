@@ -1,5 +1,5 @@
-﻿using Cuckoo.Common;
-using Cuckoo.Common.Attributes;
+﻿using Cuckoo;
+using Cuckoo.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

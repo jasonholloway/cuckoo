@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common.Infrastructure
+namespace Cuckoo.Impl
 {
 
     public class CallArg<TVal> : ICallArg
@@ -35,7 +35,7 @@ namespace Cuckoo.Common.Infrastructure
                 return _value;
             }
             set {
-                //check is byref here - depends on current phase of course
+                //check is byref here - depends on current phase of usurpation
                 //...
 
                 if(!typeof(TVal).IsAssignableFrom(value.GetType())) {

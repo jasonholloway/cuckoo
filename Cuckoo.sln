@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{637383
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Common", "Cuckoo.Common\Cuckoo.Common.csproj", "{892D38CC-E0F7-4691-B9E6-8F52B2B194D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo", "Cuckoo\Cuckoo.csproj", "{892D38CC-E0F7-4691-B9E6-8F52B2B194D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Fody", "Cuckoo.Fody\Cuckoo.Fody.csproj", "{15A60CA7-49A7-4E64-A160-26F2D0DA485C}"
 EndProject

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common.Attributes
+namespace Cuckoo.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public abstract class CuckooAttribute : Attribute, ICuckoo

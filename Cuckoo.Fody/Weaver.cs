@@ -1,4 +1,4 @@
-﻿using Cuckoo.Common;
+﻿using Cuckoo;
 using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Cil;

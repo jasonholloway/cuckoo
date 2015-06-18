@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common
+namespace Cuckoo
 {
-    public interface ICuckoo
+    public interface IRoost
     {
-        void OnRoost(IRoost roost);
-        void OnCall(ICall call);
+        MethodInfo Method { get; }
+        ICuckoo[] Cuckoos { get; }
     }
-
 }

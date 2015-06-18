@@ -4,10 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Refl = System.Reflection;
 
 
-namespace Cuckoo.Common
+namespace Cuckoo
 {
     public interface ICallArg
     {

@@ -6,12 +6,12 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using Cuckoo.Fody;
-using Cuckoo.Common;
+using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
 using System.Linq.Expressions;
-using Cuckoo.Common.Infrastructure;
-using Cuckoo.Common.Attributes;
+using Cuckoo.Impl;
+using Cuckoo.Attributes;
 
 namespace Cuckoo.Test
 {

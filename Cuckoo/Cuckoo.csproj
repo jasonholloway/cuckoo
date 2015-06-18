@@ -7,8 +7,8 @@
     <ProjectGuid>{892D38CC-E0F7-4691-B9E6-8F52B2B194D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cuckoo.Common</RootNamespace>
-    <AssemblyName>Cuckoo.Common</AssemblyName>
+    <RootNamespace>Cuckoo</RootNamespace>
+    <AssemblyName>Cuckoo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Infrastructure\CallArg.cs" />
+    <Compile Include="Impl\CallArg.cs" />
     <Compile Include="ICallArg.cs" />
-    <Compile Include="Infrastructure\CallBase.cs" />
+    <Compile Include="Impl\CallBase.cs" />
     <Compile Include="IRoost.cs" />
-    <Compile Include="Infrastructure\Roost.cs" />
+    <Compile Include="Impl\Roost.cs" />
     <Compile Include="ICuckoo.cs" />
     <Compile Include="ICall.cs" />
     <Compile Include="Attributes\CuckooAttribute.cs" />

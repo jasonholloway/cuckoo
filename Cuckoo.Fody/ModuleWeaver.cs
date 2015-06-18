@@ -1,5 +1,5 @@
-﻿using Cuckoo.Common;
-using Cuckoo.Common.Attributes;
+﻿using Cuckoo;
+using Cuckoo.Attributes;
 using Mono.Cecil;
 using Mono.Cecil.Metadata;
 using System;
@@ -16,7 +16,7 @@ namespace Cuckoo.Fody
         public Action<string> LogInfo { get; set; }
 
         public void Execute() {
-            var commonModule = ModuleDefinition.ReadModule("Cuckoo.Common.dll");
+            var commonModule = ModuleDefinition.ReadModule("Cuckoo.dll");
 
             var weaveSpecs = ModuleDefinition.Types
                                 .SelectMany(t => t.Methods)

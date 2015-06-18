@@ -74,9 +74,9 @@
       <Project>{63e6915c-7ea4-4d76-ab28-0d7191eea626}</Project>
       <Name>Mono.Cecil.Pdb</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cuckoo.Common\Cuckoo.Common.csproj">
+    <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
-      <Name>Cuckoo.Common</Name>
+      <Name>Cuckoo</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

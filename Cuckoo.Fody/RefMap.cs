@@ -1,4 +1,4 @@
-﻿using Cuckoo.Common;
+﻿using Cuckoo;
 using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    using Cuckoo.Common.Attributes;
-    using Cuckoo.Common.Infrastructure;
+    using Cuckoo.Attributes;
+    using Cuckoo.Impl;
     using Refl = System.Reflection;
 
     class RefMap

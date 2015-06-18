@@ -1,10 +1,17 @@
 ﻿
+OPTIONAL ARGS IN ATTRIBUTES:
+
+> Requires better cuckoo construction code
+
+
+
+
+
 
 
 ********************************************************************
 TO DO:
 
-> Optional args in cuckooed methods
 > Optional args in CuckooAttributes
 > Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > async
@@ -23,6 +30,7 @@ TO DO:
 
 *******************************************************************
 DONE:
+> Optional args in cuckooed methods DONE
 > CallArg<T> classes, deriving from exposed ICallArg DONE
 > CallArgs should check type of value set DONE
 > ByRef parameters DONE

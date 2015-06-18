@@ -51,6 +51,14 @@ namespace Cuckoo.TestAssembly
         }
 
 
+        [BareCuckoo]
+        public string MethodWithOptionalArgs(int a, int b = 9999) {
+            return b.ToString();
+        }
+
+
+
+
 
         //[OutArgChangingCuckoo]
         //public string MethodWithChangedOutArg(int a, out int b) {

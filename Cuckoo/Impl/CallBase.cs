@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Common.Infrastructure
+namespace Cuckoo.Impl
 {
     public abstract class CallBase : ICall
     {

@@ -69,9 +69,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cuckoo.Common\Cuckoo.Common.csproj">
+    <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
-      <Name>Cuckoo.Common</Name>
+      <Name>Cuckoo</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

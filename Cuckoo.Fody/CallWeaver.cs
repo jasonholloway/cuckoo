@@ -1,4 +1,4 @@
-﻿using Cuckoo.Common;
+﻿using Cuckoo;
 using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Cuckoo.Fody
 {
-    using Cuckoo.Common.Infrastructure;
+    using Cuckoo.Impl;
     using Refl = System.Reflection;
     
     abstract class CallWeaver
@@ -204,7 +204,7 @@ namespace Cuckoo.Fody
                         R.ICall_Type,
                         (i, m) => {
                             var vArgs = m.Body.AddVariable<ICallArg[]>();
-                            var vParams = m.Body.AddVariable<Refl.ParameterInfo>();
+                            var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
                             var lbCreateArgs = i.Create(OpCodes.Nop);
 
                             i.Emit(OpCodes.Ldarg_0);
