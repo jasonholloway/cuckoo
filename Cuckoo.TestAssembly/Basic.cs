@@ -11,7 +11,6 @@ namespace Cuckoo.TestAssembly
 {
     public class Basic
     {
-
         public void Dummy1() { }
 
 
@@ -73,5 +72,21 @@ namespace Cuckoo.TestAssembly
         public void VoidMethod() {
             //...
         }
+
+
+
+        public class CtorClass
+        {
+            public int ReceivedValue { get; private set; }
+
+            [BareCuckoo]
+            [ArgChangingCuckoo]
+            public CtorClass(int a) {
+                ReceivedValue = a;
+            }
+        }
+
+
+
     }
 }

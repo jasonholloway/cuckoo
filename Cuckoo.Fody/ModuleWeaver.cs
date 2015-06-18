@@ -14,21 +14,23 @@ namespace Cuckoo.Fody
     {
         public ModuleDefinition ModuleDefinition { get; set; }
         public Action<string> LogInfo { get; set; }
+                       
 
         public void Execute() {
             var commonModule = ModuleDefinition.ReadModule("Cuckoo.dll");
 
-            var weaveSpecs = ModuleDefinition.Types
+            var weaveSpecs = GetAllTypes(this.ModuleDefinition)
                                 .SelectMany(t => t.Methods)
                                     .Where(m => m.HasCustomAttributes && !m.IsAbstract)
                                     .Select(m => new WeaveSpec() {
                                                             Method = m,
                                                             CuckooAttributes = m.CustomAttributes
-                                                                                .Where(a => IsHatAttributeType(a.AttributeType))
+                                                                                .Where(a => IsCuckooAttributeType(a.AttributeType))
                                                                                 .Reverse()
                                                                                 .ToArray()
                                                         })
                                                         .Where(spec => spec.CuckooAttributes.Any());
+
             var weaves = weaveSpecs
                             .Select(spec => new Weaver(spec, LogInfo))
                             .ToArray(); //needed 
@@ -38,9 +40,26 @@ namespace Cuckoo.Fody
             }
         }
 
-        
 
-        bool IsHatAttributeType(TypeReference typeRef) {
+
+        IEnumerable<TypeDefinition> GetAllTypes(TypeDefinition type) {
+            yield return type;
+
+            if(type.HasNestedTypes) {
+                foreach(var nestedType in type.NestedTypes) {
+                    foreach(var t in GetAllTypes(nestedType)) {
+                        yield return t;
+                    }
+                }
+            }
+        }
+
+        IEnumerable<TypeDefinition> GetAllTypes(ModuleDefinition mod) {
+            return mod.Types.SelectMany(t => GetAllTypes(t));
+        }
+
+
+        bool IsCuckooAttributeType(TypeReference typeRef) {
             if(typeRef.FullName == typeof(CuckooAttribute).FullName) {
                 return true;
             }
@@ -48,7 +67,7 @@ namespace Cuckoo.Fody
                 var baseType = typeRef.Resolve().BaseType;
 
                 return baseType != null
-                            ? IsHatAttributeType(baseType)
+                            ? IsCuckooAttributeType(baseType)
                             : false;
             }
         }

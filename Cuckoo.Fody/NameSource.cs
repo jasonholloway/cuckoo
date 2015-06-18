@@ -23,13 +23,15 @@ namespace Cuckoo.Fody
             }
         }
 
-        public string GetElementName(string elementType, string methodName) {
+        public string GetElementName(string elementType, string elementName) {
             int number = 1;
-            
+
+            elementName = elementName.Replace(".", "<>");
+
             while(true) {
                 string name = string.Format(
                                         "<{1}{2}>_{0}", 
-                                        methodName, 
+                                        elementName, 
                                         elementType, 
                                         number == 1 ? "" : number.ToString() 
                                         );

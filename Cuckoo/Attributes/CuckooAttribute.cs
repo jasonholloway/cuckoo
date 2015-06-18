@@ -2,7 +2,7 @@
 
 namespace Cuckoo.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
     public abstract class CuckooAttribute : Attribute, ICuckoo
     {
         public virtual void OnRoost(IRoost roost) { }

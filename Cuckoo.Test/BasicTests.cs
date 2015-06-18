@@ -83,9 +83,14 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnVoidMethod() {
-            Tester.WithClass<Basic>()
-                    .Run(b => b.VoidMethod());
+            Tester.WithClass<Basic>().Run(b => b.VoidMethod());
+        }
 
+        [TestMethod]
+        public void CuckoosOnCtor() {
+            var result = Tester.Static().Run(() => new Basic.CtorClass(12).ReceivedValue );
+
+            Assert.IsTrue(result == 13);
         }
 
 

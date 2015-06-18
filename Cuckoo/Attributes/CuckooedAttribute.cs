@@ -2,7 +2,7 @@
 
 namespace Cuckoo.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
     public class CuckooedAttribute : Attribute
     {
         public string InnerMethodName { get; private set; }

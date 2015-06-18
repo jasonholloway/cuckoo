@@ -48,11 +48,12 @@ namespace Cuckoo.Fody
         
         public void Weave() 
         {
+            
             var ctx = CreateContext(_spec);
 
             var fRoostRef = CreateRoost(ctx);
-            
-            var mInner = TransplantOuterToInner(ctx);
+
+            var mInner = TransplantOuterToInner(ctx); //THIS IS WHAT BREAKS WITH CTORS!
 
             var callWeaver = (CallWeaver)new FinalCallWeaver(ctx, mInner);
 

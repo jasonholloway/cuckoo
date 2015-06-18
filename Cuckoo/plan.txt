@@ -1,9 +1,19 @@
 ﻿
+CONSTRUCTORS!:
+
+> Currently won't load type - seems to be due to TransplantOuterToInner - is the copied inner somehow still registered as ctor?
+> It's not right that the inner calls the base ctor - this should be retained by the outer and
+	called BEFORE any usurpation!!!!!!!
+
+
+
 
 ********************************************************************
 TO DO:
 
+> Cuckoos on Constructors
 > interface + abstract methods
+> structs rather than classes
 > async
 > Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > Use abstract CallBase class, with only sub-methods emitted
