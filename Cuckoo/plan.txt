@@ -1,35 +1,31 @@
 ﻿
-OPTIONAL ARGS IN ATTRIBUTES:
-
-> Requires better cuckoo construction code
-
-
-
-
-
-
 
 ********************************************************************
 TO DO:
 
-> Optional args in CuckooAttributes
-> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
+> interface + abstract methods
 > async
+> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > Use abstract CallBase class, with only sub-methods emitted
+> Test Cuckoos declared in other assemblies
+> Beware array types: in both ctor args and gen params!
+> Return value to police its type
+
+
+
+*******************************************************************
+DOUBTFUL:
+
 > Light-weight SyncLock on lazy args creation
 	- args are only created once per call, but cuckoo may thread off and access args from there...
-> Test Cuckoos declared in other assemblies
-> Static methods
-> Static classes
-> interface + abstract methods
-> Beware array types: these too are just specs i reckon
-> MethodTester.Mapper still a bit bitty: but good enough for now
-> CallArgs to only accept new values post-cuckoo if ByRef
 
 
 
 *******************************************************************
 DONE:
+> Static classes DONE
+> Static methods DONE
+> Optional args in CuckooAttributes DONE
 > Optional args in cuckooed methods DONE
 > CallArg<T> classes, deriving from exposed ICallArg DONE
 > CallArgs should check type of value set DONE

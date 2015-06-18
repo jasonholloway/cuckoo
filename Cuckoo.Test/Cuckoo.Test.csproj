@@ -64,6 +64,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ArgTests.cs" />
+    <Compile Include="StaticTests.cs" />
+    <Compile Include="AttributeTests.cs" />
     <Compile Include="GenericClassTests.cs" />
     <Compile Include="GenericMethodTests.cs" />
     <Compile Include="Infrastructure\BuildRunner.cs" />

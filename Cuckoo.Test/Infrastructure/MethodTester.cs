@@ -276,13 +276,47 @@ namespace Cuckoo.Test.Infrastructure
         }
 
 
+        public IStaticMethodTester Static() {
+            return new StaticMethodTester(_mapper);
+        }
+
+
+
+        public interface IStaticMethodTester
+        {
+            TResult Run<TResult>(Expression<Func<TResult>> exFn);
+        }
 
 
         public interface IClassMethodTester<TClass>
         {
+            void Run(Expression<Action<TClass>> exFn);
             TResult Run<TResult>(Expression<Func<TClass,TResult>> exFn);
             MethodInfo GetMethod(Func<MethodInfo, bool> fnSelect);
         }
+
+
+        class StaticMethodTester
+            : IStaticMethodTester
+        {
+            Mapper _mapper;
+
+            public StaticMethodTester(Mapper mapper) {
+                _mapper = mapper;
+            }
+
+            public TResult Run<TResult>(Expression<Func<TResult>> exFn) {
+                var replacer = new Replacer(_mapper);
+
+                var newEx = (LambdaExpression)replacer.Visit(exFn);
+                var newFn = newEx.Compile();
+
+                var result = newFn.DynamicInvoke();
+
+                return (TResult)result;
+            }
+        }
+
 
         class ClassMethodTester<TClass>
             : IClassMethodTester<TClass>
@@ -292,6 +326,19 @@ namespace Cuckoo.Test.Infrastructure
             public ClassMethodTester(Mapper mapper) {
                 _mapper = mapper;
             }
+
+            public void Run(Expression<Action<TClass>> exFn) {
+                var replacer = new Replacer(_mapper);
+
+                var newEx = (LambdaExpression)replacer.Visit(exFn);
+                var newFn = newEx.Compile();
+
+                var baseType = _mapper.Map(typeof(TClass));
+                object baseObj = Activator.CreateInstance(baseType);
+
+                newFn.DynamicInvoke(baseObj);
+            }
+
 
             public TResult Run<TResult>(Expression<Func<TClass, TResult>> exFn) {
                 var replacer = new Replacer(_mapper);

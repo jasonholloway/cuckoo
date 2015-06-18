@@ -81,8 +81,12 @@ namespace Cuckoo.Test
             Assert.IsTrue(result == "Wow!");
         }
 
+        [TestMethod]
+        public void CuckooOnVoidMethod() {
+            Tester.WithClass<Basic>()
+                    .Run(b => b.VoidMethod());
 
-
+        }
 
 
 

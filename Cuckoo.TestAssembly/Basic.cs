@@ -67,5 +67,11 @@ namespace Cuckoo.TestAssembly
 
 
         public void Dummy2() { }
+
+        [BareCuckoo]
+        [ArgCuckoo("aaaa")]
+        public void VoidMethod() {
+            //...
+        }
     }
 }

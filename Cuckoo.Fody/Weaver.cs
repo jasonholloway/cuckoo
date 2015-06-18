@@ -92,16 +92,11 @@ namespace Cuckoo.Fody
 
             var mInner = mOuter.CopyToNewSibling(innerName);
 
-            mInner.Attributes = MethodAttributes.Private 
-                                | MethodAttributes.HideBySig 
-                                | MethodAttributes.SpecialName;
+            mInner.Attributes ^= MethodAttributes.Public | MethodAttributes.Private;
 
             ctx.mInner = mInner;
 
             return mInner;
-            
-            //var mInnerRef = mInner.CloneWithNewDeclaringType(ctx.tContRef);
-            //return mInnerRef;
         }
 
 
@@ -149,7 +144,7 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Stloc, vMethodInfo);
                     
                     /////////////////////////////////////////////////////////////////////
-                    //Load usurper instances into array ////////////////////////////////
+                    //Load ICuckoo instances into array ////////////////////////////////
                     i.Emit(OpCodes.Ldc_I4, _spec.CuckooAttributes.Length);
                     i.Emit(OpCodes.Newarr, R.ICuckoo_Type);
                     i.Emit(OpCodes.Stloc_S, vCuckoos);
@@ -157,20 +152,14 @@ namespace Cuckoo.Fody
                     int iA = 0;
 
                     foreach(var att in _spec.CuckooAttributes) {
-                        var tAtt = mod.ImportReference(att.AttributeType);
+                        var tAtt = att.AttributeType;
 
                         if(att.HasConstructorArguments) {
-                            var mCtor = mod.ImportReference(
-                                                    tAtt.Resolve()
-                                                        .GetConstructors()
-                                                        .First(c => c.Parameters
-                                                                        .Select(p => p.ParameterType)
+                            var mCtor = tAtt.ReferenceMethod(c => m.IsConstructor
+                                                                    && c.Parameters.Select(p => p.ParameterType)
                                                                         .SequenceEqual(
-                                                                            att.ConstructorArguments
-                                                                                .Select(a => a.Type)
-                                                                            )
-                                                        )
-                                                    );
+                                                                            att.ConstructorArguments.Select(a => a.Type) 
+                                                                        ));
 
                             foreach(var ctorArg in att.ConstructorArguments) {
                                 i.EmitConstant(ctorArg.Type, ctorArg.Value);
@@ -179,12 +168,8 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Newobj, mCtor);
                         }
                         else {
-                            var mCtor = mod.ImportReference(
-                                                    tAtt.Resolve()
-                                                        .GetConstructors()
-                                                        .First(c => !c.HasParameters)
-                                                    );
-
+                            var mCtor = tAtt.ReferenceMethod(c => c.IsConstructor
+                                                                    && !c.HasParameters );
                             i.Emit(OpCodes.Newobj, mCtor);
                         }
 
@@ -193,7 +178,7 @@ namespace Cuckoo.Fody
 
                         if(att.HasFields) {
                             foreach(var namedCtorArg in att.Fields) {
-                                var field = tAtt.Resolve().GetField(namedCtorArg.Name);
+                                var field = tAtt.ReferenceField(namedCtorArg.Name);
 
                                 i.Emit(OpCodes.Ldloc, vCuckoo);
                                 i.Emit(OpCodes.Castclass, tAtt);
@@ -203,15 +188,13 @@ namespace Cuckoo.Fody
                         }
 
                         if(att.HasProperties) {
-                            foreach(var propCtorArg in att.Properties) {
-                                var prop = tAtt.Resolve().Properties
-                                                .Where(p => p.SetMethod != null)
-                                                .First(p => p.Name == propCtorArg.Name);
+                            foreach(var propArg in att.Properties) {
+                                var mSet = tAtt.ReferencePropertySetter(propArg.Name);
 
                                 i.Emit(OpCodes.Ldloc, vCuckoo);
                                 i.Emit(OpCodes.Castclass, tAtt);
-                                i.EmitConstant(propCtorArg.Argument.Type, propCtorArg.Argument.Value);
-                                i.Emit(OpCodes.Call, prop.SetMethod);
+                                i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
+                                i.Emit(OpCodes.Call, mSet);
                             }
                         }
 
@@ -291,11 +274,8 @@ namespace Cuckoo.Fody
 
                     i.Emit(OpCodes.Ldsfld, fRoostRef);
 
-                    if(m.HasThis) {
+                    if(!m.IsStatic) {
                         i.Emit(OpCodes.Ldarg_0);
-                    }
-                    else {
-                        i.Emit(OpCodes.Ldnull);
                     }
 
                     foreach(var param in m.Parameters) {

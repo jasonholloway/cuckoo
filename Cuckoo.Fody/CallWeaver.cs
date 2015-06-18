@@ -118,7 +118,10 @@ namespace Cuckoo.Fody
 
 
             _fRoost = _tCall.AddField<Roost>("_roost");
-            _fInstance = _tCall.AddField<object>("_instance");
+
+            if(!_ctx.mInner.IsStatic) {
+                _fInstance = _tCall.AddField(_tContRef, "_instance");
+            }
             
             if(mOuterRef.ReturnsValue()) {
                 _fReturn = _tCall.AddField(_types.Map(mOuterRef.ReturnType), "_return");
@@ -157,8 +160,10 @@ namespace Cuckoo.Fody
             _tCallRef = _tCall.HasGenericParameters
                         ? _tCall.MakeGenericInstanceType(_tCall.GenericParameters.ToArray())
                         : (TypeReference)_tCall;
-            
-            _fInstanceRef = _tCallRef.ReferenceField(_fInstance.Name);
+
+            if(_fInstance != null) {
+                _fInstanceRef = _tCallRef.ReferenceField(_fInstance.Name);
+            }
 
             _fRoostRef = _tCallRef.ReferenceField(_fRoost.Name);
 
@@ -178,8 +183,14 @@ namespace Cuckoo.Fody
                         "get_Instance",
                         R.ICall_Type,
                         (i, m) => {
-                            i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldfld, _fInstanceRef);
+                            if(_ctx.mInner.IsStatic) {
+                                i.Emit(OpCodes.Ldnull);
+                            }
+                            else {
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldfld, _fInstanceRef);
+                            }
+
                             i.Emit(OpCodes.Ret);
                         });
 
@@ -282,19 +293,17 @@ namespace Cuckoo.Fody
 
                             i.Emit(OpCodes.Ret);
                         });
-
-
-
-
-
-
-
-
+            
+            
             _mCtor = _tCall.AddCtor(
-                        new[] {
-                            new ParameterDefinition(R.Roost_Type),
-                            new ParameterDefinition(mod.TypeSystem.Object)
-                            }
+                        (_ctx.mInner.IsStatic
+                            ? new[] { 
+                                new ParameterDefinition(R.Roost_Type) 
+                                }
+                            : new[] {
+                                new ParameterDefinition(R.Roost_Type),
+                                new ParameterDefinition(_tContRef)
+                                })
                             .Concat(_args.Select(a => a.CtorParam)),
                         (i, m) => {
                             i.Emit(OpCodes.Ldarg_0);
@@ -304,9 +313,11 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ldarg_1);
                             i.Emit(OpCodes.Stfld, _fRoostRef);
 
-                            i.Emit(OpCodes.Ldarg_0);
-                            i.Emit(OpCodes.Ldarg_2);
-                            i.Emit(OpCodes.Stfld, _fInstanceRef);
+                            if(!_ctx.mInner.IsStatic) {
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldarg_2);
+                                i.Emit(OpCodes.Stfld, _fInstanceRef);
+                            }
 
                             foreach(var arg in _args) {
                                 i.Emit(OpCodes.Ldarg_0);
@@ -500,8 +511,10 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Ldarg_0);
             i.Emit(OpCodes.Ldfld, _fRoostRef);
 
-            i.Emit(OpCodes.Ldarg_0);
-            i.Emit(OpCodes.Ldfld, _fInstanceRef);
+            if(!_ctx.mInner.IsStatic) {
+                i.Emit(OpCodes.Ldarg_0);
+                i.Emit(OpCodes.Ldfld, _fInstanceRef);
+            }
 
             foreach(var arg in _args) {
                 i.Emit(OpCodes.Ldarg_0);
@@ -553,10 +566,14 @@ namespace Cuckoo.Fody
                                                                             .Skip(_rtContGenArgs.Length)
                                                                             .ToArray());
             }
-             
-            i.Emit(OpCodes.Ldarg_0);
-            i.Emit(OpCodes.Ldfld, _fInstanceRef);
-            i.Emit(OpCodes.Castclass, _tContRef);
+        
+            //don't do this if no instance...
+            //in fact, should get shot of instance field completely if static
+
+            if(!_mInner.IsStatic) {
+                i.Emit(OpCodes.Ldarg_0);
+                i.Emit(OpCodes.Ldfld, _fInstanceRef);
+            }
 
             foreach(var arg in _args) {
                 i.Emit(OpCodes.Ldarg_0);
