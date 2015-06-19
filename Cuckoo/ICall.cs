@@ -5,11 +5,12 @@ namespace Cuckoo
     public interface ICall
     {
         object Instance { get; }
-        MethodInfo Method { get; }
+        MethodBase Method { get; }
         ICallArg[] Args { get; }
         object ReturnValue { get; set; }
 
-        void CallInner();
+        void CallInner(); //Should check phase of call!
+        //void Proceed();   //Should check phase of call!
     }
 
 }

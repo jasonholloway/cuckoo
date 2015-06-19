@@ -13,7 +13,7 @@ namespace Cuckoo.Impl
             get { throw new NotImplementedException(); }
         }
 
-        public MethodInfo Method {
+        public MethodBase Method {
             get { throw new NotImplementedException(); }
         }
 
@@ -31,6 +31,11 @@ namespace Cuckoo.Impl
         }
 
         public void CallInner() {
+            throw new NotImplementedException();
+        }
+
+
+        public void Proceed() {
             throw new NotImplementedException();
         }
     }

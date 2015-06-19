@@ -17,7 +17,6 @@ namespace Cuckoo.TestAssembly
         }
 
         public ClassWithStaticCtor() {
-
         }
 
         [BareCuckoo]

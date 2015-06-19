@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallPhases.cs" />
     <Compile Include="Impl\CallArg.cs" />
     <Compile Include="ICallArg.cs" />
     <Compile Include="Impl\CallBase.cs" />

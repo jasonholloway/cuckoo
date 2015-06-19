@@ -78,7 +78,7 @@ namespace Cuckoo.Test
             string result = Tester.WithClass<Basic>()
                                     .Run(b => b.MethodWithTwoCuckoos("blah", 123));
             
-            Assert.IsTrue(result == "Wow!");
+            Assert.IsTrue(result == "BLAH");
         }
 
         [TestMethod]
@@ -88,7 +88,13 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckoosOnCtor() {
-            var result = Tester.Static().Run(() => new Basic.CtorClass(12).ReceivedValue );
+            var result = Tester.Static()
+                                    .Run(() => new Basic.CtorClass(12, 12).BaseValue );
+
+            Assert.IsTrue(result == 13);
+
+            result = Tester.Static()
+                                .Run(() => new Basic.CtorClass(12, 12).DerivedValue);
 
             Assert.IsTrue(result == 13);
         }

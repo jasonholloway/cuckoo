@@ -20,7 +20,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
 
         public override void OnRoost(IRoost roost) {
-            _returnsInt = roost.Method.ReturnType == typeof(int);
+            _returnsInt = ((MethodInfo)roost.Method).ReturnType == typeof(int);
         }
 
         public override void OnCall(ICall call) {

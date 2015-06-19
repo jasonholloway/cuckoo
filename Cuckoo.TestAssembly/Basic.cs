@@ -75,14 +75,27 @@ namespace Cuckoo.TestAssembly
 
 
 
-        public class CtorClass
+
+
+        public abstract class CtorClassBase
         {
-            public int ReceivedValue { get; private set; }
+            public int BaseValue { get; private set; }
+
+            public CtorClassBase(int baseValue) {
+                BaseValue = baseValue;
+            }
+        }
+
+        public class CtorClass : CtorClassBase
+        {
+            public int DerivedValue { get; private set; }
 
             [BareCuckoo]
             [ArgChangingCuckoo]
-            public CtorClass(int a) {
-                ReceivedValue = a;
+            public CtorClass(int baseValue, int derivedValue) 
+                : base(baseValue * 100) 
+            {
+                DerivedValue = derivedValue;
             }
         }
 

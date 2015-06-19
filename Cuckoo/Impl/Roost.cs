@@ -9,11 +9,11 @@ namespace Cuckoo.Impl
 {
     public class Roost : IRoost
     {
-        public MethodInfo Method { get; private set; }
+        public MethodBase Method { get; private set; }
         public ParameterInfo[] Parameters { get; private set; }
         public ICuckoo[] Cuckoos { get; private set; }
 
-        public Roost(MethodInfo method, ICuckoo[] cuckoos) {
+        public Roost(MethodBase method, ICuckoo[] cuckoos) {
             this.Method = method;
             this.Parameters = method.GetParameters();
             this.Cuckoos = cuckoos;

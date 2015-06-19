@@ -11,6 +11,10 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class ArgChangingCuckooAttribute : CuckooAttribute
     {
+
+        //OnBeforeInvoke
+
+        
         public override void OnCall(ICall call) {
             foreach(var stringArg in call.Args.Where(a => a.Type == typeof(string))) {
                 stringArg.Value = "Growl";

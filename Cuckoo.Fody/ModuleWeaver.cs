@@ -22,14 +22,23 @@ namespace Cuckoo.Fody
             var weaveSpecs = GetAllTypes(this.ModuleDefinition)
                                 .SelectMany(t => t.Methods)
                                     .Where(m => m.HasCustomAttributes && !m.IsAbstract)
-                                    .Select(m => new WeaveSpec() {
-                                                            Method = m,
-                                                            CuckooAttributes = m.CustomAttributes
-                                                                                .Where(a => IsCuckooAttributeType(a.AttributeType))
-                                                                                .Reverse()
-                                                                                .ToArray()
-                                                        })
-                                                        .Where(spec => spec.CuckooAttributes.Any());
+                                    .Select(m => new {
+                                                    Method = m,
+                                                    CuckooAtts = m.CustomAttributes
+                                                                    .Where(a => IsCuckooAttributeType(a.AttributeType))
+                                                    })
+                                        .Where(t => t.CuckooAtts.Any())
+                                        .Select(t => { 
+                                            int iCuckoo = 0;
+                                            return new WeaveSpec() {
+                                                            Method = t.Method,
+                                                            Cuckoos = t.CuckooAtts
+                                                                            .Select(a => new CuckooSpec() {
+                                                                                Attribute = a,
+                                                                                Index = iCuckoo++
+                                                                            }).ToArray()
+                                                            };
+                                            });
 
             var weaves = weaveSpecs
                             .Select(spec => new Weaver(spec, LogInfo))

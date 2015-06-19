@@ -33,9 +33,10 @@ namespace Cuckoo.Fody
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetUsurpers;
         public readonly MethodReference ICuckoo_mOnRoost;
+        public readonly MethodReference ICuckoo_mOnBeforeCall;
         public readonly MethodReference ICuckoo_mOnCall;
         public readonly MethodReference CuckooedAtt_mCtor;
-        public readonly MethodReference MethodInfo_mGetMethodFromHandle;
+        public readonly MethodReference MethodBase_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
 
         public RefMap(ModuleDefinition module, MethodDefinition method) 
@@ -52,6 +53,9 @@ namespace Cuckoo.Fody
 
             ICuckoo_mOnRoost = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("OnRoost"));
+
+            ICuckoo_mOnBeforeCall = module.ImportReference(
+                                        typeof(ICuckoo).GetMethod("OnBeforeCall"));
 
             ICuckoo_mOnCall = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("OnCall"));
@@ -83,7 +87,7 @@ namespace Cuckoo.Fody
             CuckooedAtt_mCtor = module.ImportReference(
                                         typeof(CuckooedAttribute).GetConstructor(new[] { typeof(string) }));
 
-            MethodInfo_mGetMethodFromHandle =
+            MethodBase_mGetMethodFromHandle =
                     module.ImportReference(typeof(Refl.MethodBase)
                                                 .GetMethod(
                                                     "GetMethodFromHandle",

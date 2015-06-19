@@ -6,6 +6,13 @@ namespace Cuckoo.Attributes
     public abstract class CuckooAttribute : Attribute, ICuckoo
     {
         public virtual void OnRoost(IRoost roost) { }
-        public abstract void OnCall(ICall call);
+
+        public virtual void OnBeforeCall(ICall call) {
+            //call.Proceed();
+        }
+
+        public virtual void OnCall(ICall call) {
+            call.CallInner();
+        }
     }
 }

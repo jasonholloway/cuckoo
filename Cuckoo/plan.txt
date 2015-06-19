@@ -1,9 +1,28 @@
 ﻿
-CONSTRUCTORS!:
+CTORS:
+> Are special cases, in that delegation to base ctor must occur in outer!
 
-> Currently won't load type - seems to be due to TransplantOuterToInner - is the copied inner somehow still registered as ctor?
-> It's not right that the inner calls the base ctor - this should be retained by the outer and
-	called BEFORE any usurpation!!!!!!!
+Need OnBeforeCall to provide opportunity to change args before ctor interior stuff.
+
+
+1 - Init cascade: constructs hierarchy of calls, each with its target in place
+2 - OnBeforeCall cascade
+3 - Ctor init at base
+4 - OnCall cascade
+5 - Return
+...
+
+OnCall and OnBeforeCall will become virtual rather than abstract
+
+OnBeforeCall should cascade down through cuckoos...
+
+
+
+
+
+
+
+
 
 
 
@@ -11,6 +30,8 @@ CONSTRUCTORS!:
 ********************************************************************
 TO DO:
 
+> Change to single array of CallArgs, passed throughout stack - no lazy-loading, unfortunately
+	- would be best if CallArgs were structs, no - they store very little info (value + ref to ParamInfo)
 > Cuckoos on Constructors
 > interface + abstract methods
 > structs rather than classes
@@ -20,6 +41,7 @@ TO DO:
 > Test Cuckoos declared in other assemblies
 > Beware array types: in both ctor args and gen params!
 > Return value to police its type
+> CallInner and Proceed to check call phase
 
 
 

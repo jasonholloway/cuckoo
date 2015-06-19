@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Cuckoo.TestAssembly
 {
@@ -17,6 +18,19 @@ namespace Cuckoo.TestAssembly
             o.SimpleMethod(123);
 
             //o.BoxOrNotBox<string>("GAH!");
+
+
+
+
+            MethodBase methodBase = null;
+            MethodInfo methodInfo = (MethodInfo)methodBase;
+
+
+
+            ConstructorInfo ctorInfo;
+
+
+
         }
     }
 

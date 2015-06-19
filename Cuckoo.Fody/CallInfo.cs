@@ -32,8 +32,9 @@ namespace Cuckoo.Fody
     {
         public TypeReference Type { get; private set; }
         public MethodReference CtorMethod { get; private set; }
-        public MethodReference AfterUsurpMethod { get; private set; }
         public FieldReference ReturnField { get; private set; }
+        public MethodReference PrepareMethod { get; private set; }
+        public MethodReference InvokeMethod { get; private set; }
         public CallArgInfo[] Args { get; private set; }
         public bool RequiresInstanciation { get; private set; }
         public bool ReturnsValue { get; private set; }
@@ -41,13 +42,15 @@ namespace Cuckoo.Fody
         public CallInfo(
             TypeReference type, 
             MethodReference ctorMethod, 
-            MethodReference postUsurpMethod,
+            MethodReference prepareMethod,
+            MethodReference invokeMethod,
             FieldReference returnField,
             IEnumerable<CallArgInfo> args) 
         {
             Type = type;
             CtorMethod = ctorMethod;
-            AfterUsurpMethod = postUsurpMethod;
+            PrepareMethod = prepareMethod;
+            InvokeMethod = invokeMethod;
             ReturnField = returnField;
             Args = args.ToArray();
             RequiresInstanciation = Type.HasGenericParameters;
@@ -57,17 +60,19 @@ namespace Cuckoo.Fody
         public CallInfo Instanciate(IEnumerable<TypeReference> genArgs) {            
             var tCallRef = Type.MakeGenericInstanceType(genArgs.ToArray());
             var mCtorRef = tCallRef.ReferenceMethod(m => m.IsConstructor);
+            var mPrepareRef = tCallRef.ReferenceMethod(PrepareMethod.Name);
 
             return new CallInfo(tCallRef,
                                         mCtorRef,
-                                        tCallRef.ReferenceMethod(AfterUsurpMethod.Name),
+                                        mPrepareRef,
+                                        tCallRef.ReferenceMethod(InvokeMethod.Name),
                                         ReturnsValue 
                                             ? tCallRef.ReferenceField(ReturnField.Name) 
                                             : null,
                                         Args.Select(a => new CallArgInfo(
                                                                 tCallRef.ReferenceField(a.Field.Name),
                                                                 a.MethodParam,
-                                                                mCtorRef.Parameters[a.CallParam.Index]
+                                                                mPrepareRef.Parameters[a.CallParam.Index]
                                                                 ))
                                         );
         }

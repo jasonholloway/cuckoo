@@ -10,16 +10,15 @@ namespace Cuckoo.Fody.Cecil
 {
     public static class MethodDefinitionExtensions
     {
-
-        public static MethodDefinition CopyToNewSibling(this MethodDefinition @this, string siblingName) 
+        public static MethodDefinition CloneTo(this MethodDefinition @this, TypeDefinition declaringType, Action<MethodDefinition> fnModify) 
         {
             var mNew = new MethodDefinition(
-                                siblingName,
+                                @this.Name,
                                 @this.Attributes,
                                 @this.ReturnType
                                 );
 
-            @this.DeclaringType.Methods.Add(mNew);
+            declaringType.Methods.Add(mNew);
 
             foreach(var param in @this.Parameters) {
                 mNew.Parameters.Add(param); //params probably need to be cloned, and updated if generic
@@ -56,6 +55,8 @@ namespace Cuckoo.Fody.Cecil
             foreach(var eh in @this.Body.ExceptionHandlers) {
                 mNew.Body.ExceptionHandlers.Add(eh);
             }
+
+            fnModify(mNew);
 
             return mNew;
         }

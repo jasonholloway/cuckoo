@@ -17,7 +17,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
 
 
-        public override void OnCall(ICall call) {
+        public override void OnInvoke(ICall call) {
             call.CallInner();
         }
     }
