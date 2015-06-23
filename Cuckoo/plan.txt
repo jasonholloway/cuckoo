@@ -1,4 +1,54 @@
 ﻿
+CALL REWRITE:
+
+As Ctors require two phases of usurpation, it suddenly becomes more efficient to create CallArgs
+up front, and to use these solely in place of private fields in each special Call.
+
+Cuckoos can then edit arg values in place, without a secret updating of the interior fields after
+every stage of potential user interaction. The final inner method will have its arg stack populated
+directly from these CallArgs.
+
+And why not a similar set-up for the return value? 
+
+A single light-weight Call instance will house the CallArg array and return value, and will be passed
+from Cuckoo to Cuckoo in its various stages, finally offering up its modified contents to the final
+inner method invocation.
+
+Calls will therefore not be dispatchers; the Roost will be subclassed more extensively to feed the 
+Cuckoos it contains.
+
+Each call will be of Call<TReturn>, removing the need for IL subclassing of the same.
+
+
+Calls will store a callback reference to the dispatcher, and on CallInner will delegate to this
+dispatcher. The dispatcher will internally keep tabs on which phase of the overall invocation it is at,
+and will switch to the correct inner invocation appropriately. This will however mess up the stack...
+
+So this will separate the call and dispatcher, both of which must be stateful, and therefore both 
+must be created anew for each overall invocation. The roost is static.
+
+Instead of this ping-pong, it would make more sense for each call to be its own dispatcher, as this
+would minimise object allocation, but at the cost of conflation in the design. Calls would remain
+hard-coded in IL (in part at least, as specialised subclasses).
+
+The outer method creates the CallDispatcher (of ICall) and calls Dispatch().
+
+
+NEW ROOSTS:
+
+Roosts will build methodinfo, create a call object, pass this call to its various cuckoos,
+and then invoke the inner method with the contents of the call. 
+
+
+
+
+
+
+
+
+
+
+
 CTORS:
 > Are special cases, in that delegation to base ctor must occur in outer!
 
@@ -42,6 +92,7 @@ TO DO:
 > Beware array types: in both ctor args and gen params!
 > Return value to police its type
 > CallInner and Proceed to check call phase
+> Nullable types in generic args
 
 
 

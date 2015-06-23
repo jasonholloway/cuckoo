@@ -9,164 +9,8 @@ namespace Cuckoo.Fody
 {
     using Cuckoo.Impl;
     using Refl = System.Reflection;
-
-    internal partial class CallWeaver
-    {
-        WeaveContext _ctx;
-
-        public CallWeaver(WeaveContext ctx) {
-            _ctx = ctx;
-        }
-
-        public CallInfo Weave(MethodReference mOuterRef) 
-        {
-            var R = _ctx.RefMap;
-            var mod = _ctx.Module;
-            var tCont = _ctx.tCont;
-            var tContRef = _ctx.tContRef;
-            string methodName = _ctx.mOuter.Name;
-
-            bool isStaticMethod = mOuterRef.Resolve().IsStatic;
-            bool returnsValue = mOuterRef.ReturnsValue();
-
-
-            var tInstance = isStaticMethod
-                                ? null
-                                : tContRef;
-
-            var tReturn = returnsValue
-                                ? mOuterRef.ReturnType
-                                : null;
-
-            var tCallBaseRef = R.CallBase_Type.MakeGenericInstanceType(
-                                                tInstance ?? mod.TypeSystem.Object, 
-                                                tReturn ?? mod.TypeSystem.Object
-                                                );
-
-            
-            string callClassName = _ctx.NameSource.GetElementName("CALL", methodName);
-
-            var tCall = new TypeDefinition(
-                                tCont.Namespace,
-                                callClassName,
-                                TypeAttributes.Class
-                                    | TypeAttributes.NestedPrivate
-                                    | TypeAttributes.BeforeFieldInit
-                                    | TypeAttributes.AutoClass
-                                    | TypeAttributes.AnsiClass,
-                                tCallBaseRef
-                                );
-
-            tCont.NestedTypes.Add(tCall);
-
-            
-
-            var rtContGenArgs = tContRef is GenericInstanceType
-                                    ? ((GenericInstanceType)tContRef).GenericArguments.ToArray()
-                                    : new TypeReference[0];
-
-            var rtMethodGenArgs = mOuterRef is GenericInstanceMethod
-                                    ? ((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray()
-                                    : new TypeReference[0];
-
-
-            var types = new ScopeTypeMapper(tCall);
-
-            foreach(var tContGenArg in rtContGenArgs) {
-                types.Map(tContGenArg);
-            }
-
-            foreach(var tMethodGenArg in rtMethodGenArgs) {
-                types.Map(tMethodGenArg);
-            }
-
-
-            var fInstance = isStaticMethod
-                                ? null
-                                : tCallBaseRef.ReferenceField(R.CallBase_fInstance.Name);
-
-            var fReturn = returnsValue
-                                ? tCallBaseRef.ReferenceField(R.CallBase_fReturn.Name)
-                                : null;
-
-
-            int iArg = 0;
-
-            var args = mOuterRef.Parameters
-                                    .Select(p => {
-                                        var argType = types.Map(p.ParameterType).GetElementType();
-
-                                        var tCallArg = R.CallArg_Type.MakeGenericInstanceType(argType);
-
-                                        return new Arg() {
-                                            Index = iArg++,
-                                            MethodParam = p,
-                                            PrepareParam = new ParameterDefinition(argType),
-                                            IsByRef = p.ParameterType.IsByReference,
-                                            Field = _tCall.AddField(argType,
-                                                                        "_arg_" + p.Name,
-                                                                        FieldAttributes.Public),
-                                            CallArg_Type = tCallArg,
-                                            CallArg_mCtor = tCallArg.ReferenceMethod(m => m.IsConstructor),
-                                            CallArg_mHasChanged = tCallArg.ReferenceMethod(R.CallArg_mGetHasChanged.Name),
-                                            CallArg_mGetTypedValue = tCallArg.ReferenceMethod(R.CallArg_mGetTypedValue.Name),
-                                            CallArg_mSetTypedValue = tCallArg.ReferenceMethod(R.CallArg_mSetTypedValue.Name)
-                                        };
-                                    })
-                                    .ToArray();
-
-            _byrefArgs = _args.Where(a => a.IsByRef)
-                                .ToArray();
-
-
-            _tCallRef = _tCall.HasGenericParameters
-                        ? _tCall.MakeGenericInstanceType(_tCall.GenericParameters.ToArray())
-                        : (TypeReference)_tCall;
-
-            if(_fInstance != null) {
-                _fInstanceRef = _tCallRef.ReferenceField(_fInstance.Name);
-            }
-
-            _fRoostRef = _tCallRef.ReferenceField(_fRoost.Name);
-
-            if(_fReturn != null) {
-                _fReturnRef = _tCallRef.ReferenceField(_fReturn.Name);
-            }
-
-            foreach(var arg in _args) {
-                arg.FieldRef = _tCallRef.ReferenceField(arg.Field.Name);
-            }
-
-
-
-
-
-
-            return new CallInfo(
-                            tCall,
-                            mCtor,
-                            fReturn,
-                            args
-                            );
-        }
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    abstract class _CallWeaver
+    
+    abstract class CallWeaver
     {
         protected WeaveContext _ctx;
         protected ScopeTypeMapper _types;
@@ -216,8 +60,9 @@ namespace Cuckoo.Fody
 
 
 
-        public _CallWeaver(WeaveContext ctx) {
+        public CallWeaver(WeaveContext ctx, CuckooSpec cuckoo) {
             _ctx = ctx;
+            _cuckoo = cuckoo;
         }
 
 
@@ -280,7 +125,7 @@ namespace Cuckoo.Fody
 
 
 
-            _fRoost = _tCall.AddField<Roost>("_roost");
+            _fRoost = _tCall.AddField<RoostBase>("_roost");
 
             if(!_ctx.mInner.IsStatic) {
                 _fInstance = _tCall.AddField(_tContRef, "_instance");
@@ -685,7 +530,7 @@ namespace Cuckoo.Fody
 
 
 
-    class MediateCallWeaver : _CallWeaver
+    class MediateCallWeaver : CallWeaver
     {
         CallInfo _nextCall;
         FieldReference _fNextCallRef;
@@ -732,7 +577,7 @@ namespace Cuckoo.Fody
                 i.Emit(OpCodes.Ldfld, arg.FieldRef);
             }
 
-            i.Emit(OpCodes.Call, _nextCall.PreDispatchMethod);
+            i.Emit(OpCodes.Call, _nextCall.PrepareMethod);
 
             //copy events back here?
             //....
@@ -749,7 +594,7 @@ namespace Cuckoo.Fody
             i.Emit(OpCodes.Stloc_S, vCall);
 
             i.Emit(OpCodes.Ldloc_S, vCall);
-            i.Emit(OpCodes.Call, _nextCall.DispatchMethod);
+            i.Emit(OpCodes.Call, _nextCall.InvokeMethod);
 
             foreach(var nextCallArg in _nextCall.Args.Where(a => a.IsByRef)) {
                 i.Emit(OpCodes.Ldarg_0);
@@ -769,7 +614,7 @@ namespace Cuckoo.Fody
     }
 
 
-    class FinalCallWeaver : _CallWeaver
+    class FinalCallWeaver : CallWeaver
     {
         MethodDefinition _mInner;
 

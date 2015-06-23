@@ -41,7 +41,7 @@ namespace Cuckoo.Fody
                                             });
 
             var weaves = weaveSpecs
-                            .Select(spec => new Weaver(spec, LogInfo))
+                            .Select(spec => new MethodWeaver(spec, LogInfo))
                             .ToArray(); //needed 
 
             foreach(var weave in weaves) {

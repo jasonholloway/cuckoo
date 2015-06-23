@@ -8,29 +8,35 @@ using System.Threading.Tasks;
 namespace Cuckoo.Impl
 {
 
-    public class CallArg<TVal> : ICallArg
+    public class CallArg<TVal> : ICallArg<TVal>
     {
-        TVal _value;
-        bool _hasChanged;
+        public TVal _value;
+        private int _index; //used to get parameter info from roost
 
-        public ParameterInfo Parameter { get; private set; }
-        public string Name { get; private set; }
-        public Type Type { get; private set; }
-
-        public CallArg(ParameterInfo paramInfo, TVal value) {
+        public CallArg(int index, TVal value) {
             _value = value;
-
-            this.Parameter = paramInfo;
-            this.Name = paramInfo.Name;
-            this.Type = paramInfo.ParameterType;
+            Parameter = param;
         }
 
-        public TVal TypedValue {
-            get { return _value; }
-            set { _value = value; }
+
+        public Parameter Parameter { get; private set; }
+
+
+        public string Name {
+            get { return Parameter.Name; }
         }
 
-        public object Value {
+        public Type Type {
+            get { return Parameter.Type; }
+        }
+
+        public bool IsByRef {
+            get { return Parameter.IsByRef; }
+        }
+
+
+
+        object ICallArg.Value {
             get {
                 return _value;
             }
@@ -42,15 +48,17 @@ namespace Cuckoo.Impl
                     throw new InvalidCastException(string.Format("CallArg of {0} can't be assigned value of {1}", typeof(TVal).Name, value.GetType().Name));
                 }
 
-                if(!_value.Equals(value)) {
-                    _value = (TVal)value;
-                    _hasChanged = true;
-                }
+                _value = (TVal)value;
             }
         }
 
-        public bool HasChanged {
-            get { return _hasChanged; }
+        TVal ICallArg<TVal>.TypedValue {
+            get {
+                return _value;
+            }
+            set {
+                _value = value;
+            }
         }
 
     }
