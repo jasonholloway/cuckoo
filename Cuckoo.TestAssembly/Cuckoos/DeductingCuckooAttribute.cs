@@ -22,7 +22,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _returnsInt = ((MethodInfo)roost.Method).ReturnType == typeof(int);
         }
 
-        public override void OnInvoke(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             if(_returnsInt) {

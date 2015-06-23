@@ -11,7 +11,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class OutArgChangingCuckooAttribute : CuckooAttribute
     {
-        public override void OnInvokeke(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             var intOutArgs = call.Args.Where(a => a.Parameter.IsOut 

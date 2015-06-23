@@ -17,7 +17,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _s = s;
         }
 
-        public override void OnInvokeke(ICall call) {
+        public override void OnCall(ICall call) {
             call.CallInner();
 
             foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(string))) {
