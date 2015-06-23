@@ -297,7 +297,10 @@ namespace Cuckoo.Fody
 
             var args = ArgSpec.CreateAll(ctx, mOuterRef.Parameters);
 
-            var call = WeaveCall(ctx, mInner, mOuterRef);
+
+            var callWeaver = new CallWeaver(ctx);
+
+            var call = callWeaver.Weave(mOuterRef, args);
 
             if(call.RequiresInstanciation) {
                 call = call.Instanciate(contGenArgs.Concat(methodGenArgs));
@@ -313,54 +316,42 @@ namespace Cuckoo.Fody
             mOuter.Compose(
                 (i, m) => {
                     var vCall = m.Body.AddVariable(call.Type);
-
-                    //mOuter to create subclassed Call (with correct generic args)
-                    //by passing appropriate args to ctor
-                    //Then call PreDispatch
-                    //Then call Dispatch
-                    //Then copy back byref arg values
-                    //Then load return value onto stack
-                    //...
-
+                    
                     i.Emit(OpCodes.Ldsfld, fRoostRef);
 
                     if(!m.IsStatic) {
                         i.Emit(OpCodes.Ldarg_0);
                     }
+                    
+                    i.Emit(OpCodes.Ldc_I4, args.Length);
+                    i.Emit(OpCodes.Newarr, R.ICallArg_Type);
 
-                    //create callargs here, one by one, and store to an array - TO DO
                     foreach(var arg in args) {
+                        i.Emit(OpCodes.Dup);
+                        i.Emit(OpCodes.Ldc_I4, arg.Index);
+
                         i.Emit(OpCodes.Ldnull); //LOAD PARAMETER HERE!!!!
 
                         if(arg.IsByRef) {
-                            i.Emit(OpCodes.Ldarg_S, param);
-                            i.Emit(OpCodes.Ldobj, param.ParameterType.GetElementType());
+                            i.Emit(OpCodes.Ldarg_S, arg.Param);
+                            i.Emit(OpCodes.Ldobj, arg.Type);
                         }
                         else {
-                            i.Emit(OpCodes.Ldarg_S, param);
+                            i.Emit(OpCodes.Ldarg_S, arg.Param);
                         }
 
                         i.Emit(OpCodes.Call, arg.CallArg_mCtor);
-                    }
 
+                        i.Emit(OpCodes.Stelem_Ref);
+                    }
 
                     i.Emit(OpCodes.Newobj, call.CtorMethod);
                     i.Emit(OpCodes.Stloc_S, vCall);
 
-                    
+
                     i.Emit(OpCodes.Ldloc_S, vCall);
-
-                    foreach(var param in m.Parameters) {
-                        if(param.ParameterType.IsByReference) {
-                            i.Emit(OpCodes.Ldarg_S, param);
-                            i.Emit(OpCodes.Ldobj, param.ParameterType.GetElementType());
-                        }
-                        else {
-                            i.Emit(OpCodes.Ldarg_S, param);
-                        }
-                    }
-
                     i.Emit(OpCodes.Call, call.PreDispatchMethod);
+
 
                     if(initialCtorInstructions != null) {
                         foreach(var inst in initialCtorInstructions) {
@@ -368,38 +359,19 @@ namespace Cuckoo.Fody
                         }
                     }
 
+
                     i.Emit(OpCodes.Ldloc_S, vCall);
                     i.Emit(OpCodes.Call, call.DispatchMethod);
 
 
-
-
-
-                    //i.Emit(OpCodes.Ldsfld, fRoostRef);
-                    //i.Emit(OpCodes.Call, R.Roost_mGetUsurpers);
-                    //i.Emit(OpCodes.Ldc_I4_0);
-                    //i.Emit(OpCodes.Ldelem_Ref);
-                    //i.Emit(OpCodes.Stloc_S, vCuckoo);
-
-                    //Init call with 
-
-
-                    
-                    //interpose ctor init stuff here
-                    //...
-
-                    //i.Emit(OpCodes.Ldloc_S, vCuckoo);
-                    //i.Emit(OpCodes.Ldloc_S, vCall);
-                    //i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnCall);
-
-                    //i.Emit(OpCodes.Ldloc, vCall);
-                    //i.Emit(OpCodes.Call, call.AfterUsurpMethod);
-
-                    foreach(var arg in call.Args.Where(a => a.IsByRef)) {
-                        i.Emit(OpCodes.Ldarg_S, arg.MethodParam);
+                    foreach(var callArg in call.Args.Where(a => a.IsByRef)) {
+                        i.Emit(OpCodes.Ldarg_S, callArg.MethodArg.Param);
                         i.Emit(OpCodes.Ldloc_S, vCall);
-                        i.Emit(OpCodes.Ldfld, arg.Field);
-                        i.Emit(OpCodes.Stobj, arg.Field.FieldType);
+                        i.Emit(OpCodes.Ldfld, call.ArgsField);
+                        i.Emit(OpCodes.Ldc_I4, callArg.Index);
+                        i.Emit(OpCodes.Ldelem_Ref);
+                        i.Emit(OpCodes.Ldfld, callArg.CallArg_fValue);
+                        i.Emit(OpCodes.Stobj, callArg.Type);
                     }
 
                     if(call.ReturnsValue) {
@@ -415,15 +387,6 @@ namespace Cuckoo.Fody
 
 
 
-
-        CallInfo WeaveCall(
-                    WeaveContext ctx,
-                    MethodDefinition mInner,
-                    MethodReference mOuterRef ) 
-        {
-            var callWeaver = new _CallWeaver(ctx);
-            return callWeaver.Weave(mOuterRef);
-        }
 
 
         /*

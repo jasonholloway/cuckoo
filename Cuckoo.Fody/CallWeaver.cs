@@ -18,7 +18,7 @@ namespace Cuckoo.Fody
             _ctx = ctx;
         }
 
-        public CallInfo Weave(MethodReference mOuterRef) 
+        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs) 
         {
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
@@ -30,19 +30,6 @@ namespace Cuckoo.Fody
             bool returnsValue = mOuterRef.ReturnsValue();
 
 
-            var tInstance = isStaticMethod
-                                ? null
-                                : tContRef;
-
-            var tReturn = returnsValue
-                                ? mOuterRef.ReturnType
-                                : null;
-
-            var tCallBaseRef = R.CallBase_Type.MakeGenericInstanceType(
-                                                tInstance ?? mod.TypeSystem.Object, 
-                                                tReturn ?? mod.TypeSystem.Object
-                                                );
-
             
             string callClassName = _ctx.NameSource.GetElementName("CALL", methodName);
 
@@ -53,13 +40,16 @@ namespace Cuckoo.Fody
                                     | TypeAttributes.NestedPrivate
                                     | TypeAttributes.BeforeFieldInit
                                     | TypeAttributes.AutoClass
-                                    | TypeAttributes.AnsiClass,
-                                tCallBaseRef
+                                    | TypeAttributes.AnsiClass
                                 );
 
             tCont.NestedTypes.Add(tCall);
 
-            
+            var types = new ScopeTypeMapper(tCall);
+
+
+
+
 
             var rtContGenArgs = tContRef is GenericInstanceType
                                     ? ((GenericInstanceType)tContRef).GenericArguments.ToArray()
@@ -70,16 +60,47 @@ namespace Cuckoo.Fody
                                     : new TypeReference[0];
 
 
-            var types = new ScopeTypeMapper(tCall);
 
             foreach(var tContGenArg in rtContGenArgs) {
                 types.Map(tContGenArg);
             }
 
+
+            var tInstance = isStaticMethod
+                                ? null
+                                : types.Map(tContRef);
+
+            var tReturn = returnsValue
+                                ? types.Map(mOuterRef.ReturnType)
+                                : null;
+
+            var tCallBaseRef = R.CallBase_Type.MakeGenericInstanceType(
+                                                tInstance ?? mod.TypeSystem.Object,
+                                                tReturn ?? mod.TypeSystem.Object
+                                                );
+
+            tCall.BaseType = tCallBaseRef;
+
+
             foreach(var tMethodGenArg in rtMethodGenArgs) {
                 types.Map(tMethodGenArg);
             }
 
+
+
+
+
+
+            var args = ArgSpec.CreateAll(_ctx, types, methodArgs);
+
+            var byrefArgs = args.Where(a => a.IsByRef)
+                                    .ToArray();
+
+
+            
+            var tCallRef = tCall.HasGenericParameters
+                            ? tCall.MakeGenericInstanceType(tCall.GenericParameters.ToArray())
+                            : (TypeReference)tCall;
 
             var fInstance = isStaticMethod
                                 ? null
@@ -89,63 +110,52 @@ namespace Cuckoo.Fody
                                 ? tCallBaseRef.ReferenceField(R.CallBase_fReturn.Name)
                                 : null;
 
-
-            int iArg = 0;
-
-            var args = mOuterRef.Parameters
-                                    .Select(p => {
-                                        var argType = types.Map(p.ParameterType).GetElementType();
-
-                                        var tCallArg = R.CallArg_Type.MakeGenericInstanceType(argType);
-
-                                        return new Arg() {
-                                            Index = iArg++,
-                                            MethodParam = p,
-                                            PrepareParam = new ParameterDefinition(argType),
-                                            IsByRef = p.ParameterType.IsByReference,
-                                            Field = _tCall.AddField(argType,
-                                                                        "_arg_" + p.Name,
-                                                                        FieldAttributes.Public),
-                                            CallArg_Type = tCallArg,
-                                            CallArg_mCtor = tCallArg.ReferenceMethod(m => m.IsConstructor),
-                                            CallArg_mHasChanged = tCallArg.ReferenceMethod(R.CallArg_mGetHasChanged.Name),
-                                            CallArg_mGetTypedValue = tCallArg.ReferenceMethod(R.CallArg_mGetTypedValue.Name),
-                                            CallArg_mSetTypedValue = tCallArg.ReferenceMethod(R.CallArg_mSetTypedValue.Name)
-                                        };
-                                    })
-                                    .ToArray();
-
-            _byrefArgs = _args.Where(a => a.IsByRef)
-                                .ToArray();
+            var fArgs = tCallBaseRef.ReferenceField(R.CallBase_fCallArgs.Name);
 
 
-            _tCallRef = _tCall.HasGenericParameters
-                        ? _tCall.MakeGenericInstanceType(_tCall.GenericParameters.ToArray())
-                        : (TypeReference)_tCall;
+            var CallBase_mCtor = tCallBaseRef.ReferenceMethod(m => m.IsConstructor);
 
-            if(_fInstance != null) {
-                _fInstanceRef = _tCallRef.ReferenceField(_fInstance.Name);
-            }
-
-            _fRoostRef = _tCallRef.ReferenceField(_fRoost.Name);
-
-            if(_fReturn != null) {
-                _fReturnRef = _tCallRef.ReferenceField(_fReturn.Name);
-            }
-
-            foreach(var arg in _args) {
-                arg.FieldRef = _tCallRef.ReferenceField(arg.Field.Name);
-            }
-
+            var mCtor = tCall.AddCtor(
+                                new[] {
+                                    R.Roost_Type,
+                                    tContRef,
+                                    mod.ImportReference(typeof(ICallArg[]))
+                                },
+                                (i, m) => {
+                                    i.Emit(OpCodes.Ldarg_0);
+                                    i.Emit(OpCodes.Ldarg_1);
+                                    i.Emit(OpCodes.Ldarg_2);
+                                    i.Emit(OpCodes.Ldarg_3);
+                                    i.Emit(OpCodes.Call, CallBase_mCtor);
+                                    i.Emit(OpCodes.Ret);
+                                });
 
 
+            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mDispatchFinal.Name);
 
+            tCall.OverrideMethod(
+                        CallBase_mDispatchFinal,
+                        (i, m) => {
+                            //load instance to stack (if non-static)
+                            //load args onto stack (or address thereof if byref)
 
+                            //call mInner
 
+                            //save return value to fReturn
+
+                            i.Emit(OpCodes.Ret);
+                        });
+
+            
+            
+            //return populated CallInfo
             return new CallInfo(
                             tCall,
                             mCtor,
+                            R.CallBase_mPreDispatch,
+                            R.CallBase_mDispatch,
                             fReturn,
+                            fArgs,
                             args
                             );
         }
@@ -165,7 +175,7 @@ namespace Cuckoo.Fody
 
 
 
-
+    /*
     abstract class _CallWeaver
     {
         protected WeaveContext _ctx;
@@ -683,8 +693,7 @@ namespace Cuckoo.Fody
         }
     }
 
-
-
+    
     class MediateCallWeaver : _CallWeaver
     {
         CallInfo _nextCall;
@@ -835,5 +844,5 @@ namespace Cuckoo.Fody
             }
         }
     }
-
+    */
 }

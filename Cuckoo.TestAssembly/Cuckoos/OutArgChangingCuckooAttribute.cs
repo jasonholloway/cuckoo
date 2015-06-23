@@ -12,14 +12,16 @@ namespace Cuckoo.TestAssembly.Cuckoos
     public class OutArgChangingCuckooAttribute : CuckooAttribute
     {
         public override void OnCall(ICall call) {
-            call.CallInner();
+            throw new NotImplementedException();
 
-            var intOutArgs = call.Args.Where(a => a.Parameter.IsOut 
-                                                  && a.Type == typeof(int));
+            //call.CallInner();
+
+            //var intOutArgs = call.Args.Where(a => a.Parameter.IsOut 
+            //                                      && a.Type == typeof(int));
             
-            foreach(var intOutArg in intOutArgs) {
-                intOutArg.Value = 999;
-            }
+            //foreach(var intOutArg in intOutArgs) {
+            //    intOutArg.Value = 999;
+            //}
         }
     }
 }

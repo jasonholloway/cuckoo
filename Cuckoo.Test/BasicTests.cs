@@ -38,9 +38,9 @@ namespace Cuckoo.Test
                                                     BindingFlags.Static | BindingFlags.NonPublic);
 
                 object value = fRoost.GetValue(null);
-                Assert.IsTrue(value is RoostBase);
-
-                var roost = value as RoostBase;
+                Assert.IsTrue(value is IRoost);
+                
+                var roost = value as IRoost;
                 Assert.AreEqual(roost.Method, method);
                 Assert.IsTrue(roost.Cuckoos is ICuckoo[]);
                 Assert.IsTrue(roost.Cuckoos.All(u => u is CuckooAttribute));

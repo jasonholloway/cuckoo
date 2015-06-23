@@ -9,6 +9,12 @@ namespace GenericExample
     internal class ByRefs
     {
 
+
+
+
+
+
+
         public void ByRefMethod(int a, out int b, out string c, int d = 99, object o = null) {
             b = 99;
             c = "BLAH";

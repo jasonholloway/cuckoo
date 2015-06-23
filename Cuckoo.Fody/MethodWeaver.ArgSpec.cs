@@ -15,9 +15,10 @@ namespace Cuckoo.Fody
         {
             private ArgSpec() { }
             
-            public bool IsByRef { get; private set; }
             public int Index { get; private set; }
-            public ParameterDefinition OuterParam { get; private set; }
+            public ParameterDefinition Param { get; private set; }
+            public TypeReference Type { get; private set; }
+            public bool IsByRef { get; private set; }
 
             public TypeReference CallArg_Type { get; private set; }
             public MethodReference CallArg_mCtor { get; private set; }
@@ -38,7 +39,8 @@ namespace Cuckoo.Fody
 
                                 return new ArgSpec() {
                                     Index = iParam++,
-                                    OuterParam = p,
+                                    Param = p,
+                                    Type = argType,
                                     IsByRef = p.ParameterType.IsByReference,
                                     CallArg_Type = tCallArgRef,
                                     CallArg_mCtor = tCallArgRef.ReferenceMethod(m => m.IsConstructor),

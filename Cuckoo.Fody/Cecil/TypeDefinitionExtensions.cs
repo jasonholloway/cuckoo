@@ -196,9 +196,9 @@ namespace Cuckoo.Fody.Cecil
 
             mCtor.Body.InitLocals = true;
 
-            fnIL(mCtor.Body.GetILProcessor(), mCtor);
-
             @this.Methods.Add(mCtor);
+
+            fnIL(mCtor.Body.GetILProcessor(), mCtor);
 
             return mCtor;
 

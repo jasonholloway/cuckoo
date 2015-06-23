@@ -16,10 +16,13 @@ namespace Cuckoo.Fody
             private ArgSpec() { }
             
             public bool IsByRef { get; private set; }
-            public int Index { get; private set; }            
+            public int Index { get; private set; }
+            public TypeReference Type { get; private set; }
+
             public TypeReference CallArg_Type { get; private set; }
             public FieldReference CallArg_fValue { get; private set; }
-
+            public MethodWeaver.ArgSpec MethodArg { get; private set; }
+                       
 
             public static ArgSpec[] CreateAll(
                                         WeaveContext ctx, 
@@ -31,14 +34,16 @@ namespace Cuckoo.Fody
                             var R = ctx.RefMap;
 
                             var tCallArgRef = R.CallArg_Type.MakeGenericInstanceType(
-                                                                s.OuterParam.ParameterType.GetElementType()
+                                                                s.Param.ParameterType.GetElementType()
                                                                 );
 
                             return new ArgSpec() { 
-                                        IsByRef = s.IsByRef,
                                         Index = s.Index,
+                                        Type = s.Type,
+                                        IsByRef = s.IsByRef,
                                         CallArg_Type = tCallArgRef,
-                                        CallArg_fValue = tCallArgRef.ReferenceField(R.CallArg_fValue.Name)
+                                        CallArg_fValue = tCallArgRef.ReferenceField(R.CallArg_fValue.Name),
+                                        MethodArg = s
                                         };
                         })
                         .ToArray();

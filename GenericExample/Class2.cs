@@ -9,6 +9,14 @@ namespace GenericExample
     static class Class2
     {
 
+
+        public static object CreateArray(int i) {
+            var r = new object[] { 1, 2, 3, i, 5 };
+
+            return r;
+        }
+
+
         public static void Method() {
             /*
             object obj = null;

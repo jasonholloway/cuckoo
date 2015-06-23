@@ -11,9 +11,8 @@ namespace Cuckoo.Impl
     public class CallArg<TVal> : ICallArg<TVal>
     {
         public TVal _value;
-        private int _index; //used to get parameter info from roost
 
-        public CallArg(int index, TVal value) {
+        public CallArg(Parameter param, TVal value) {
             _value = value;
             Parameter = param;
         }

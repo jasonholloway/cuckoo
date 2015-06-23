@@ -28,6 +28,11 @@ namespace Cuckoo.Impl
             _callArgs = callArgs;
         }
 
+
+        public void PreDispatch() {
+            //call PreInvoke on each cuckoo...
+        }
+
         public void Dispatch() {
             if(_iNextCuckoo < _cuckoos.Length) {
                 var cuckoo = _cuckoos[_iNextCuckoo++];
