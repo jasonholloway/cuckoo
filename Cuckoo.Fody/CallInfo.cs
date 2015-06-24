@@ -41,14 +41,15 @@ namespace Cuckoo.Fody
         public bool RequiresInstanciation { get; private set; }
         public bool ReturnsValue { get; private set; }
 
+
         public CallInfo(
-            TypeReference type, 
-            MethodReference ctorMethod, 
-            MethodReference preDispatchMethod,
-            MethodReference dispatchMethod,
-            FieldReference returnField,
-            FieldReference argsField,
-            CallWeaver.ArgSpec[] args) 
+                    TypeReference type, 
+                    MethodReference ctorMethod, 
+                    MethodReference preDispatchMethod,
+                    MethodReference dispatchMethod,
+                    FieldReference returnField,
+                    FieldReference argsField,
+                    CallWeaver.ArgSpec[] args ) 
         {
             Type = type;
             CtorMethod = ctorMethod;
@@ -61,8 +62,14 @@ namespace Cuckoo.Fody
             ReturnsValue = ReturnField != null;
         }
 
-        public CallInfo Instanciate(IEnumerable<TypeReference> genArgs) {            
-            var tCallRef = Type.MakeGenericInstanceType(genArgs.ToArray());
+
+        public CallInfo Instanciate(
+                            IEnumerable<TypeReference> contGenArgs, 
+                            IEnumerable<TypeReference> methodGenArgs ) 
+        {         
+            var tCallRef = Type.MakeGenericInstanceType(
+                                        contGenArgs.Concat(methodGenArgs).ToArray());
+
             var tCallBaseRef = tCallRef.Resolve().BaseType;
 
             var mod = Type.Module;
@@ -72,9 +79,9 @@ namespace Cuckoo.Fody
                                     tCallBaseRef.ReferenceMethod(PreDispatchMethod.Name),
                                     tCallBaseRef.ReferenceMethod(DispatchMethod.Name),
                                     ReturnsValue 
-                                        ? mod.ImportReference(tCallBaseRef.ReferenceField(ReturnField.Name)) 
+                                        ? tCallBaseRef.ReferenceField(ReturnField.Name) 
                                         : null,
-                                    mod.ImportReference(tCallBaseRef.ReferenceField(ArgsField.Name)),
+                                    tCallBaseRef.ReferenceField(ArgsField.Name),
                                     Args
                                     );
         }

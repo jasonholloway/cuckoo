@@ -48,27 +48,31 @@ namespace Cuckoo.Fody
             var types = new ScopeTypeMapper(tCall);
 
 
+            if(tContRef is GenericInstanceType) {
+                var tConstInst = (GenericInstanceType)tContRef;
+                var origGenArgs = tConstInst.GenericArguments.ToArray();
+                tConstInst.GenericArguments.Clear();
 
-
-
-            var rtContGenArgs = tContRef is GenericInstanceType
-                                    ? ((GenericInstanceType)tContRef).GenericArguments.ToArray()
-                                    : new TypeReference[0];
-
-            var rtMethodGenArgs = mOuterRef is GenericInstanceMethod
-                                    ? ((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray()
-                                    : new TypeReference[0];
-
-
-
-            foreach(var tContGenArg in rtContGenArgs) {
-                types.Map(tContGenArg);
+                foreach(var origGenArg in origGenArgs) {
+                    tConstInst.GenericArguments.Add(types.Map(origGenArg));
+                }
             }
+
+            if(mOuterRef is GenericInstanceMethod) {
+                var mOuterInst = (GenericInstanceMethod)mOuterRef;
+                var origGenArgs = mOuterInst.GenericArguments.ToArray();
+                mOuterInst.GenericArguments.Clear();
+
+                foreach(var origGenArg in origGenArgs) {
+                    mOuterInst.GenericArguments.Add(types.Map(origGenArg));
+                }
+            }
+
 
 
             var tInstance = isStaticMethod
                                 ? null
-                                : types.Map(tContRef);
+                                : tContRef;
 
             var tReturn = returnsValue
                                 ? types.Map(mOuterRef.ReturnType)
@@ -82,9 +86,6 @@ namespace Cuckoo.Fody
             tCall.BaseType = tCallBaseRef;
 
 
-            foreach(var tMethodGenArg in rtMethodGenArgs) {
-                types.Map(tMethodGenArg);
-            }
 
 
 

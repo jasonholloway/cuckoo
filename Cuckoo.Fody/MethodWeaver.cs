@@ -301,9 +301,9 @@ namespace Cuckoo.Fody
             var callWeaver = new CallWeaver(ctx);
 
             var call = callWeaver.Weave(mOuterRef, args);
-
+            
             if(call.RequiresInstanciation) {
-                call = call.Instanciate(contGenArgs.Concat(methodGenArgs));
+                call = call.Instanciate(contGenArgs, methodGenArgs);
             }
 
 

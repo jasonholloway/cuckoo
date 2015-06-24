@@ -74,7 +74,15 @@ namespace Cuckoo.Fody.Cecil
                 return fieldDef;
             }
 
-            return new FieldReference(fieldDef.Name, fieldDef.FieldType, typeRef);
+            var fieldType = fieldDef.FieldType;
+
+            if(fieldType.IsGenericParameter) {
+
+                //try and swap parameter for specified arg
+
+            }
+
+            return new FieldReference(fieldDef.Name, fieldType, typeRef);
         }
 
         public static FieldReference ReferenceField(this TypeReference typeRef, string fieldName) {
