@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cuckoo.Impl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,54 @@ namespace GenericExample
     internal class ByRefs
     {
 
+
+        class Call<TRet> : CallBase<ByRefs, TRet>
+        {
+            public Call() 
+                : base(null, null, null) { }
+
+            protected override void InvokeInnerMethod() {
+                //...
+            }
+        }
+
+
+
+
+        public T GenTest<T>(int a) {
+            var call = new Call<T>();
+
+            call.PreInvoke();
+
+            call.InvokeNext();
+
+            var r = call._return;
+
+            return r;
+        }
+
+
+
+        public float ReturnsFloat() {
+            return 13F;
+        }
+
+        public object ReturnsObject() {
+            return null;
+        }
+
+
+        public void CallTest() {
+
+            CallBase<ByRefs, int> callBase = null;
+
+            var r = callBase._return;
+
+            if(r == 99) {
+                CallTest();
+            }
+
+        }
 
 
 

@@ -33,8 +33,8 @@ namespace Cuckoo.Fody
     {
         public TypeReference Type { get; private set; }
         public MethodReference CtorMethod { get; private set; }
-        public MethodReference PreDispatchMethod { get; private set; }
-        public MethodReference DispatchMethod { get; private set; }
+        public MethodReference PreInvokeMethod { get; private set; }
+        public MethodReference InvokeNextMethod { get; private set; }
         public FieldReference ReturnField { get; private set; }
         public FieldReference ArgsField { get; private set; }
         public CallWeaver.ArgSpec[] Args { get; private set; }
@@ -43,18 +43,18 @@ namespace Cuckoo.Fody
 
 
         public CallInfo(
-                    TypeReference type, 
-                    MethodReference ctorMethod, 
-                    MethodReference preDispatchMethod,
-                    MethodReference dispatchMethod,
+                    TypeReference type,
+                    MethodReference ctorMethod,
+                    MethodReference preInvokeMethod,
+                    MethodReference invokeNextMethod,
                     FieldReference returnField,
                     FieldReference argsField,
                     CallWeaver.ArgSpec[] args ) 
         {
             Type = type;
             CtorMethod = ctorMethod;
-            PreDispatchMethod = preDispatchMethod;
-            DispatchMethod = dispatchMethod;
+            PreInvokeMethod = preInvokeMethod;
+            InvokeNextMethod = invokeNextMethod;
             ReturnField = returnField;
             ArgsField = argsField;
             Args = args;
@@ -70,16 +70,16 @@ namespace Cuckoo.Fody
             var tCallRef = Type.MakeGenericInstanceType(
                                         contGenArgs.Concat(methodGenArgs).ToArray());
 
-            var tCallBaseRef = tCallRef.Resolve().BaseType;
+            var tCallBaseRef = tCallRef.GetBaseType(); 
 
             var mod = Type.Module;
 
             return new CallInfo(tCallRef,
                                     tCallRef.ReferenceMethod(m => m.IsConstructor),
-                                    tCallBaseRef.ReferenceMethod(PreDispatchMethod.Name),
-                                    tCallBaseRef.ReferenceMethod(DispatchMethod.Name),
-                                    ReturnsValue 
-                                        ? tCallBaseRef.ReferenceField(ReturnField.Name) 
+                                    tCallBaseRef.ReferenceMethod(PreInvokeMethod.Name),
+                                    tCallBaseRef.ReferenceMethod(InvokeNextMethod.Name),
+                                    ReturnsValue
+                                        ? tCallBaseRef.ReferenceField(ReturnField.Name)
                                         : null,
                                     tCallBaseRef.ReferenceField(ArgsField.Name),
                                     Args

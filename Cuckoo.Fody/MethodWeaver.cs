@@ -59,12 +59,12 @@ namespace Cuckoo.Fody
             var fRoostRef = CreateRoost(ctx);
 
             var mInner = TransplantOuterToInner(ctx);
-
+            
             var mOuter = WeaveOuterMethod(ctx, _spec.Cuckoos, mInner);
+            
+            //AddCuckooedAttribute(ctx, mOuter, mInner);
 
-            AddCuckooedAttribute(ctx, mOuter, mInner);
-
-            ctx.Logger(string.Format("Mod applied to {0}!", ctx.mOuter.FullName));
+            //ctx.Logger(string.Format("Mod applied to {0}!", ctx.mOuter.FullName));
         }
 
 
@@ -270,7 +270,7 @@ namespace Cuckoo.Fody
             WeaveContext ctx, 
             IEnumerable<CuckooSpec> cuckoos, 
             MethodDefinition mInner) 
-        {
+        {            
             var R = ctx.RefMap;
             var mOuter = ctx.mOuter;
             var fRoost = ctx.fRoost;
@@ -296,20 +296,31 @@ namespace Cuckoo.Fody
 
 
             var args = ArgSpec.CreateAll(ctx, mOuterRef.Parameters);
-
+                                    
 
             var callWeaver = new CallWeaver(ctx);
-
-            var call = callWeaver.Weave(mOuterRef, args);
             
+            var call = callWeaver.Weave(mOuterRef, args);
+
             if(call.RequiresInstanciation) {
-                call = call.Instanciate(contGenArgs, methodGenArgs);
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //PROBLEM ONLY OCCURS WITH GENERIC RETURN FIELD - NOTHING ELSE !!!!!!!!!!!!!!!!!!!!!!!
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                call = call.Instanciate(contGenArgs, methodGenArgs);     
             }
+
+
+            return null;
+
+
+
 
 
             var initialCtorInstructions = mOuter.IsConstructor
                                             ? GetInitialCtorInstructions(mOuter.Body)
                                             : null;
+                        
 
             mOuter.Body = new MethodBody(mOuter);
 
@@ -319,8 +330,12 @@ namespace Cuckoo.Fody
                     
                     i.Emit(OpCodes.Ldsfld, fRoostRef);
 
-                    if(!m.IsStatic) {
-                        i.Emit(OpCodes.Ldarg_0);
+                    if(m.IsStatic) {
+                        i.Emit(OpCodes.Ldnull);
+                    }
+                    else {
+                        i.Emit(OpCodes.Ldnull); //!!!!!!!!!!!!!!!
+                        //i.Emit(OpCodes.Ldarg_0);
                     }
                     
                     i.Emit(OpCodes.Ldc_I4, args.Length);
@@ -340,17 +355,17 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ldarg_S, arg.Param);
                         }
 
-                        i.Emit(OpCodes.Call, arg.CallArg_mCtor);
+                        i.Emit(OpCodes.Newobj, arg.CallArg_mCtor);
 
                         i.Emit(OpCodes.Stelem_Ref);
                     }
 
                     i.Emit(OpCodes.Newobj, call.CtorMethod);
                     i.Emit(OpCodes.Stloc_S, vCall);
-
+                    
 
                     i.Emit(OpCodes.Ldloc_S, vCall);
-                    i.Emit(OpCodes.Call, call.PreDispatchMethod);
+                    i.Emit(OpCodes.Callvirt, call.PreInvokeMethod);
 
 
                     if(initialCtorInstructions != null) {
@@ -361,7 +376,7 @@ namespace Cuckoo.Fody
 
 
                     i.Emit(OpCodes.Ldloc_S, vCall);
-                    i.Emit(OpCodes.Call, call.DispatchMethod);
+                    i.Emit(OpCodes.Callvirt, call.InvokeNextMethod);
 
 
                     foreach(var callArg in call.Args.Where(a => a.IsByRef)) {
@@ -370,6 +385,7 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldfld, call.ArgsField);
                         i.Emit(OpCodes.Ldc_I4, callArg.Index);
                         i.Emit(OpCodes.Ldelem_Ref);
+                        i.Emit(OpCodes.Castclass, callArg.CallArg_Type);
                         i.Emit(OpCodes.Ldfld, callArg.CallArg_fValue);
                         i.Emit(OpCodes.Stobj, callArg.Type);
                     }

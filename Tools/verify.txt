@@ -2,6 +2,6 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-File not found or has bad headers.
-Could not create mapping for file '..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll' error:0x000003EE
-2 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll
+ [HRESULT 0x8007000B] - An attempt was made to load a program with an incorrect format.
+
+1 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll

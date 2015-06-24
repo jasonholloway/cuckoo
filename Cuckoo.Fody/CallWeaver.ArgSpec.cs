@@ -26,7 +26,7 @@ namespace Cuckoo.Fody
 
             public static ArgSpec[] CreateAll(
                                         WeaveContext ctx, 
-                                        ScopeTypeMapper types, 
+                                        ScopeTypeSource types, 
                                         MethodWeaver.ArgSpec[] methodArgSpecs ) 
             {
                 return methodArgSpecs

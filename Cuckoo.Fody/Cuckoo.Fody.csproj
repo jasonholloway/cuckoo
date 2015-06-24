@@ -44,11 +44,13 @@
     <Compile Include="CallInfo.cs" />
     <Compile Include="CallWeaver.cs" />
     <Compile Include="Cecil\GenericInstanceTypeExtensions.cs" />
+    <Compile Include="Cecil\MemberReferenceEqualityComparer.cs" />
     <Compile Include="Cecil\MethodReferenceExtensions.cs" />
     <Compile Include="Cecil\ReferenceExtensions.cs" />
     <Compile Include="CallWeaver.ArgSpec.cs" />
     <Compile Include="MethodWeaver.ArgSpec.cs" />
-    <Compile Include="ScopeTypeMapper.cs" />
+    <Compile Include="ScopeGenericTypeMapper.cs" />
+    <Compile Include="ScopeTypeSource.cs" />
     <Compile Include="WeaveContext.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />

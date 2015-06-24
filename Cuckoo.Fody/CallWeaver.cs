@@ -45,7 +45,7 @@ namespace Cuckoo.Fody
 
             tCont.NestedTypes.Add(tCall);
 
-            var types = new ScopeTypeMapper(tCall);
+            var types = new ScopeTypeSource(tCall);
 
 
             if(tContRef is GenericInstanceType) {
@@ -119,8 +119,8 @@ namespace Cuckoo.Fody
             var mCtor = tCall.AddCtor(
                                 new[] {
                                     R.Roost_Type,
-                                    tContRef,
-                                    mod.ImportReference(typeof(ICallArg[]))
+                                    isStaticMethod ? mod.TypeSystem.Object : tContRef,
+                                    R.ICallArg_Type.MakeArrayType()
                                 },
                                 (i, m) => {
                                     i.Emit(OpCodes.Ldarg_0);
@@ -132,7 +132,7 @@ namespace Cuckoo.Fody
                                 });
 
 
-            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mDispatchFinal.Name);
+            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeInnerMethod.Name);
 
             tCall.OverrideMethod(
                         CallBase_mDispatchFinal,
@@ -146,15 +146,17 @@ namespace Cuckoo.Fody
 
                             i.Emit(OpCodes.Ret);
                         });
+            
 
+            var CallBase_mPreInvoke = tCallBaseRef.ReferenceMethod(R.CallBase_mPreInvoke.Name);
+            var CallBase_mInvokeNext = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeNext.Name);
             
-            
-            //return populated CallInfo
+
             return new CallInfo(
                             tCall,
                             mCtor,
-                            R.CallBase_mPreDispatch,
-                            R.CallBase_mDispatch,
+                            CallBase_mPreInvoke,
+                            CallBase_mInvokeNext,
                             fReturn,
                             fArgs,
                             args

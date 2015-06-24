@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    class ScopeTypeMapper
+    class ScopeTypeSource
     {
         ModuleDefinition _module;
         IGenericParameterProvider _genProv;
         Dictionary<TypeReference, TypeReference> _dMap;
 
-        public ScopeTypeMapper(IGenericParameterProvider genProv) {
+        public ScopeTypeSource(IGenericParameterProvider genProv) {
             _module = genProv.Module;
             _genProv = genProv;
             _dMap = new Dictionary<TypeReference, TypeReference>(TypeRefEqualityComparer.Default);

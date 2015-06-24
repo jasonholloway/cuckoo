@@ -14,9 +14,29 @@ namespace Cuckoo.Fody.Cecil
         public static TypeReference GetBaseType(this GenericInstanceType @this) {
             var baseType = @this.Resolve().BaseType;
 
+            if(baseType is GenericInstanceType) {
+                var baseInst = (GenericInstanceType)baseType;
 
-            //gen 
+                var tups = @this.GetElementType().GenericParameters
+                                    .Zip(@this.GenericArguments,
+                                                    (p, a) => new {
+                                                        Param = p,
+                                                        Arg = a
+                                                    }).ToArray();
 
+                var origArgs = baseInst.GenericArguments.ToArray();
+
+                baseInst.GenericArguments.Clear();
+
+                var newArgs = origArgs.Select(a => {
+                    var tup = tups.FirstOrDefault(t => t.Param == a);
+                    return tup != null ? tup.Arg : a ; //.Param : a;
+                });
+
+                foreach(var newArg in newArgs) {
+                    baseInst.GenericArguments.Add(newArg);
+                }
+            }
 
             return baseType;
         } 

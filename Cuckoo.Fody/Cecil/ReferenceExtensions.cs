@@ -70,16 +70,29 @@ namespace Cuckoo.Fody.Cecil
 
         public static FieldReference ReferenceField(this TypeReference typeRef, Func<FieldDefinition, bool> fieldSelector) {
             FieldDefinition fieldDef = typeRef.Resolve().Fields.FirstOrDefault(fieldSelector);
-            if(!typeRef.IsGenericInstance || fieldDef == null) {
-                return fieldDef;
-            }
+
+            if(fieldDef == null) return null;
 
             var fieldType = fieldDef.FieldType;
 
-            if(fieldType.IsGenericParameter) {
+            if(fieldType.IsGenericParameter) 
+            {
+                var typeInst = (GenericInstanceType)typeRef;
 
-                //try and swap parameter for specified arg
+                var tups = typeInst.ElementType.GenericParameters
+                                .Zip(typeInst.GenericArguments, 
+                                                    (p, a) => new { 
+                                                        Param = p,
+                                                        Arg = a
+                                                    }).ToArray();
 
+                var matchedTup = tups.First(t => t.Param.Name == fieldType.Name
+                                                    && t.Param.DeclaringType.FullName == fieldType.DeclaringType.FullName);
+
+                fieldType = matchedTup.Param; //.Arg;
+            }
+            else {
+                fieldType = typeRef.Module.ImportReference(fieldType);
             }
 
             return new FieldReference(fieldDef.Name, fieldType, typeRef);

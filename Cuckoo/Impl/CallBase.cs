@@ -28,12 +28,12 @@ namespace Cuckoo.Impl
             _callArgs = callArgs;
         }
 
-
-        public void PreDispatch() {
+        
+        public void PreInvoke() {
             //call PreInvoke on each cuckoo...
         }
 
-        public void Dispatch() {
+        public void InvokeNext() {
             if(_iNextCuckoo < _cuckoos.Length) {
                 var cuckoo = _cuckoos[_iNextCuckoo++];
                 
@@ -42,11 +42,11 @@ namespace Cuckoo.Impl
                 _iNextCuckoo--; //this is unnecessary
             }
             else {
-                DispatchFinal();
+                InvokeInnerMethod();
             }
         }
 
-        protected abstract void DispatchFinal(); //loads args onto stack etc
+        protected abstract void InvokeInnerMethod(); //loads args onto stack etc
 
 
         #region ICall
@@ -82,7 +82,7 @@ namespace Cuckoo.Impl
         }
 
         void ICall.CallInner() {
-            Dispatch();
+            InvokeNext();
         }
 
         #endregion

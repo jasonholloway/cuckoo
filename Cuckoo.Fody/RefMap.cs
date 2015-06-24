@@ -29,9 +29,9 @@ namespace Cuckoo.Fody
         public readonly MethodReference CallArg_mCtor;
         public readonly FieldReference CallArg_fValue;
 
-        public readonly MethodReference CallBase_mPreDispatch;
-        public readonly MethodReference CallBase_mDispatch;
-        public readonly MethodReference CallBase_mDispatchFinal;
+        public readonly MethodReference CallBase_mPreInvoke;
+        public readonly MethodReference CallBase_mInvokeNext;
+        public readonly MethodReference CallBase_mInvokeInnerMethod;
         public readonly FieldReference CallBase_fInstance;
         public readonly FieldReference CallBase_fReturn;
         public readonly FieldReference CallBase_fCallArgs;
@@ -67,14 +67,14 @@ namespace Cuckoo.Fody
             ICuckoo_mOnCall = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("OnCall"));
 
-            CallBase_mPreDispatch = module.ImportReference(
-                                        CallBase_Type.GetMethod("PreDispatch"));
+            CallBase_mPreInvoke = module.ImportReference(
+                                        CallBase_Type.GetMethod("PreInvoke"));
 
-            CallBase_mDispatch = module.ImportReference(
-                                        CallBase_Type.GetMethod("Dispatch"));
+            CallBase_mInvokeNext = module.ImportReference(
+                                        CallBase_Type.GetMethod("InvokeNext"));
 
-            CallBase_mDispatchFinal = module.ImportReference(
-                                        CallBase_Type.GetMethod("DispatchFinal"));
+            CallBase_mInvokeInnerMethod = module.ImportReference(
+                                        CallBase_Type.GetMethod("InvokeInnerMethod"));
 
             CallBase_fInstance = module.ImportReference(
                                         CallBase_Type.GetField("_instance"));
