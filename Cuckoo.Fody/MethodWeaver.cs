@@ -301,20 +301,10 @@ namespace Cuckoo.Fody
             var callWeaver = new CallWeaver(ctx);
             
             var call = callWeaver.Weave(mOuterRef, args);
-
+            
             if(call.RequiresInstanciation) {
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //PROBLEM ONLY OCCURS WITH GENERIC RETURN FIELD - NOTHING ELSE !!!!!!!!!!!!!!!!!!!!!!!
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
                 call = call.Instanciate(contGenArgs, methodGenArgs);     
             }
-
-
-            return null;
-
-
-
 
 
             var initialCtorInstructions = mOuter.IsConstructor

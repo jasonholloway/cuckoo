@@ -1,4 +1,5 @@
-﻿using Cuckoo.TestAssembly.Cuckoos;
+﻿using Cuckoo.Impl;
+using Cuckoo.TestAssembly.Cuckoos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,43 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
+
+    //public class GenRet
+    //{
+
+    //    public T MethodWithGenericResult2<T>(int a) {
+    //        var call = new DummyCall<T>();
+
+    //        call.PreInvoke();
+
+    //        call.InvokeNext();
+
+    //        var result = call._return;
+
+    //        return result;
+    //    }
+
+
+
+    //    class DummyCall<TRet> : CallBase<GenRet, TRet>
+    //    {
+    //        public DummyCall()
+    //            : base(null, null, null) {
+    //            //...
+    //        }
+
+    //        protected override void InvokeInnerMethod() {
+    //            throw new NotImplementedException();
+    //        }
+    //    }
+
+
+
+    //}
+
+
     public class GenericArgs
     {
-
         [BareCuckoo]
         public int MethodWithGenericArgs<A, B>(A a, B b) {
             return 999;
@@ -26,7 +61,6 @@ namespace Cuckoo.TestAssembly
         public int TreblyCuckooedMethodWithGenericArgs<A, B, C>(A a, B b, C c) {
             return 100;
         }
-
 
     }
 

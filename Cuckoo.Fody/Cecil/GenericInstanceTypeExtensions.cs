@@ -25,17 +25,14 @@ namespace Cuckoo.Fody.Cecil
                                                     }).ToArray();
 
                 var origArgs = baseInst.GenericArguments.ToArray();
-
-                baseInst.GenericArguments.Clear();
-
+                
                 var newArgs = origArgs.Select(a => {
                     var tup = tups.FirstOrDefault(t => t.Param == a);
-                    return tup != null ? tup.Arg : a ; //.Param : a;
-                });
+                    return tup != null ? tup.Arg : a;
+                });                                                     
 
-                foreach(var newArg in newArgs) {
-                    baseInst.GenericArguments.Add(newArg);
-                }
+                baseType = baseType.GetElementType()
+                                .MakeGenericInstanceType(newArgs.ToArray());
             }
 
             return baseType;

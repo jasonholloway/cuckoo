@@ -75,21 +75,20 @@ namespace Cuckoo.Fody.Cecil
 
             var fieldType = fieldDef.FieldType;
 
-            if(fieldType.IsGenericParameter) 
-            {
-                var typeInst = (GenericInstanceType)typeRef;
+            if(fieldType.IsGenericParameter) {
+                //var typeInst = (GenericInstanceType)typeRef;
 
-                var tups = typeInst.ElementType.GenericParameters
-                                .Zip(typeInst.GenericArguments, 
-                                                    (p, a) => new { 
-                                                        Param = p,
-                                                        Arg = a
-                                                    }).ToArray();
+                //var tups = typeInst.ElementType.GenericParameters
+                //                .Zip(typeInst.GenericArguments,
+                //                                    (p, a) => new {
+                //                                        Param = p,
+                //                                        Arg = a
+                //                                    }).ToArray();
 
-                var matchedTup = tups.First(t => t.Param.Name == fieldType.Name
-                                                    && t.Param.DeclaringType.FullName == fieldType.DeclaringType.FullName);
+                //var matchedTup = tups.First(t => t.Param.Name == fieldType.Name
+                //                                    && t.Param.DeclaringType.FullName == fieldType.DeclaringType.FullName);
 
-                fieldType = matchedTup.Param; //.Arg;
+                //fieldType = matchedTup.Param; //.Arg;
             }
             else {
                 fieldType = typeRef.Module.ImportReference(fieldType);

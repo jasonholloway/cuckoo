@@ -70,7 +70,7 @@ namespace Cuckoo.Fody
             var tCallRef = Type.MakeGenericInstanceType(
                                         contGenArgs.Concat(methodGenArgs).ToArray());
 
-            var tCallBaseRef = tCallRef.GetBaseType(); 
+            var tCallBaseRef = tCallRef.GetBaseType();    //THIS IS WHAT DOES IT!!!! BUT ONLY FOR METHOD WITH GENERIC RETURN TYPE!!!
 
             var mod = Type.Module;
 

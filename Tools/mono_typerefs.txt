@@ -1,0 +1,289 @@
+MemberRef Table (1..72)
+1: TypeRef[3] Format
+	Resolved: [mscorlib]System.String.Format
+	Signature: string(string, object, object, object)
+	
+2: TypeRef[4] ToString
+	Resolved: [mscorlib]System.Int32.ToString
+	Signature: instance string()
+	
+3: TypeRef[1] .ctor
+	Resolved: [mscorlib]System.Object..ctor
+	Signature: instance void()
+	
+4: TypeRef[2] .ctor
+	Resolved: [Cuckoo]Cuckoo.Impl.Roost..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.Method, class [Cuckoo]Cuckoo.ICuckoo[])
+	
+5: TypeRef[6] OnRoost
+	Resolved: [Cuckoo]Cuckoo.ICuckoo.OnRoost
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost)
+	
+6: TypeSpec[1] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Args,string>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+7: TypeSpec[1] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Args,string>.InvokeInnerMethod
+	Signature: instance void()
+	
+8: TypeSpec[2] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<object,int32>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+9: TypeSpec[2] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<object,int32>.InvokeInnerMethod
+	Signature: instance void()
+	
+10: TypeSpec[3] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Atts,string>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+11: TypeSpec[3] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Atts,string>.InvokeInnerMethod
+	Signature: instance void()
+	
+12: TypeSpec[4] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.ClassWithStaticCtor,string>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+13: TypeSpec[4] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.ClassWithStaticCtor,string>.InvokeInnerMethod
+	Signature: instance void()
+	
+14: TypeSpec[5] .ctor
+	Resolved: class Cuckoo.TestAssembly.ExampleClass`1<int32>..ctor
+	Signature: instance void()
+	
+15: TypeSpec[5] SimpleMethod
+	Resolved: class Cuckoo.TestAssembly.ExampleClass`1<int32>.SimpleMethod
+	Signature: instance !0(int32)
+	
+16: TypeSpec[8] <ROOST>_MethodInGenericClass
+	Resolved: class Cuckoo.TestAssembly.GenericClass`2<!0,!1>.<ROOST>_MethodInGenericClass
+	Signature: class [Cuckoo]Cuckoo.Impl.Roost
+	
+17: TypeSpec[8] <ROOST>_MethodWithGenericArgsInGenericClass
+	Resolved: class Cuckoo.TestAssembly.GenericClass`2<!0,!1>.<ROOST>_MethodWithGenericArgsInGenericClass
+	Signature: class [Cuckoo]Cuckoo.Impl.Roost
+	
+18: TypeSpec[9] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericClass`2<!0,!1>,int32>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+19: TypeSpec[9] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericClass`2<!0,!1>,int32>.InvokeInnerMethod
+	Signature: instance void()
+	
+20: TypeSpec[10] .ctor
+	Resolved: class Cuckoo.TestAssembly.GenRet/DummyCall`1<!!0>..ctor
+	Signature: instance void()
+	
+21: TypeSpec[11] PreInvoke
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenRet,!!0>.PreInvoke
+	Signature: instance void()
+	
+22: TypeSpec[11] InvokeNext
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenRet,!!0>.InvokeNext
+	Signature: instance void()
+	
+23: TypeSpec[11] _return
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenRet,!!0>._return
+	Signature: !1
+	
+24: TypeSpec[12] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenRet,!0>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+25: TypeRef[13] .ctor
+	Resolved: [mscorlib]System.NotImplementedException..ctor
+	Signature: instance void()
+	
+26: TypeSpec[13] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericArgs,int32>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+27: TypeSpec[13] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericArgs,int32>.InvokeInnerMethod
+	Signature: instance void()
+	
+28: TypeSpec[14] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericArgs,!!0>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+29: TypeSpec[14] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.GenericArgs,!!0>.InvokeInnerMethod
+	Signature: instance void()
+	
+30: TypeRef[14] .ctor
+	Resolved: [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute..ctor
+	Signature: instance void()
+	
+31: TypeRef[15] .ctor
+	Resolved: [mscorlib]System.Diagnostics.DebuggerBrowsableAttribute..ctor
+	Signature: instance void(valuetype [mscorlib]System.Diagnostics.DebuggerBrowsableState)
+	
+32: TypeSpec[15] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic/CtorClass,object>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+33: TypeSpec[15] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic/CtorClass,object>.InvokeInnerMethod
+	Signature: instance void()
+	
+34: TypeSpec[16] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,string>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+35: TypeSpec[16] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,string>.InvokeInnerMethod
+	Signature: instance void()
+	
+36: TypeSpec[17] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,int32>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+37: TypeSpec[17] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,int32>.InvokeInnerMethod
+	Signature: instance void()
+	
+38: TypeSpec[18] .ctor
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,object>..ctor
+	Signature: instance void(class [Cuckoo]Cuckoo.IRoost, !0, class [Cuckoo]Cuckoo.ICallArg[])
+	
+39: TypeSpec[18] InvokeInnerMethod
+	Resolved: class [Cuckoo]Cuckoo.Impl.CallBase`2<class Cuckoo.TestAssembly.Basic,object>.InvokeInnerMethod
+	Signature: instance void()
+	
+40: TypeRef[17] .ctor
+	Resolved: [Cuckoo]Cuckoo.Attributes.CuckooAttribute..ctor
+	Signature: instance void()
+	
+41: TypeRef[20] CallInner
+	Resolved: [Cuckoo]Cuckoo.ICall.CallInner
+	Signature: instance void()
+	
+42: TypeRef[20] get_Args
+	Resolved: [Cuckoo]Cuckoo.ICall.get_Args
+	Signature: instance class [Cuckoo]Cuckoo.ICallArg[]()
+	
+43: TypeSpec[19] .ctor
+	Resolved: class [mscorlib]System.Func`2<class [Cuckoo]Cuckoo.ICallArg,bool>..ctor
+	Signature: instance void(object, native int)
+	
+44: TypeRef[21] Where
+	Resolved: [System.Core]System.Linq.Enumerable.Where
+	Signature: class [mscorlib]System.Collections.Generic.IEnumerable`1<!!0>(class [mscorlib]System.Collections.Generic.IEnumerable`1<!!0>, class [mscorlib]System.Func`2<!!0,bool>)
+	
+45: TypeSpec[20] GetEnumerator
+	Resolved: class [mscorlib]System.Collections.Generic.IEnumerable`1<class [Cuckoo]Cuckoo.ICallArg>.GetEnumerator
+	Signature: instance class [mscorlib]System.Collections.Generic.IEnumerator`1<!0>()
+	
+46: TypeSpec[21] get_Current
+	Resolved: class [mscorlib]System.Collections.Generic.IEnumerator`1<class [Cuckoo]Cuckoo.ICallArg>.get_Current
+	Signature: instance !0()
+	
+47: TypeRef[9] set_Value
+	Resolved: [Cuckoo]Cuckoo.ICallArg.set_Value
+	Signature: instance void(object)
+	
+48: TypeRef[23] MoveNext
+	Resolved: [mscorlib]System.Collections.IEnumerator.MoveNext
+	Signature: instance bool()
+	
+49: TypeRef[24] Dispose
+	Resolved: [mscorlib]System.IDisposable.Dispose
+	Signature: instance void()
+	
+50: TypeRef[9] get_Type
+	Resolved: [Cuckoo]Cuckoo.ICallArg.get_Type
+	Signature: instance class [mscorlib]System.Type()
+	
+51: TypeRef[25] get_IsByRef
+	Resolved: [mscorlib]System.Type.get_IsByRef
+	Signature: instance bool()
+	
+52: TypeRef[25] GetElementType
+	Resolved: [mscorlib]System.Type.GetElementType
+	Signature: instance class [mscorlib]System.Type()
+	
+53: TypeRef[25] GetTypeFromHandle
+	Resolved: [mscorlib]System.Type.GetTypeFromHandle
+	Signature: class [mscorlib]System.Type(valuetype [mscorlib]System.RuntimeTypeHandle)
+	
+54: TypeRef[25] op_Equality
+	Resolved: [mscorlib]System.Type.op_Equality
+	Signature: bool(class [mscorlib]System.Type, class [mscorlib]System.Type)
+	
+55: TypeRef[20] get_Method
+	Resolved: [Cuckoo]Cuckoo.ICall.get_Method
+	Signature: instance class [mscorlib]System.Reflection.MethodBase()
+	
+56: TypeRef[11] get_ReturnType
+	Resolved: [mscorlib]System.Reflection.MethodInfo.get_ReturnType
+	Signature: instance class [mscorlib]System.Type()
+	
+57: TypeRef[20] set_ReturnValue
+	Resolved: [Cuckoo]Cuckoo.ICall.set_ReturnValue
+	Signature: instance void(object)
+	
+58: TypeRef[20] get_ReturnValue
+	Resolved: [Cuckoo]Cuckoo.ICall.get_ReturnValue
+	Signature: instance object()
+	
+59: TypeRef[27] .ctor
+	Resolved: [mscorlib]System.Runtime.CompilerServices.CompilationRelaxationsAttribute..ctor
+	Signature: instance void(int32)
+	
+60: TypeRef[28] .ctor
+	Resolved: [mscorlib]System.Runtime.CompilerServices.RuntimeCompatibilityAttribute..ctor
+	Signature: instance void()
+	
+61: TypeRef[29] .ctor
+	Resolved: [mscorlib]System.Diagnostics.DebuggableAttribute..ctor
+	Signature: instance void(valuetype [mscorlib]System.Diagnostics.DebuggableAttribute/DebuggingModes)
+	
+62: TypeRef[31] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyTitleAttribute..ctor
+	Signature: instance void(string)
+	
+63: TypeRef[32] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyDescriptionAttribute..ctor
+	Signature: instance void(string)
+	
+64: TypeRef[33] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyConfigurationAttribute..ctor
+	Signature: instance void(string)
+	
+65: TypeRef[34] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyCompanyAttribute..ctor
+	Signature: instance void(string)
+	
+66: TypeRef[35] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyProductAttribute..ctor
+	Signature: instance void(string)
+	
+67: TypeRef[36] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyCopyrightAttribute..ctor
+	Signature: instance void(string)
+	
+68: TypeRef[37] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyTrademarkAttribute..ctor
+	Signature: instance void(string)
+	
+69: TypeRef[38] .ctor
+	Resolved: [mscorlib]System.Runtime.InteropServices.ComVisibleAttribute..ctor
+	Signature: instance void(bool)
+	
+70: TypeRef[39] .ctor
+	Resolved: [mscorlib]System.Runtime.InteropServices.GuidAttribute..ctor
+	Signature: instance void(string)
+	
+71: TypeRef[40] .ctor
+	Resolved: [mscorlib]System.Reflection.AssemblyFileVersionAttribute..ctor
+	Signature: instance void(string)
+	
+72: TypeRef[41] .ctor
+	Resolved: [mscorlib]System.Runtime.Versioning.TargetFrameworkAttribute..ctor
+	Signature: instance void(string)
+	
