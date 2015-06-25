@@ -16,6 +16,8 @@ namespace Cuckoo.TestAssembly.Cuckoos
 
         
         public override void OnCall(ICall call) {
+            throw new NotImplementedException("Cuckoo disabled till param stuff implemented!");
+
             foreach(var stringArg in call.Args.Where(a => a.Type == typeof(string))) {
                 stringArg.Value = "Growl";
             }

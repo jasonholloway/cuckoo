@@ -30,20 +30,21 @@ namespace Cuckoo.Fody
                                         MethodWeaver.ArgSpec[] methodArgSpecs ) 
             {
                 return methodArgSpecs
-                        .Select(s => {
+                        .Select(ms => {
                             var R = ctx.RefMap;
+                            
+                            var argType = types.Map(ms.Type);
 
-                            var tCallArgRef = R.CallArg_Type.MakeGenericInstanceType(
-                                                                s.Param.ParameterType.GetElementType()
-                                                                );
+                            var tCallArgRef = R.CallArg_Type
+                                                    .MakeGenericInstanceType(argType); 
 
                             return new ArgSpec() { 
-                                        Index = s.Index,
-                                        Type = s.Type,
-                                        IsByRef = s.IsByRef,
+                                        Index = ms.Index,
+                                        Type = argType,
+                                        IsByRef = ms.IsByRef,
                                         CallArg_Type = tCallArgRef,
                                         CallArg_fValue = tCallArgRef.ReferenceField(R.CallArg_fValue.Name),
-                                        MethodArg = s
+                                        MethodArg = ms
                                         };
                         })
                         .ToArray();

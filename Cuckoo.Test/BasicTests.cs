@@ -29,6 +29,19 @@ namespace Cuckoo.Test
             }
         }*/
 
+        [TestMethod]
+        public void SimpleCall() {
+            Tester.WithClass<Basic>().Run(b => b.SimpleMethod());
+        }
+
+
+        [TestMethod]
+        public void SimpleCallWithReturn() {
+            int result = Tester.WithClass<Basic>().Run(b => b.SimpleMethodWithReturn());
+
+            Assert.IsTrue(result == 13);
+        }
+
 
         [TestMethod]
         public void RoostsInPlace() {

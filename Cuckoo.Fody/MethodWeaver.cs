@@ -338,11 +338,11 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldnull); //LOAD PARAMETER HERE!!!!
 
                         if(arg.IsByRef) {
-                            i.Emit(OpCodes.Ldarg_S, arg.Param);
+                            i.Emit(OpCodes.Ldarg_S, arg.OuterParam.Resolve());
                             i.Emit(OpCodes.Ldobj, arg.Type);
                         }
                         else {
-                            i.Emit(OpCodes.Ldarg_S, arg.Param);
+                            i.Emit(OpCodes.Ldarg_S, arg.OuterParam.Resolve());
                         }
 
                         i.Emit(OpCodes.Newobj, arg.CallArg_mCtor);
@@ -370,7 +370,7 @@ namespace Cuckoo.Fody
 
 
                     foreach(var callArg in call.Args.Where(a => a.IsByRef)) {
-                        i.Emit(OpCodes.Ldarg_S, callArg.MethodArg.Param);
+                        i.Emit(OpCodes.Ldarg_S, callArg.MethodArg.OuterParam.Resolve());
                         i.Emit(OpCodes.Ldloc_S, vCall);
                         i.Emit(OpCodes.Ldfld, call.ArgsField);
                         i.Emit(OpCodes.Ldc_I4, callArg.Index);

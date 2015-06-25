@@ -13,6 +13,17 @@ namespace Cuckoo.TestAssembly
     {
         public void Dummy1() { }
 
+        [BareCuckoo]
+        public void SimpleMethod() {
+            //...
+        }
+
+        [BareCuckoo]
+        public int SimpleMethodWithReturn() {
+            return 13;
+        }
+
+
 
         [BareCuckoo]
         public string MethodWithSimpleCuckoo(string recipient1, string recipient2) {

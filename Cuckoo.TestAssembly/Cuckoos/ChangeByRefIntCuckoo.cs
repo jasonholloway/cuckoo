@@ -18,6 +18,8 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
 
         public override void OnCall(ICall call) {
+            throw new NotImplementedException("Cuckoo disabled till params sorted");
+
             call.CallInner();
 
             foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(int))) {

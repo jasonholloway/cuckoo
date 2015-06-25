@@ -19,12 +19,12 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
 
         public override void OnRoost(IRoost roost) {
-            throw new NotImplementedException();
-
             //_returnsString = ((MethodInfo)roost.Method).ReturnType == typeof(string);
         }
 
         public override void OnCall(ICall call) {
+            throw new NotImplementedException("CuckooAttribute disabled till param info set up!");
+
             call.CallInner();
 
             if(_returnsString) {

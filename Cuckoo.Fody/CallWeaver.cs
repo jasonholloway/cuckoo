@@ -134,16 +134,54 @@ namespace Cuckoo.Fody
 
             var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeInnerMethod.Name);
 
+            var mInner = (MethodReference)_ctx.mInner;
+
+            if(mInner.HasGenericParameters) {
+                mInner = mInner.MakeGenericInstanceMethod(((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray());
+            }
+
             tCall.OverrideMethod(
                         CallBase_mDispatchFinal,
                         (i, m) => {
-                            //load instance to stack (if non-static)
-                            //load args onto stack (or address thereof if byref)
+                            if(!isStaticMethod) {
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldfld, fInstance);
+                            }
 
-                            //call mInner
+                            if(args.Any()) {
+                                var vArgs = i.Body.AddVariable<ICallArg[]>();
 
-                            //save return value to fReturn
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldfld, fArgs);
+                                i.Emit(OpCodes.Stloc_S, vArgs);
 
+                                foreach(var arg in args) {
+                                    i.Emit(OpCodes.Ldloc_S, vArgs);
+                                    i.Emit(OpCodes.Ldc_I4, arg.Index);
+                                    i.Emit(OpCodes.Ldelem_Ref);
+                                    i.Emit(OpCodes.Castclass, arg.CallArg_Type);
+                                    
+                                    if(arg.IsByRef) {
+                                        i.Emit(OpCodes.Ldflda, arg.CallArg_fValue);
+                                    }
+                                    else {
+                                        i.Emit(OpCodes.Ldfld, arg.CallArg_fValue);
+                                    }
+                                }
+                            }
+
+                            i.Emit(OpCodes.Call, mInner);
+
+                            if(returnsValue) {
+                                var vReturn = i.Body.AddVariable(tReturn);
+                                
+                                i.Emit(OpCodes.Stloc_S, vReturn);
+                                
+                                i.Emit(OpCodes.Ldarg_0);
+                                i.Emit(OpCodes.Ldloc_S, vReturn);
+                                i.Emit(OpCodes.Stfld, fReturn);
+                            }
+                            
                             i.Emit(OpCodes.Ret);
                         });
             

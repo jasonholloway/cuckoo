@@ -16,7 +16,7 @@ namespace Cuckoo.Fody
             private ArgSpec() { }
             
             public int Index { get; private set; }
-            public ParameterDefinition Param { get; private set; }
+            public ParameterReference OuterParam { get; private set; }
             public TypeReference Type { get; private set; }
             public bool IsByRef { get; private set; }
 
@@ -27,7 +27,7 @@ namespace Cuckoo.Fody
 
             public static ArgSpec[] CreateAll(
                                         WeaveContext ctx,
-                                        IEnumerable<ParameterDefinition> outerParams) 
+                                        IEnumerable<ParameterReference> outerParams) 
             {
                 var R = ctx.RefMap;
                 int iParam = 0;
@@ -39,7 +39,7 @@ namespace Cuckoo.Fody
 
                                 return new ArgSpec() {
                                     Index = iParam++,
-                                    Param = p,
+                                    OuterParam = p,
                                     Type = argType,
                                     IsByRef = p.ParameterType.IsByReference,
                                     CallArg_Type = tCallArgRef,

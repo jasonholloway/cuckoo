@@ -34,7 +34,13 @@ namespace Cuckoo.TestAssembly
     //        }
 
     //        protected override void InvokeInnerMethod() {
-    //            throw new NotImplementedException();
+
+    //            var arg = new CallArg<TRet>(null, default(TRet));
+
+
+    //            var v = arg._value;
+
+    //            //throw new NotImplementedException();
     //        }
     //    }
 
