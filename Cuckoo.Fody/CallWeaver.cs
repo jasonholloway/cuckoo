@@ -134,7 +134,7 @@ namespace Cuckoo.Fody
 
             var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeInnerMethod.Name);
 
-            var mInner = (MethodReference)_ctx.mInner;
+            var mInner = tContRef.ReferenceMethod(_ctx.mInner.Name);
 
             if(mInner.HasGenericParameters) {
                 mInner = mInner.MakeGenericInstanceMethod(((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray());
