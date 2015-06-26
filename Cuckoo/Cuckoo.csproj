@@ -51,8 +51,8 @@
     <Compile Include="ICall.cs" />
     <Compile Include="Attributes\CuckooAttribute.cs" />
     <Compile Include="Attributes\CuckooedAttribute.cs" />
-    <Compile Include="Method.cs" />
-    <Compile Include="Parameter.cs" />
+    <Compile Include="MethodSpec.cs" />
+    <Compile Include="ParamSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

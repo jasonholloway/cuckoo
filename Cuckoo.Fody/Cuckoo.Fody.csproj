@@ -49,7 +49,6 @@
     <Compile Include="Cecil\ReferenceExtensions.cs" />
     <Compile Include="CallWeaver.ArgSpec.cs" />
     <Compile Include="MethodWeaver.ArgSpec.cs" />
-    <Compile Include="ScopeGenericTypeMapper.cs" />
     <Compile Include="ScopeTypeSource.cs" />
     <Compile Include="WeaveContext.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />

@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Impl
 {
-
     public class CallArg<TVal> : ICallArg<TVal>
     {
         public TVal _value;
 
-        public CallArg(Parameter param, TVal value) {
+        public CallArg(ParameterInfo param, TVal value) {
             _value = value;
             Parameter = param;
         }
 
 
-        public Parameter Parameter { get; private set; }
+        public ParameterInfo Parameter { get; private set; }
 
 
         public string Name {
@@ -26,11 +25,11 @@ namespace Cuckoo.Impl
         }
 
         public Type Type {
-            get { return Parameter.Type; }
+            get { return Parameter.ParameterType.GetElementType(); }
         }
 
         public bool IsByRef {
-            get { return Parameter.IsByRef; }
+            get { return Parameter.ParameterType.IsByRef; }
         }
 
 

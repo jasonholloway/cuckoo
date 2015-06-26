@@ -8,6 +8,7 @@ using System.Linq;
 namespace Cuckoo.Fody
 {
     using Cuckoo.Impl;
+    using Mono.Collections.Generic;
     using Refl = System.Reflection;
 
     internal partial class CallWeaver
@@ -18,7 +19,7 @@ namespace Cuckoo.Fody
             _ctx = ctx;
         }
 
-        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs) 
+        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs, WeaveSpec spec) 
         {
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
@@ -48,24 +49,43 @@ namespace Cuckoo.Fody
             var types = new ScopeTypeSource(tCall);
 
 
+            var contGenArgs = new TypeReference[0]; 
+
             if(tContRef is GenericInstanceType) {
                 var tConstInst = (GenericInstanceType)tContRef;
-                var origGenArgs = tConstInst.GenericArguments.ToArray();
-                tConstInst.GenericArguments.Clear();
+                
+                contGenArgs = tConstInst.GenericArguments
+                                            .Select(a => types.Map(a))
+                                            .ToArray();
 
-                foreach(var origGenArg in origGenArgs) {
-                    tConstInst.GenericArguments.Add(types.Map(origGenArg));
-                }
+                tContRef = tContRef.GetElementType()
+                                    .MakeGenericInstanceType(contGenArgs);
+
+                //tConstInst.GenericArguments.Clear();
+                
+                //foreach(var genArg in contGenArgs) {
+                //    tConstInst.GenericArguments.Add(genArg);
+                //}
             }
+
+
+            var methodGenArgs = new TypeReference[0];
 
             if(mOuterRef is GenericInstanceMethod) {
                 var mOuterInst = (GenericInstanceMethod)mOuterRef;
-                var origGenArgs = mOuterInst.GenericArguments.ToArray();
-                mOuterInst.GenericArguments.Clear();
 
-                foreach(var origGenArg in origGenArgs) {
-                    mOuterInst.GenericArguments.Add(types.Map(origGenArg));
-                }
+                methodGenArgs = mOuterInst.GenericArguments
+                                            .Select(a => types.Map(a))
+                                            .ToArray();
+
+                mOuterRef = mOuterRef.GetElementMethod()
+                                        .MakeGenericInstanceMethod(methodGenArgs);
+
+                //mOuterInst.GenericArguments.Clear();
+
+                //foreach(var genArg in methodGenArgs) {
+                //    mOuterInst.GenericArguments.Add(genArg);
+                //}
             }
 
 
@@ -78,19 +98,13 @@ namespace Cuckoo.Fody
                                 ? types.Map(mOuterRef.ReturnType)
                                 : null;
 
+
             var tCallBaseRef = R.CallBase_Type.MakeGenericInstanceType(
                                                 tInstance ?? mod.TypeSystem.Object,
                                                 tReturn ?? mod.TypeSystem.Object
                                                 );
-
             tCall.BaseType = tCallBaseRef;
-
-
-
-
-
-
-
+            
 
             var args = ArgSpec.CreateAll(_ctx, types, methodArgs);
 
@@ -114,6 +128,124 @@ namespace Cuckoo.Fody
             var fArgs = tCallBaseRef.ReferenceField(R.CallBase_fCallArgs.Name);
 
 
+
+
+            //Create static roost field and append to cctor to populate
+
+            var fRoost = tCall.AddField<Roost>(
+                                        "_roost", 
+                                        FieldAttributes.Static 
+                                        | FieldAttributes.Private
+                                        | FieldAttributes.InitOnly );
+
+            var fRoostRef = fRoost.CloneWithNewDeclaringType(tCallRef);
+
+
+        
+
+            tCall.AppendToStaticCtor(
+                    (i, m) => {
+                        var vMethod = m.Body.AddVariable<Refl.MethodBase>();
+                        var vCuckoo = m.Body.AddVariable<ICuckoo>();
+                        var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
+                    
+                        i.Emit(OpCodes.Ldtoken, mOuterRef);
+                        i.Emit(OpCodes.Ldtoken, tContRef);
+                        i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
+                        i.Emit(OpCodes.Stloc_S, vMethod);
+                    
+                        /////////////////////////////////////////////////////////////////////
+                        //Load ICuckoo instances into array ////////////////////////////////
+                        i.Emit(OpCodes.Ldc_I4, spec.Cuckoos.Length);
+                        i.Emit(OpCodes.Newarr, R.ICuckoo_Type);
+                        i.Emit(OpCodes.Stloc_S, vCuckoos);
+                    
+                        foreach(var cuckoo in spec.Cuckoos) {
+                            var att = cuckoo.Attribute;
+                            var tAtt = att.AttributeType;
+
+                            if(att.HasConstructorArguments) {
+                                var mCuckooCtor = tAtt.ReferenceMethod(c => m.IsConstructor
+                                                                            && c.Parameters.Select(p => p.ParameterType)
+                                                                                .SequenceEqual(
+                                                                                    att.ConstructorArguments.Select(a => a.Type) 
+                                                                                ));
+
+                                foreach(var ctorArg in att.ConstructorArguments) {
+                                    i.EmitConstant(ctorArg.Type, ctorArg.Value);
+                                }
+
+                                i.Emit(OpCodes.Newobj, mCuckooCtor);
+                            }
+                            else {
+                                var mCuckooCtor = tAtt.ReferenceMethod(c => c.IsConstructor
+                                                                               && !c.HasParameters );
+                                i.Emit(OpCodes.Newobj, mCuckooCtor);
+                            }
+
+                            i.Emit(OpCodes.Stloc, vCuckoo);
+
+
+                            if(att.HasFields) {
+                                foreach(var namedCtorArg in att.Fields) {
+                                    var field = tAtt.ReferenceField(namedCtorArg.Name);
+
+                                    i.Emit(OpCodes.Ldloc, vCuckoo);
+                                    i.Emit(OpCodes.Castclass, tAtt);
+                                    i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
+                                    i.Emit(OpCodes.Stfld, field);
+                                }
+                            }
+
+                            if(att.HasProperties) {
+                                foreach(var propArg in att.Properties) {
+                                    var mSet = tAtt.ReferencePropertySetter(propArg.Name);
+
+                                    i.Emit(OpCodes.Ldloc, vCuckoo);
+                                    i.Emit(OpCodes.Castclass, tAtt);
+                                    i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
+                                    i.Emit(OpCodes.Call, mSet);
+                                }
+                            }
+
+                            i.Emit(OpCodes.Ldloc_S, vCuckoos);
+                            i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
+                            i.Emit(OpCodes.Ldloc_S, vCuckoo);
+                            i.Emit(OpCodes.Stelem_Ref);
+                        }
+                    
+                        ////////////////////////////////////////////////////////////////////
+                        //Construct and emplace Roost
+                        i.Emit(OpCodes.Ldloc, vMethod);
+                        i.Emit(OpCodes.Ldloc, vCuckoos);
+                        i.Emit(OpCodes.Newobj, R.Roost_mCtor);
+                        i.Emit(OpCodes.Stsfld, fRoostRef);
+
+
+                        ////////////////////////////////////////////////////////////////////
+                        //Init Cuckoos ////////////////////////////////////////////////////
+                        foreach(var cuckoo in spec.Cuckoos) {
+                            i.Emit(OpCodes.Ldloc, vCuckoos);
+                            i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
+                            i.Emit(OpCodes.Ldelem_Ref);
+
+                            i.Emit(OpCodes.Ldsfld, fRoostRef);
+                            i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnRoost);
+                        }
+                    });
+
+
+
+
+
+
+
+
+
+
+
+
+
             var CallBase_mCtor = tCallBaseRef.ReferenceMethod(m => m.IsConstructor);
 
             var mCtor = tCall.AddCtor(
@@ -130,7 +262,6 @@ namespace Cuckoo.Fody
                                     i.Emit(OpCodes.Call, CallBase_mCtor);
                                     i.Emit(OpCodes.Ret);
                                 });
-
 
             var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeInnerMethod.Name);
 

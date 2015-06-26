@@ -6,7 +6,7 @@ namespace Cuckoo
 {
     public interface ICallArg
     {
-        Parameter Parameter { get; }
+        ParameterInfo Parameter { get; }
         string Name { get; }
         Type Type { get; }
         bool IsByRef { get; }

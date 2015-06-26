@@ -164,18 +164,13 @@ namespace Cuckoo.Fody
 
             tCont.AppendToStaticCtor(
                 (i, m) => {
-                    //var vMethodBase = m.Body.AddVariable<Refl.MethodBase>();
-                    var vMethod = m.Body.AddVariable<Method>();
+                    var vMethod = m.Body.AddVariable<Refl.MethodBase>();
                     var vCuckoo = m.Body.AddVariable<ICuckoo>();
                     var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
                     
-                    //i.Emit(OpCodes.Ldtoken, mOuter);
-                    //i.Emit(OpCodes.Ldtoken, tContRef);
-                    //i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
-                    ////i.Emit(OpCodes.Castclass, R.MethodInfo_Type);
-                    //i.Emit(OpCodes.Stloc, vMethodBase);
-
-                    i.Emit(OpCodes.Ldnull); //CONSTRUCT METHOD HERE!!!!!!!
+                    i.Emit(OpCodes.Ldtoken, mOuter);
+                    i.Emit(OpCodes.Ldtoken, tContRef);
+                    i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
                     i.Emit(OpCodes.Stloc_S, vMethod);
                     
                     /////////////////////////////////////////////////////////////////////
@@ -300,7 +295,7 @@ namespace Cuckoo.Fody
 
             var callWeaver = new CallWeaver(ctx);
             
-            var call = callWeaver.Weave(mOuterRef, args);
+            var call = callWeaver.Weave(mOuterRef, args, _spec);
             
             if(call.RequiresInstanciation) {
                 call = call.Instanciate(contGenArgs, methodGenArgs);     
@@ -318,7 +313,7 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable(call.Type);
                     
-                    i.Emit(OpCodes.Ldsfld, fRoostRef);
+                    i.Emit(OpCodes.Ldsfld, fRoostRef); //NEED TO LOAD THIS FROM STATIC FIELD IN CALL CLASS!
 
                     if(m.IsStatic) {
                         i.Emit(OpCodes.Ldnull);

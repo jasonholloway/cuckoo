@@ -4,7 +4,8 @@ namespace Cuckoo
 {
     public interface IRoost
     {
-        Method Method { get; }
+        MethodBase Method { get; }
+        ParameterInfo[] Parameters { get; }
         ICuckoo[] Cuckoos { get; }
     }
 }

@@ -1,46 +1,14 @@
 ﻿
-CALL REWRITE:
+ROOSTS:
 
-As Ctors require two phases of usurpation, it suddenly becomes more efficient to create CallArgs
-up front, and to use these solely in place of private fields in each special Call.
+Each static roost field should be particular to the generic class of its parent class.
 
-Cuckoos can then edit arg values in place, without a secret updating of the interior fields after
-every stage of potential user interaction. The final inner method will have its arg stack populated
-directly from these CallArgs.
+As Call classes take all generic arguments possible, the roost class should really live
+nested within the Call, and use its static instance here for all the compute-once metadata
+pertaining to calls, such as MethodInfo, ParameterInfo, etc. This should be statically built,
+ie not lazily!
 
-And why not a similar set-up for the return value? 
-
-A single light-weight Call instance will house the CallArg array and return value, and will be passed
-from Cuckoo to Cuckoo in its various stages, finally offering up its modified contents to the final
-inner method invocation.
-
-Calls will therefore not be dispatchers; the Roost will be subclassed more extensively to feed the 
-Cuckoos it contains.
-
-Each call will be of Call<TReturn>, removing the need for IL subclassing of the same.
-
-
-Calls will store a callback reference to the dispatcher, and on CallInner will delegate to this
-dispatcher. The dispatcher will internally keep tabs on which phase of the overall invocation it is at,
-and will switch to the correct inner invocation appropriately. This will however mess up the stack...
-
-So this will separate the call and dispatcher, both of which must be stateful, and therefore both 
-must be created anew for each overall invocation. The roost is static.
-
-Instead of this ping-pong, it would make more sense for each call to be its own dispatcher, as this
-would minimise object allocation, but at the cost of conflation in the design. Calls would remain
-hard-coded in IL (in part at least, as specialised subclasses).
-
-The outer method creates the CallDispatcher (of ICall) and calls Dispatch().
-
-
-NEW ROOSTS:
-
-Roosts will build methodinfo, create a call object, pass this call to its various cuckoos,
-and then invoke the inner method with the contents of the call. 
-
-
-
+Creating the roost should therefore be part of creating the call...
 
 
 
@@ -80,14 +48,12 @@ OnBeforeCall should cascade down through cuckoos...
 ********************************************************************
 TO DO:
 
-> Change to single array of CallArgs, passed throughout stack - no lazy-loading, unfortunately
-	- would be best if CallArgs were structs, no - they store very little info (value + ref to ParamInfo)
+> Static roost field to be nested within Call class
 > Cuckoos on Constructors
 > interface + abstract methods
 > structs rather than classes
 > async
 > Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
-> Use abstract CallBase class, with only sub-methods emitted
 > Test Cuckoos declared in other assemblies
 > Beware array types: in both ctor args and gen params!
 > Return value to police its type

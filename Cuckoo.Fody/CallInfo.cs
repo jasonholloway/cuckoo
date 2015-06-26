@@ -75,7 +75,7 @@ namespace Cuckoo.Fody
             var mod = Type.Module;
 
             return new CallInfo(tCallRef,
-                                    tCallRef.ReferenceMethod(m => m.IsConstructor),
+                                    tCallRef.ReferenceMethod(m => m.IsConstructor && !m.IsStatic),
                                     tCallBaseRef.ReferenceMethod(PreInvokeMethod.Name),
                                     tCallBaseRef.ReferenceMethod(InvokeNextMethod.Name),
                                     ReturnsValue

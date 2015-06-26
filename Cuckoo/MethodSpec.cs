@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace Cuckoo
 {
-    public class Method
+    public class MethodSpec
     {
+        public RuntimeMethodHandle Handle { get; private set; }
+
         public string Name { get; private set; }
         public Type DeclaringType { get; private set; }
 
@@ -21,15 +23,13 @@ namespace Cuckoo
         public Type ReturnType { get; private set; }
 
 
-        public RuntimeMethodHandle RuntimeMethodHandle { get; private set; }
-
 
         public ConstructorInfo GetConstructorInfo() {
-            return (ConstructorInfo)MethodBase.GetMethodFromHandle(RuntimeMethodHandle);
+            return (ConstructorInfo)MethodBase.GetMethodFromHandle(Handle);
         }
 
         public MethodInfo GetMethodInfo() {
-            return (MethodInfo)MethodBase.GetMethodFromHandle(RuntimeMethodHandle);
+            return (MethodInfo)MethodBase.GetMethodFromHandle(Handle);
         } 
     }
 }
