@@ -135,7 +135,7 @@ namespace Cuckoo.Fody
             var fRoost = tCall.AddField<Roost>(
                                         "_roost", 
                                         FieldAttributes.Static 
-                                        | FieldAttributes.Private
+                                        | FieldAttributes.Public
                                         | FieldAttributes.InitOnly );
 
             var fRoostRef = fRoost.CloneWithNewDeclaringType(tCallRef);
@@ -326,6 +326,7 @@ namespace Cuckoo.Fody
                             mCtor,
                             CallBase_mPreInvoke,
                             CallBase_mInvokeNext,
+                            fRoost,
                             fReturn,
                             fArgs,
                             args

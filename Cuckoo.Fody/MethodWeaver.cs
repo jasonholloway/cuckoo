@@ -56,7 +56,7 @@ namespace Cuckoo.Fody
         {   
             var ctx = CreateContext(_spec);
 
-            var fRoostRef = CreateRoost(ctx);
+            //var fRoostRef = CreateRoost(ctx);
 
             var mInner = TransplantOuterToInner(ctx);
             
@@ -131,130 +131,130 @@ namespace Cuckoo.Fody
 
 
 
-        FieldReference CreateRoost(WeaveContext ctx) {
-            var mod = ctx.Module;
-            var R = ctx.RefMap;
-            var mOuter = ctx.mOuter;
-            var mInner = ctx.mInner;
-            var names = ctx.NameSource;
-            var tCont = ctx.tCont;
+        //FieldReference CreateRoost(WeaveContext ctx) {
+        //    var mod = ctx.Module;
+        //    var R = ctx.RefMap;
+        //    var mOuter = ctx.mOuter;
+        //    var mInner = ctx.mInner;
+        //    var names = ctx.NameSource;
+        //    var tCont = ctx.tCont;
 
-            var tContRef = tCont.HasGenericParameters
-                            ? tCont.MakeGenericInstanceType(tCont.GenericParameters.ToArray())
-                            : (TypeReference)tCont;
+        //    var tContRef = tCont.HasGenericParameters
+        //                    ? tCont.MakeGenericInstanceType(tCont.GenericParameters.ToArray())
+        //                    : (TypeReference)tCont;
 
-            ctx.tContRef = tContRef;
+        //    ctx.tContRef = tContRef;
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            //Create static CallSite ///////////////////////////////////////////////////////////////////
-            string callSiteName = names.GetElementName("ROOST", mOuter.Name);
+        //    /////////////////////////////////////////////////////////////////////////////////////////////
+        //    //Create static CallSite ///////////////////////////////////////////////////////////////////
+        //    string callSiteName = names.GetElementName("ROOST", mOuter.Name);
 
-            var fRoost = tCont.AddField(
-                                    R.Roost_Type,
-                                    callSiteName);
+        //    var fRoost = tCont.AddField(
+        //                            R.Roost_Type,
+        //                            callSiteName);
 
-            fRoost.Attributes = FieldAttributes.Private
-                                        | FieldAttributes.Static
-                                        | FieldAttributes.InitOnly;
+        //    fRoost.Attributes = FieldAttributes.Private
+        //                                | FieldAttributes.Static
+        //                                | FieldAttributes.InitOnly;
 
-            ctx.fRoost = fRoost;
+        //    ctx.fRoost = fRoost;
 
-            var fRoostRef = fRoost.CloneWithNewDeclaringType(tContRef);
+        //    var fRoostRef = fRoost.CloneWithNewDeclaringType(tContRef);
 
 
-            tCont.AppendToStaticCtor(
-                (i, m) => {
-                    var vMethod = m.Body.AddVariable<Refl.MethodBase>();
-                    var vCuckoo = m.Body.AddVariable<ICuckoo>();
-                    var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
+        //    tCont.AppendToStaticCtor(
+        //        (i, m) => {
+        //            var vMethod = m.Body.AddVariable<Refl.MethodBase>();
+        //            var vCuckoo = m.Body.AddVariable<ICuckoo>();
+        //            var vCuckoos = m.Body.AddVariable<ICuckoo[]>();
                     
-                    i.Emit(OpCodes.Ldtoken, mOuter);
-                    i.Emit(OpCodes.Ldtoken, tContRef);
-                    i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
-                    i.Emit(OpCodes.Stloc_S, vMethod);
+        //            i.Emit(OpCodes.Ldtoken, mOuter);
+        //            i.Emit(OpCodes.Ldtoken, tContRef);
+        //            i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
+        //            i.Emit(OpCodes.Stloc_S, vMethod);
                     
-                    /////////////////////////////////////////////////////////////////////
-                    //Load ICuckoo instances into array ////////////////////////////////
-                    i.Emit(OpCodes.Ldc_I4, _spec.Cuckoos.Length);
-                    i.Emit(OpCodes.Newarr, R.ICuckoo_Type);
-                    i.Emit(OpCodes.Stloc_S, vCuckoos);
+        //            /////////////////////////////////////////////////////////////////////
+        //            //Load ICuckoo instances into array ////////////////////////////////
+        //            i.Emit(OpCodes.Ldc_I4, _spec.Cuckoos.Length);
+        //            i.Emit(OpCodes.Newarr, R.ICuckoo_Type);
+        //            i.Emit(OpCodes.Stloc_S, vCuckoos);
                     
-                    foreach(var cuckoo in _spec.Cuckoos) {
-                        var att = cuckoo.Attribute;
-                        var tAtt = att.AttributeType;
+        //            foreach(var cuckoo in _spec.Cuckoos) {
+        //                var att = cuckoo.Attribute;
+        //                var tAtt = att.AttributeType;
 
-                        if(att.HasConstructorArguments) {
-                            var mCtor = tAtt.ReferenceMethod(c => m.IsConstructor
-                                                                    && c.Parameters.Select(p => p.ParameterType)
-                                                                        .SequenceEqual(
-                                                                            att.ConstructorArguments.Select(a => a.Type) 
-                                                                        ));
+        //                if(att.HasConstructorArguments) {
+        //                    var mCtor = tAtt.ReferenceMethod(c => m.IsConstructor
+        //                                                            && c.Parameters.Select(p => p.ParameterType)
+        //                                                                .SequenceEqual(
+        //                                                                    att.ConstructorArguments.Select(a => a.Type) 
+        //                                                                ));
 
-                            foreach(var ctorArg in att.ConstructorArguments) {
-                                i.EmitConstant(ctorArg.Type, ctorArg.Value);
-                            }
+        //                    foreach(var ctorArg in att.ConstructorArguments) {
+        //                        i.EmitConstant(ctorArg.Type, ctorArg.Value);
+        //                    }
 
-                            i.Emit(OpCodes.Newobj, mCtor);
-                        }
-                        else {
-                            var mCtor = tAtt.ReferenceMethod(c => c.IsConstructor
-                                                                    && !c.HasParameters );
-                            i.Emit(OpCodes.Newobj, mCtor);
-                        }
+        //                    i.Emit(OpCodes.Newobj, mCtor);
+        //                }
+        //                else {
+        //                    var mCtor = tAtt.ReferenceMethod(c => c.IsConstructor
+        //                                                            && !c.HasParameters );
+        //                    i.Emit(OpCodes.Newobj, mCtor);
+        //                }
 
-                        i.Emit(OpCodes.Stloc, vCuckoo);
+        //                i.Emit(OpCodes.Stloc, vCuckoo);
 
 
-                        if(att.HasFields) {
-                            foreach(var namedCtorArg in att.Fields) {
-                                var field = tAtt.ReferenceField(namedCtorArg.Name);
+        //                if(att.HasFields) {
+        //                    foreach(var namedCtorArg in att.Fields) {
+        //                        var field = tAtt.ReferenceField(namedCtorArg.Name);
 
-                                i.Emit(OpCodes.Ldloc, vCuckoo);
-                                i.Emit(OpCodes.Castclass, tAtt);
-                                i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
-                                i.Emit(OpCodes.Stfld, field);
-                            }
-                        }
+        //                        i.Emit(OpCodes.Ldloc, vCuckoo);
+        //                        i.Emit(OpCodes.Castclass, tAtt);
+        //                        i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
+        //                        i.Emit(OpCodes.Stfld, field);
+        //                    }
+        //                }
 
-                        if(att.HasProperties) {
-                            foreach(var propArg in att.Properties) {
-                                var mSet = tAtt.ReferencePropertySetter(propArg.Name);
+        //                if(att.HasProperties) {
+        //                    foreach(var propArg in att.Properties) {
+        //                        var mSet = tAtt.ReferencePropertySetter(propArg.Name);
 
-                                i.Emit(OpCodes.Ldloc, vCuckoo);
-                                i.Emit(OpCodes.Castclass, tAtt);
-                                i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
-                                i.Emit(OpCodes.Call, mSet);
-                            }
-                        }
+        //                        i.Emit(OpCodes.Ldloc, vCuckoo);
+        //                        i.Emit(OpCodes.Castclass, tAtt);
+        //                        i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
+        //                        i.Emit(OpCodes.Call, mSet);
+        //                    }
+        //                }
 
-                        i.Emit(OpCodes.Ldloc_S, vCuckoos);
-                        i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
-                        i.Emit(OpCodes.Ldloc_S, vCuckoo);
-                        i.Emit(OpCodes.Stelem_Ref);
-                    }
+        //                i.Emit(OpCodes.Ldloc_S, vCuckoos);
+        //                i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
+        //                i.Emit(OpCodes.Ldloc_S, vCuckoo);
+        //                i.Emit(OpCodes.Stelem_Ref);
+        //            }
                     
-                    ////////////////////////////////////////////////////////////////////
-                    //Construct and emplace Roost
-                    i.Emit(OpCodes.Ldloc, vMethod);
-                    i.Emit(OpCodes.Ldloc, vCuckoos);
-                    i.Emit(OpCodes.Newobj, R.Roost_mCtor);
-                    i.Emit(OpCodes.Stsfld, fRoostRef);
+        //            ////////////////////////////////////////////////////////////////////
+        //            //Construct and emplace Roost
+        //            i.Emit(OpCodes.Ldloc, vMethod);
+        //            i.Emit(OpCodes.Ldloc, vCuckoos);
+        //            i.Emit(OpCodes.Newobj, R.Roost_mCtor);
+        //            i.Emit(OpCodes.Stsfld, fRoostRef);
 
 
-                    ////////////////////////////////////////////////////////////////////
-                    //Init Cuckoos ////////////////////////////////////////////////////
-                    foreach(var cuckoo in _spec.Cuckoos) {
-                        i.Emit(OpCodes.Ldloc, vCuckoos);
-                        i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
-                        i.Emit(OpCodes.Ldelem_Ref);
+        //            ////////////////////////////////////////////////////////////////////
+        //            //Init Cuckoos ////////////////////////////////////////////////////
+        //            foreach(var cuckoo in _spec.Cuckoos) {
+        //                i.Emit(OpCodes.Ldloc, vCuckoos);
+        //                i.Emit(OpCodes.Ldc_I4, cuckoo.Index);
+        //                i.Emit(OpCodes.Ldelem_Ref);
 
-                        i.Emit(OpCodes.Ldsfld, fRoostRef);
-                        i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnRoost);
-                    }
-                });
+        //                i.Emit(OpCodes.Ldsfld, fRoostRef);
+        //                i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnRoost);
+        //            }
+        //        });
 
-            return fRoostRef;
-        }
+        //    return fRoostRef;
+        //}
 
 
 
@@ -268,13 +268,13 @@ namespace Cuckoo.Fody
         {            
             var R = ctx.RefMap;
             var mOuter = ctx.mOuter;
-            var fRoost = ctx.fRoost;
+            //var fRoost = ctx.fRoost;
             var tCont = ctx.tCont;
             var tContRef = ctx.tContRef;
 
-            var fRoostRef = tCont.HasGenericParameters
-                                ? fRoost.CloneWithNewDeclaringType(tContRef)
-                                : fRoost;
+            //var fRoostRef = tCont.HasGenericParameters
+            //                    ? fRoost.CloneWithNewDeclaringType(tContRef)
+            //                    : fRoost;
 
             var mOuterRef = mOuter.HasGenericParameters
                             ? mOuter.MakeGenericInstanceMethod(mOuter.GenericParameters.ToArray())
@@ -313,7 +313,7 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable(call.Type);
                     
-                    i.Emit(OpCodes.Ldsfld, fRoostRef); //NEED TO LOAD THIS FROM STATIC FIELD IN CALL CLASS!
+                    i.Emit(OpCodes.Ldsfld, call.RoostField);
 
                     if(m.IsStatic) {
                         i.Emit(OpCodes.Ldnull);

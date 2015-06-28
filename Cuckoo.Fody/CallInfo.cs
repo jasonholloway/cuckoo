@@ -35,6 +35,7 @@ namespace Cuckoo.Fody
         public MethodReference CtorMethod { get; private set; }
         public MethodReference PreInvokeMethod { get; private set; }
         public MethodReference InvokeNextMethod { get; private set; }
+        public FieldReference RoostField { get; private set; }
         public FieldReference ReturnField { get; private set; }
         public FieldReference ArgsField { get; private set; }
         public CallWeaver.ArgSpec[] Args { get; private set; }
@@ -47,6 +48,7 @@ namespace Cuckoo.Fody
                     MethodReference ctorMethod,
                     MethodReference preInvokeMethod,
                     MethodReference invokeNextMethod,
+                    FieldReference roostField,
                     FieldReference returnField,
                     FieldReference argsField,
                     CallWeaver.ArgSpec[] args ) 
@@ -55,6 +57,7 @@ namespace Cuckoo.Fody
             CtorMethod = ctorMethod;
             PreInvokeMethod = preInvokeMethod;
             InvokeNextMethod = invokeNextMethod;
+            RoostField = roostField;
             ReturnField = returnField;
             ArgsField = argsField;
             Args = args;
@@ -78,6 +81,7 @@ namespace Cuckoo.Fody
                                     tCallRef.ReferenceMethod(m => m.IsConstructor && !m.IsStatic),
                                     tCallBaseRef.ReferenceMethod(PreInvokeMethod.Name),
                                     tCallBaseRef.ReferenceMethod(InvokeNextMethod.Name),
+                                    tCallRef.ReferenceField(RoostField.Name),
                                     ReturnsValue
                                         ? tCallBaseRef.ReferenceField(ReturnField.Name)
                                         : null,
