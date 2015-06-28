@@ -230,7 +230,7 @@ namespace Cuckoo.Fody
                             i.Emit(OpCodes.Ldelem_Ref);
 
                             i.Emit(OpCodes.Ldsfld, fRoostRef);
-                            i.Emit(OpCodes.Callvirt, R.ICuckoo_mOnRoost);
+                            i.Emit(OpCodes.Callvirt, R.ICuckoo_mInit);
                         }
                     });
 
@@ -259,11 +259,20 @@ namespace Cuckoo.Fody
                                     i.Emit(OpCodes.Ldarg_1);
                                     i.Emit(OpCodes.Ldarg_2);
                                     i.Emit(OpCodes.Ldarg_3);
+
+                                    i.Emit(isStaticMethod
+                                                ? OpCodes.Ldc_I4_0
+                                                : OpCodes.Ldc_I4_1);
+
+                                    i.Emit(returnsValue
+                                                ? OpCodes.Ldc_I4_1
+                                                : OpCodes.Ldc_I4_0);
+
                                     i.Emit(OpCodes.Call, CallBase_mCtor);
                                     i.Emit(OpCodes.Ret);
                                 });
 
-            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeInnerMethod.Name);
+            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeFinal.Name);
 
             var mInner = tContRef.ReferenceMethod(_ctx.mInner.Name);
 

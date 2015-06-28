@@ -18,16 +18,6 @@ namespace Cuckoo.Test
     [TestClass]
     public class BasicTests : WeavingTestBase
     {
-        /*
-        [TestMethod]
-        public void AllUsurpationsCallable() {
-            Assert.IsTrue(UsurpedMethods.Any(), "No usurpations!");
-
-            foreach(var method in UsurpedMethods) {
-                System.Diagnostics.Debug.WriteLine(method.Name);
-                MethodTester.Test(method); 
-            }
-        }*/
 
         [TestMethod]
         public void SimpleCall() {
@@ -104,12 +94,12 @@ namespace Cuckoo.Test
             var result = Tester.Static()
                                     .Run(() => new Basic.CtorClass(12, 12).BaseValue );
 
-            Assert.IsTrue(result == 13);
+            Assert.IsTrue(result == 7700);
 
             result = Tester.Static()
-                                .Run(() => new Basic.CtorClass(12, 12).DerivedValue);
+                                .Run(() => new Basic.CtorClass(12, 12).DerivedValue );
 
-            Assert.IsTrue(result == 13);
+            Assert.IsTrue(result == 99);
         }
 
 

@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallPhases.cs" />
+    <Compile Include="IBeforeCall.cs" />
     <Compile Include="Impl\CallArg.cs" />
     <Compile Include="ICallArg.cs" />
     <Compile Include="Impl\CallBase.cs" />
@@ -51,8 +52,6 @@
     <Compile Include="ICall.cs" />
     <Compile Include="Attributes\CuckooAttribute.cs" />
     <Compile Include="Attributes\CuckooedAttribute.cs" />
-    <Compile Include="MethodSpec.cs" />
-    <Compile Include="ParamSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

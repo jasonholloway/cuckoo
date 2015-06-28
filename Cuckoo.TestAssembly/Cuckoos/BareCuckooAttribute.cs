@@ -13,10 +13,8 @@ namespace Cuckoo.TestAssembly.Cuckoos
     {
         
 
-        public override void OnCall(ICall call) {
-
+        public override void Call(ICall call) {
             call.CallInner();
-
         }
     }
 

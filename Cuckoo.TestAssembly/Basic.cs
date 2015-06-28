@@ -102,7 +102,7 @@ namespace Cuckoo.TestAssembly
             public int DerivedValue { get; private set; }
 
             [BareCuckoo]
-            [ArgChangingCuckoo]
+            [CtorArgChangingCuckoo]
             public CtorClass(int baseValue, int derivedValue) 
                 : base(baseValue * 100) 
             {

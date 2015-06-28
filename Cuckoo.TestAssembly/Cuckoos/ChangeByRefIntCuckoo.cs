@@ -17,12 +17,10 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _i = i;
         }
 
-        public override void OnCall(ICall call) {
-            throw new NotImplementedException("Cuckoo disabled till params sorted");
-
+        public override void Call(ICall call) {
             call.CallInner();
 
-            foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(int))) {
+            foreach(var arg in call.Args.Where(a => a.IsByRef && a.ValueType == typeof(int))) {
                 arg.Value = _i;
             }
         }

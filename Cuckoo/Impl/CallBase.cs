@@ -9,66 +9,82 @@ namespace Cuckoo.Impl
 {
     public abstract class CallBase<TInstance, TReturn> : ICall
     {
-        protected IRoost _roost;
-        protected TInstance _instance;
         public ICallArg[] _callArgs; //public as these to be accessed by mOuter
         public TReturn _return;
-
+        
+        protected IRoost _roost;
+        protected TInstance _instance;
+      
         ICuckoo[] _cuckoos;
         int _iNextCuckoo = 0;
+        bool _hasInstance;
+        bool _returnsValue;
+
 
         protected CallBase(
                     IRoost roost,
                     TInstance instance, 
-                    ICallArg[] callArgs ) 
+                    ICallArg[] callArgs,
+                    bool hasInstance,
+                    bool returnsValue ) 
         {
             _roost = roost;
             _cuckoos = _roost.Cuckoos;
             _instance = instance;
             _callArgs = callArgs;
+            _hasInstance = hasInstance;
+            _returnsValue = returnsValue;
         }
 
         
         public void PreInvoke() {
-            //call PreInvoke on each cuckoo...
+            foreach(var cuckoo in _cuckoos) {
+                cuckoo.PreCall(this);
+            }
         }
 
         public void InvokeNext() {
             if(_iNextCuckoo < _cuckoos.Length) {
-                var cuckoo = _cuckoos[_iNextCuckoo++];
-                
-                cuckoo.OnCall(this);
-
-                _iNextCuckoo--; //this is unnecessary
+                var cuckoo = _cuckoos[_iNextCuckoo++];                
+                cuckoo.Call(this);
             }
             else {
-                InvokeInnerMethod();
+                InvokeFinal();
             }
         }
 
-        protected abstract void InvokeInnerMethod(); //loads args onto stack etc
+        protected abstract void InvokeFinal();
+
+
+        #region IBeforeCall
+
+        bool IBeforeCall.HasInstance {
+            get { return _hasInstance; }
+        }
+
+        bool IBeforeCall.HasReturnValue {
+            get { return _returnsValue; }
+        }
+
+        IRoost IBeforeCall.Roost {
+            get { return _roost; }
+        }
+
+        MethodBase IBeforeCall.Method {
+            get { return _roost.Method; }
+        }
+
+        ICallArg[] IBeforeCall.Args {
+            get { return _callArgs; }
+        }
+
+        #endregion
 
 
         #region ICall
 
-        bool ICall.HasInstance {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool ICall.HasReturnValue {
-            get { throw new NotImplementedException(); }
-        }
-
         object ICall.Instance {
             get { return _instance; }
-        }
-
-        MethodBase ICall.Method {
-            get { throw new NotImplementedException(); }
-        }
-
-        ICallArg[] ICall.Args {
-            get { return _callArgs; }
         }
 
         object ICall.ReturnValue {

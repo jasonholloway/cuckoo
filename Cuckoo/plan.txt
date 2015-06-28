@@ -1,45 +1,6 @@
 ﻿
-ROOSTS:
-
-Each static roost field should be particular to the generic class of its parent class.
-
-As Call classes take all generic arguments possible, the roost class should really live
-nested within the Call, and use its static instance here for all the compute-once metadata
-pertaining to calls, such as MethodInfo, ParameterInfo, etc. This should be statically built,
-ie not lazily!
-
-Creating the roost should therefore be part of creating the call...
-
-
-
-
-
-
-
-
 CTORS:
-> Are special cases, in that delegation to base ctor must occur in outer!
-
-Need OnBeforeCall to provide opportunity to change args before ctor interior stuff.
-
-
-1 - Init cascade: constructs hierarchy of calls, each with its target in place
-2 - OnBeforeCall cascade
-3 - Ctor init at base
-4 - OnCall cascade
-5 - Return
-...
-
-OnCall and OnBeforeCall will become virtual rather than abstract
-
-OnBeforeCall should cascade down through cuckoos...
-
-
-
-
-
-
-
+> PreCall currently not affecting value sent to base ctor...
 
 
 
@@ -48,17 +9,16 @@ OnBeforeCall should cascade down through cuckoos...
 ********************************************************************
 TO DO:
 
-> Static roost field to be nested within Call class
 > Cuckoos on Constructors
-> interface + abstract methods
+> No abstract methods! Enforce at weaving stage: throw error if discovered.
 > structs rather than classes
 > async
-> Calls to have bespoke little method/param info classes, with lazy GetParameterInfo() and GetMethodInfo() funcs
 > Test Cuckoos declared in other assemblies
 > Beware array types: in both ctor args and gen params!
 > Return value to police its type
 > CallInner and Proceed to check call phase
 > Nullable types in generic args
+
 
 
 
@@ -72,6 +32,7 @@ DOUBTFUL:
 
 *******************************************************************
 DONE:
+> Static roost field to be nested within Call class DONE
 > Static classes DONE
 > Static methods DONE
 > Optional args in CuckooAttributes DONE

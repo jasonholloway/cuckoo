@@ -11,7 +11,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
 {
     public class OutArgChangingCuckooAttribute : CuckooAttribute
     {
-        public override void OnCall(ICall call) {
+        public override void Call(ICall call) {
             throw new NotImplementedException();
 
             //call.CallInner();

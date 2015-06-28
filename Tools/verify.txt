@@ -2,4 +2,6 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-All Classes and Methods in ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll Verified.
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.Basic+CtorClass::.ctor][mdToken=0x6000073][offset 0x00000042][found <uninitialized> ref ('this' ptr) 'Cuckoo.TestAssembly.Basic+CtorClass'][expected ref 'Cuckoo.TestAssembly.Basic+CtorClass'] Unexpected type on the stack.
+[IL]: Error: [C:\dev\csharp\cuckoo\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll : Cuckoo.TestAssembly.Basic+CtorClass::.ctor][mdToken=0x6000073][offset 0x00000042][found <uninitialized> ref ('this' ptr) 'Cuckoo.TestAssembly.Basic+CtorClass'] Uninitialized item on stack.
+2 Error(s) Verifying ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly2.dll

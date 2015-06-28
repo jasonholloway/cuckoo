@@ -14,9 +14,9 @@ namespace GenericExample
         class Call<TRet> : CallBase<ByRefs, TRet>
         {
             public Call() 
-                : base(null, null, null) { }
+                : base(null, null, null, true, true) { }
 
-            protected override void InvokeInnerMethod() {
+            protected override void InvokeFinal() {
                 //...
             }
         }

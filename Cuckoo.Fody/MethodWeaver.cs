@@ -262,19 +262,14 @@ namespace Cuckoo.Fody
 
 
         MethodDefinition WeaveOuterMethod(
-            WeaveContext ctx, 
-            IEnumerable<CuckooSpec> cuckoos, 
-            MethodDefinition mInner) 
+                                WeaveContext ctx, 
+                                IEnumerable<CuckooSpec> cuckoos, 
+                                MethodDefinition mInner) 
         {            
             var R = ctx.RefMap;
             var mOuter = ctx.mOuter;
-            //var fRoost = ctx.fRoost;
             var tCont = ctx.tCont;
             var tContRef = ctx.tContRef;
-
-            //var fRoostRef = tCont.HasGenericParameters
-            //                    ? fRoost.CloneWithNewDeclaringType(tContRef)
-            //                    : fRoost;
 
             var mOuterRef = mOuter.HasGenericParameters
                             ? mOuter.MakeGenericInstanceMethod(mOuter.GenericParameters.ToArray())
@@ -312,15 +307,19 @@ namespace Cuckoo.Fody
             mOuter.Compose(
                 (i, m) => {
                     var vCall = m.Body.AddVariable(call.Type);
+                    var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
                     
                     i.Emit(OpCodes.Ldsfld, call.RoostField);
+
+                    i.Emit(OpCodes.Dup);
+                    i.Emit(OpCodes.Call, R.Roost_mGetParams);
+                    i.Emit(OpCodes.Stloc_S, vParams);
 
                     if(m.IsStatic) {
                         i.Emit(OpCodes.Ldnull);
                     }
                     else {
-                        i.Emit(OpCodes.Ldnull); //!!!!!!!!!!!!!!!
-                        //i.Emit(OpCodes.Ldarg_0);
+                        i.Emit(OpCodes.Ldarg_0);
                     }
                     
                     i.Emit(OpCodes.Ldc_I4, args.Length);
@@ -330,7 +329,9 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Dup);
                         i.Emit(OpCodes.Ldc_I4, arg.Index);
 
-                        i.Emit(OpCodes.Ldnull); //LOAD PARAMETER HERE!!!!
+                        i.Emit(OpCodes.Ldloc_S, vParams);
+                        i.Emit(OpCodes.Ldc_I4, arg.Index);
+                        i.Emit(OpCodes.Ldelem_Ref);
 
                         if(arg.IsByRef) {
                             i.Emit(OpCodes.Ldarg_S, arg.OuterParam.Resolve());
@@ -352,6 +353,10 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Ldloc_S, vCall);
                     i.Emit(OpCodes.Callvirt, call.PreInvokeMethod);
 
+                    //NEED TO COPY BACK ARG VALUES HERE!!!!
+                    //have to replace all ldarg_s opcodes with loads from callargs
+                    //would be nice to have a long int of flags
+                    //or indeed loads of bools, limiting updates to changed args (and same below!)
 
                     if(initialCtorInstructions != null) {
                         foreach(var inst in initialCtorInstructions) {

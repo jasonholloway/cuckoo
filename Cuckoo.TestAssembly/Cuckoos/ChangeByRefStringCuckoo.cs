@@ -17,10 +17,10 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _s = s;
         }
 
-        public override void OnCall(ICall call) {
+        public override void Call(ICall call) {
             call.CallInner();
 
-            foreach(var arg in call.Args.Where(a => a.Type.IsByRef && a.Type.GetElementType() == typeof(string))) {
+            foreach(var arg in call.Args.Where(a => a.IsByRef && a.ValueType == typeof(string))) {
                 arg.Value = _s;
             }
         }

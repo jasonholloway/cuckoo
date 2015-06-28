@@ -9,29 +9,36 @@ namespace Cuckoo.Impl
 {
     public class CallArg<TVal> : ICallArg<TVal>
     {
+        ParameterInfo _param;
+
         public TVal _value;
 
+
         public CallArg(ParameterInfo param, TVal value) {
+            _param = param;
             _value = value;
-            Parameter = param;
         }
 
 
-        public ParameterInfo Parameter { get; private set; }
-
+        public ParameterInfo Parameter {
+            get { return _param; }
+        }
 
         public string Name {
             get { return Parameter.Name; }
         }
 
-        public Type Type {
-            get { return Parameter.ParameterType.GetElementType(); }
+        public Type ValueType {
+            get {
+                return IsByRef
+                        ? Parameter.ParameterType.GetElementType()
+                        : Parameter.ParameterType;
+            }
         }
 
         public bool IsByRef {
             get { return Parameter.ParameterType.IsByRef; }
         }
-
 
 
         object ICallArg.Value {
@@ -49,6 +56,7 @@ namespace Cuckoo.Impl
                 _value = (TVal)value;
             }
         }
+
 
         TVal ICallArg<TVal>.TypedValue {
             get {

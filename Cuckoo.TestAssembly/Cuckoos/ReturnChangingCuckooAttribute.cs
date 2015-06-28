@@ -18,11 +18,11 @@ namespace Cuckoo.TestAssembly.Cuckoos
             _message = message;
         }
 
-        public override void OnRoost(IRoost roost) {
+        public override void Init(IRoost roost) {
             _returnsString = ((MethodInfo)roost.Method).ReturnType == typeof(string);
         }
 
-        public override void OnCall(ICall call) {
+        public override void Call(ICall call) {
             call.CallInner();
 
             if(_returnsString) {
