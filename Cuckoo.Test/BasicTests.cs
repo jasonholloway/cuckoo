@@ -90,26 +90,11 @@ namespace Cuckoo.Test
         }
 
         [TestMethod]
-        public void CuckoosOnCtor() {
-            var result = Tester.Static()
-                                    .Run(() => new Basic.CtorClass(12, 12).BaseValue );
+        public void ImportedCuckooOnMethod() {
+            var result = Tester.WithClass<Basic>().Run(b => b.MethodWithDistantCuckoo());
 
-            Assert.IsTrue(result == 7700);
-
-            result = Tester.Static()
-                                .Run(() => new Basic.CtorClass(12, 12).DerivedValue );
-
-            Assert.IsTrue(result == 99);
+            Assert.IsTrue(result == 999);
         }
-
-
-        //[TestMethod]
-        //public void CuckooOnCtorGetsInstance() {
-        //    Tester.Static()
-        //              .Run(() => new Basic.CtorClass(1, 2));
-        //}
-
-
 
 
     }

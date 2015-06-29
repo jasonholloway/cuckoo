@@ -1,19 +1,24 @@
 ﻿
 ********************************************************************
 TO DO:
-> async
-> No abstract methods! Enforce at weaving stage: throw error if discovered.
-> structs rather than classes
-> Test Cuckoos declared in other assemblies
-> Beware array types: in both ctor args and gen params!
-> CallInner and Proceed to check call phase
-> Nullable types in generic args
-
-
+> NuGet
+> Mono
 
 
 *******************************************************************
 DONE:
+> Clean away MethodDecorator remnants DONE
+> Remove and sort all usings DONE
+> structs rather than classes DONE
+> virtual methods DONE
+> check attributes not inherited DONE
+> Test Cuckoos declared in other assemblies DONE
+> Extension methods DONE
+> ICuckooProvider DONE
+> Property accessors DONE
+> Beware array types: in both ctor args and gen params! DONE
+> Nullable types in generic args DONE
+> async DONE
 > Return value to police its type DONE
 > Cuckoos on Constructors DONE
 > Static roost field to be nested within Call class DONE

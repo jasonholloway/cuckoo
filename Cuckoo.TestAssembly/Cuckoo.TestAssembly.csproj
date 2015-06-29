@@ -47,6 +47,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Args.cs" />
+    <Compile Include="Cuckoos\ReturnInstanceCuckooAttribute.cs" />
+    <Compile Include="Structs.cs" />
+    <Compile Include="Ctors.cs" />
+    <Compile Include="Cuckoos\CheckArgsCuckooAttribute.cs" />
+    <Compile Include="Properties.cs" />
+    <Compile Include="TypeSpecArgs.cs" />
+    <Compile Include="Async.cs" />
     <Compile Include="Cuckoos\CheckInstanceInPlaceCuckooAttribute.cs" />
     <Compile Include="Cuckoos\CtorArgChangingCuckooAttribute.cs" />
     <Compile Include="Statics.cs" />
@@ -69,11 +76,16 @@
     <Compile Include="GenericArgs.cs" />
     <Compile Include="Basic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Virtuals.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cuckoo.AnotherTestAssembly\Cuckoo.AnotherTestAssembly.csproj">
+      <Project>{20cee2c9-a38e-4f66-95c6-30af60328a6f}</Project>
+      <Name>Cuckoo.AnotherTestAssembly</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
       <Name>Cuckoo</Name>

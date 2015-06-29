@@ -31,6 +31,17 @@ namespace Cuckoo.Test
             Assert.IsTrue(r == default(int));
         }
 
+
+        [TestMethod]
+        public void CuckooOnMethodWithNullableGenericResult() {
+            int? r = Tester.WithClass<GenericArgs>()
+                            .Run(g => g.MethodWithGenericResult<int?>(99));
+
+            Assert.IsTrue(r == default(int?));
+        }
+
+
+
         [TestMethod]
         public void CuckoosCooperateOnMethodWithGenericArgs() {
             int r = Tester.WithClass<GenericArgs>()
@@ -38,6 +49,17 @@ namespace Cuckoo.Test
 
             Assert.IsTrue(r == 90);
         }
+
+
+
+        [TestMethod]
+        public void CuckooOnMethodReturningGenValue() {
+            var l = Tester.WithClass<GenericArgs>()
+                            .Run(g => g.MethodReturningList());
+
+            Assert.IsTrue(l.SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
+        }
+
 
 
     }

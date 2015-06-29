@@ -1,11 +1,7 @@
-﻿using Mono.Cecil;
+﻿using Cuckoo.Fody.Cecil;
+using Mono.Cecil;
 using Mono.Cecil.Rocks;
-using Cuckoo.Fody.Cecil;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {

@@ -63,6 +63,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="StructTests.cs" />
+    <Compile Include="VirtualTests.cs" />
+    <Compile Include="PropertyTests.cs" />
+    <Compile Include="AsyncTests.cs" />
+    <Compile Include="TypeSpecTests.cs" />
+    <Compile Include="CtorTests.cs" />
     <Compile Include="ArgTests.cs" />
     <Compile Include="StaticTests.cs" />
     <Compile Include="AttributeTests.cs" />

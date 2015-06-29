@@ -30,6 +30,13 @@ namespace Cuckoo.Test
             Assert.IsTrue(result == 887);
         }
 
+        [TestMethod]
+        public void CuckooOnGenericMethodWithArrayParams() {
+            int result = Tester.WithClass<GenericClass<int[], int[]>>()
+                                .Run(c => c.MethodWithGenericArgsInGenericClass<string[], string>(new[] { "a1", "a2" }, "b"));
+
+            Assert.IsTrue(result == 887);
+        }
 
     }
 }

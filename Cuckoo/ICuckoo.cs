@@ -4,7 +4,7 @@ namespace Cuckoo
     public interface ICuckoo
     {
         void Init(IRoost roost);
-        void PreCall(IBeforeCall beforeCall);
+        void PreCall(ICallArg[] callArgs);
         void Call(ICall call);
     }
 

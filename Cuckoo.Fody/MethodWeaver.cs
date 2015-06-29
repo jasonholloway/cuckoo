@@ -1,17 +1,13 @@
-﻿using Cuckoo;
-using Cuckoo.Fody.Cecil;
+﻿using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
-    using Mono.Collections.Generic;
     using Refl = System.Reflection;
 
     internal partial class MethodWeaver
@@ -58,7 +54,7 @@ namespace Cuckoo.Fody
 
             var mInner = TransplantOuterToInner(ctx);
             
-            var mOuter = WeaveOuterMethod(ctx, _spec.Cuckoos, mInner);
+            var mOuter = WeaveOuterMethod(ctx, _spec.ProvSpecs, mInner);
             
             AddCuckooedAttribute(ctx, mOuter, mInner);
 
@@ -260,7 +256,7 @@ namespace Cuckoo.Fody
 
         MethodDefinition WeaveOuterMethod(
                                 WeaveContext ctx, 
-                                IEnumerable<CuckooSpec> cuckoos, 
+                                IEnumerable<CuckooProvSpec> cuckoos, 
                                 MethodDefinition mInner) 
         {            
             var R = ctx.RefMap;
@@ -407,8 +403,12 @@ namespace Cuckoo.Fody
                     if(m.IsStatic) {
                         i.Emit(OpCodes.Ldnull);
                     }
-                    else {
+                    else {    
                         i.Emit(OpCodes.Ldarg_0);
+
+                        if(tCont.IsValueType) {
+                            i.Emit(OpCodes.Ldobj, tContRef);
+                        }
                     }
 
                     i.Emit(OpCodes.Callvirt, call.InvokeMethod);

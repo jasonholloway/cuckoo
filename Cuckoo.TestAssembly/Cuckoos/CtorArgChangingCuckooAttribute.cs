@@ -12,12 +12,12 @@ namespace Cuckoo.TestAssembly.Cuckoos
     public class CtorArgChangingCuckooAttribute : CuckooAttribute
     {
 
-        public override void PreCall(IBeforeCall call) {
-            foreach(var stringArg in call.Args.Where(a => a.ValueType == typeof(string))) {
+        public override void PreCall(ICallArg[] callArgs) {
+            foreach(var stringArg in callArgs.Where(a => a.ValueType == typeof(string))) {
                 stringArg.Value = "Chirp!";
             }
 
-            foreach(var intArg in call.Args.Where(a => a.ValueType == typeof(int))) {
+            foreach(var intArg in callArgs.Where(a => a.ValueType == typeof(int))) {
                 intArg.Value = 77;
             }
         }

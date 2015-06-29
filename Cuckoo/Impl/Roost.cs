@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Impl
 {
@@ -13,10 +9,18 @@ namespace Cuckoo.Impl
         public ParameterInfo[] Parameters { get; private set; }
         public ICuckoo[] Cuckoos { get; private set; }
 
-        public Roost(MethodBase method, ICuckoo[] cuckoos) {
+        public Roost(MethodBase method) {
             Method = method;
             Parameters = method.GetParameters();
-            Cuckoos = cuckoos;
+        }
+
+        public void Init(ICuckooProvider[] provs) {
+            Cuckoos = provs.SelectMany(p => p.CreateCuckoos(this))
+                                .ToArray();
+
+            foreach(var cuckoo in Cuckoos) {
+                cuckoo.Init(this);
+            }
         }
 
     }

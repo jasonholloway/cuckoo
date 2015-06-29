@@ -1,12 +1,8 @@
-﻿using Cuckoo;
-using Cuckoo.Fody.Cecil;
+﻿using Cuckoo.Fody.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
@@ -36,8 +32,11 @@ namespace Cuckoo.Fody
 
         public readonly TypeReference Roost_Type;
         public readonly MethodReference Roost_mCtor;
+        public readonly MethodReference Roost_mInit;
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetCuckoos;
+
+        public readonly TypeReference ICuckooProvider_Type;
 
         public readonly TypeReference ICuckoo_Type;
         public readonly MethodReference ICuckoo_mInit;
@@ -53,11 +52,15 @@ namespace Cuckoo.Fody
             MethodInfo_Type = module.ImportReference(typeof(Refl.MethodInfo));
             ParamInfo_Type = module.ImportReference(typeof(Refl.ParameterInfo));
 
-            ICuckoo_Type = module.ImportReference(typeof(ICuckoo));
             ICall_Type = module.ImportReference(typeof(ICall));
             CallBase_Type = module.ImportReference(typeof(CallBase<,>));
             ICallArg_Type = module.ImportReference(typeof(ICallArg));
 
+            ICuckooProvider_Type = module.ImportReference(
+                                            typeof(ICuckooProvider));
+
+            ICuckoo_Type = module.ImportReference(
+                                            typeof(ICuckoo));
 
             ICuckoo_mInit = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("Init"));
@@ -94,6 +97,9 @@ namespace Cuckoo.Fody
 
             Roost_mCtor = module.ImportReference(
                                         Roost_Type.Resolve().GetConstructors().First());
+
+            Roost_mInit = module.ImportReference(
+                                        Roost_Type.Resolve().GetMethod("Init"));
 
             Roost_mGetParams = module.ImportReference(
                                         Roost_Type.GetMethod("get_Parameters"));

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Impl
 {
@@ -40,13 +36,12 @@ namespace Cuckoo.Impl
             _callArgs = callArgs;
 
             foreach(var cuckoo in _cuckoos) {
-                cuckoo.PreCall(this);
+                cuckoo.PreCall(callArgs);
             }
         }
 
         public void Invoke(TInstance instance) {
             _instance = instance;
-
             InvokeNext();
         }
 
@@ -64,32 +59,27 @@ namespace Cuckoo.Impl
         protected abstract void InvokeFinal();
 
 
-        #region IBeforeCall
+        #region ICall
 
-        bool IBeforeCall.HasInstance {
+        bool ICall.HasInstance {
             get { return _hasInstance; }
         }
 
-        bool IBeforeCall.HasReturnValue {
+        bool ICall.HasReturnValue {
             get { return _returnsValue; }
         }
 
-        IRoost IBeforeCall.Roost {
+        IRoost ICall.Roost {
             get { return _roost; }
         }
 
-        MethodBase IBeforeCall.Method {
+        MethodBase ICall.Method {
             get { return _roost.Method; }
         }
 
-        ICallArg[] IBeforeCall.Args {
+        ICallArg[] ICall.Args {
             get { return _callArgs; }
         }
-
-        #endregion
-
-
-        #region ICall
 
         object ICall.Instance {
             get { return _instance; }
@@ -113,7 +103,7 @@ namespace Cuckoo.Impl
         }
 
         #endregion
-
+        
 
         #region ICallArgChangeSink
 
@@ -122,5 +112,6 @@ namespace Cuckoo.Impl
         }
 
         #endregion
+
     }
 }

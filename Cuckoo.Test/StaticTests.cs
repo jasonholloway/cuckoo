@@ -32,6 +32,15 @@ namespace Cuckoo.Test
             Assert.IsTrue(result == 40);
         }
 
+        [TestMethod]
+        public void CuckooOnExtensionMethod() {
+            var result = Tester.WithClass<StaticMethods>()
+                                .Run(s => s.ExtensionMethod(7));
+
+            Assert.IsTrue(result == 407);
+        }
+
+
 
     }
 

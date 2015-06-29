@@ -12,7 +12,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
     public class ArgChangingCuckooAttribute : CuckooAttribute
     {
 
-        public override void PreCall(IBeforeCall call) {
+        public override void PreCall(ICallArg[] callArgs) {
             //...
         }
                 

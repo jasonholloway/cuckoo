@@ -1,9 +1,7 @@
 ﻿using Mono.Cecil;
-using System;
+using Mono.Cecil.Rocks;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
@@ -58,6 +56,12 @@ namespace Cuckoo.Fody
 
             if(sourceTypeSpec is ArrayType) {
                 type = new ArrayType(type, ((ArrayType)sourceTypeSpec).Rank);
+            }
+
+            if(sourceTypeSpec is GenericInstanceType) {
+                type = type.MakeGenericInstanceType(((GenericInstanceType)sourceTypeSpec).GenericArguments
+                                                                                            .Select(a => Map(a))
+                                                                                            .ToArray());
             }
 
             return type;

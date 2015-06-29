@@ -23,6 +23,14 @@ namespace Cuckoo.TestAssembly
         public static int StaticMethodInStaticClass(int a) {
             return a;
         }
+
+
+        [DeductingCuckoo(100)]
+        [AddingCuckoo(500)]
+        public static int ExtensionMethod(this StaticMethods @this, int b) {
+            return b;
+        }
+
     }
 
 }

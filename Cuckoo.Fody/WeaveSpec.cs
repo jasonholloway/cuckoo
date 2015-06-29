@@ -1,19 +1,14 @@
 ﻿using Mono.Cecil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cuckoo.Fody
 {
     internal class WeaveSpec
     {
         public MethodDefinition Method { get; set; }
-        public CuckooSpec[] Cuckoos { get; set; }
+        public CuckooProvSpec[] ProvSpecs { get; set; }
     }
 
-    internal class CuckooSpec
+    internal class CuckooProvSpec
     {
         public CustomAttribute Attribute { get; set; }
         public int Index { get; set; }

@@ -20,7 +20,7 @@ namespace Cuckoo.Test.Infrastructure
         class Mapper
         {
             Dictionary<Type, Type> _dTypes;
-            Dictionary<MethodInfo, MethodInfo> _dMethods;
+            Dictionary<MethodBase, MethodBase> _dMethods;
             Dictionary<MemberInfo, MemberInfo> _dMembers;
 
             public Mapper(Module module) {
@@ -28,7 +28,8 @@ namespace Cuckoo.Test.Infrastructure
                                     .OrderBy(t => t.FullName)
                                     .ToDictionary(t => t, TypeComparer.Instance);
                 
-                _dMethods = _dTypes.Values.SelectMany(t => t.GetMethods())
+                _dMethods = _dTypes.Values.SelectMany(t => t.GetMethods().Cast<MethodBase>()
+                                                                .Concat(t.GetConstructors().Cast<MethodBase>()))
                                             .Distinct(MethodComparer.Instance)
                                             .OrderBy(m => m.DeclaringType.FullName + "." + m.Name)
                                             .ToDictionary(m => m, MethodComparer.Instance);
@@ -63,17 +64,21 @@ namespace Cuckoo.Test.Infrastructure
                 return type;
             }
             
-            internal MethodInfo Map(MethodInfo method) {
+            internal MethodBase Map(MethodBase method) {
                 //a given method must be reduced to its basic form, without generic args
 
                 Type[] genArgs = null;
 
-                if(method.IsGenericMethod) {
-                    genArgs = method.GetGenericArguments()
-                                        .Select(t => Map(t))
-                                        .ToArray();
+                if(method is MethodInfo) {
+                    var methodInfo = (MethodInfo)method;
 
-                    method = method.GetGenericMethodDefinition();
+                    if(methodInfo.IsGenericMethod) {
+                        genArgs = methodInfo.GetGenericArguments()
+                                                .Select(t => Map(t))
+                                                .ToArray();
+
+                        method = methodInfo.GetGenericMethodDefinition();
+                    }
                 }
 
 
@@ -90,7 +95,7 @@ namespace Cuckoo.Test.Infrastructure
                 }
                 
                                 
-                MethodInfo foundMethod;
+                MethodBase foundMethod;
 
                 if(_dMethods.TryGetValue(method, out foundMethod)) {
                     method = foundMethod;
@@ -105,7 +110,7 @@ namespace Cuckoo.Test.Infrastructure
 
 
                 if(genArgs != null) {
-                    method = method.MakeGenericMethod(genArgs);
+                    method = ((MethodInfo)method).MakeGenericMethod(genArgs);
                 }
 
                 return method;
@@ -141,8 +146,8 @@ namespace Cuckoo.Test.Infrastructure
                 public static readonly MemberComparer Instance = new MemberComparer();
 
                 public bool Equals(MemberInfo x, MemberInfo y) {
-                    if(x is MethodInfo && y is MethodInfo) {
-                        return MethodComparer.Instance.Equals((MethodInfo)x, (MethodInfo)y);
+                    if(x is MethodBase && y is MethodBase) {
+                        return MethodComparer.Instance.Equals((MethodBase)x, (MethodBase)y);
                     }
 
                     return TypeComparer.Instance.Equals(x.DeclaringType, y.DeclaringType)
@@ -154,19 +159,20 @@ namespace Cuckoo.Test.Infrastructure
                 }
             }
 
-            class MethodComparer : IEqualityComparer<MethodInfo>
+            class MethodComparer : IEqualityComparer<MethodBase>
             {
                 public static readonly MethodComparer Instance = new MethodComparer();
 
-                public bool Equals(MethodInfo x, MethodInfo y) {
+                public bool Equals(MethodBase x, MethodBase y) {
                     return x.Name == y.Name
                             && TypeComparer.Instance.Equals(x.DeclaringType, y.DeclaringType)
-                            && TypeComparer.Instance.Equals(x.ReturnType, y.ReturnType)
+                            && (!(x is MethodInfo && y is MethodInfo) 
+                                || TypeComparer.Instance.Equals(((MethodInfo)x).ReturnType, ((MethodInfo)y).ReturnType))
                             && x.GetParameters().SequenceEqual(y.GetParameters(), ParameterComparer.Instance);
                 }
 
-                public int GetHashCode(MethodInfo obj) {
-                    return (obj.Name + obj.DeclaringType.FullName + obj.ReturnType.FullName).GetHashCode();
+                public int GetHashCode(MethodBase obj) {
+                    return (obj.Name + obj.DeclaringType.FullName).GetHashCode();
                 }
             }
 
@@ -235,7 +241,7 @@ namespace Cuckoo.Test.Infrastructure
 
                 return Expression.Call(
                                     instance,
-                                    method,
+                                    (MethodInfo)method,
                                     args
                                     );
             }
@@ -254,6 +260,22 @@ namespace Cuckoo.Test.Infrastructure
                                                     .ToArray()
                                     );
             }
+
+            protected override MemberAssignment VisitMemberAssignment(MemberAssignment node) {
+                return Expression.Bind(
+                                    _mapper.Map(node.Member),
+                                    Visit(node.Expression)
+                                    );
+            }
+
+            protected override Expression VisitUnary(UnaryExpression node) {
+                return Expression.Convert(
+                                    Visit(node.Operand),
+                                    _mapper.Map(node.Type)
+                                    );
+            }
+
+            
 
         }
 

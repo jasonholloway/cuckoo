@@ -68,6 +68,13 @@ namespace Cuckoo.TestAssembly
             return 100;
         }
 
+
+        [AddingCuckoo(1)]
+        public List<int> MethodReturningList() {
+            return new List<int>(new[] { 1, 2, 3, 4, 5 });
+        }
+
+
     }
 
 }
