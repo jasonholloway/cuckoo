@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Args.cs" />
+    <Compile Include="Cuckoos\CheckInstanceInPlaceCuckooAttribute.cs" />
     <Compile Include="Cuckoos\CtorArgChangingCuckooAttribute.cs" />
     <Compile Include="Statics.cs" />
     <Compile Include="Atts.cs" />

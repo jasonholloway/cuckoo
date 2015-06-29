@@ -1,5 +1,5 @@
 ﻿
-namespace Cuckoo
+namespace Cuckoo.Impl
 {
     public enum CallPhases
     {

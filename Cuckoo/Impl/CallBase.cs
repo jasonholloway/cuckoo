@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Impl
 {
-    public abstract class CallBase<TInstance, TReturn> : ICall
-    {
-        public ICallArg[] _callArgs; //public as these to be accessed by mOuter
+    public abstract class CallBase<TInstance, TReturn> 
+        : ICall, ICallArgChangeSink
+    { 
+        //public as these to be accessed by mOuter
+        public ICallArg[] _callArgs;
         public TReturn _return;
+        public ulong _argFlags = 0;
         
         protected IRoost _roost;
         protected TInstance _instance;
@@ -23,27 +26,32 @@ namespace Cuckoo.Impl
 
         protected CallBase(
                     IRoost roost,
-                    TInstance instance, 
-                    ICallArg[] callArgs,
                     bool hasInstance,
                     bool returnsValue ) 
         {
             _roost = roost;
             _cuckoos = _roost.Cuckoos;
-            _instance = instance;
-            _callArgs = callArgs;
             _hasInstance = hasInstance;
             _returnsValue = returnsValue;
         }
 
         
-        public void PreInvoke() {
+        public void Prepare(ICallArg[] callArgs) {
+            _callArgs = callArgs;
+
             foreach(var cuckoo in _cuckoos) {
                 cuckoo.PreCall(this);
             }
         }
 
-        public void InvokeNext() {
+        public void Invoke(TInstance instance) {
+            _instance = instance;
+
+            InvokeNext();
+        }
+
+
+        void InvokeNext() {
             if(_iNextCuckoo < _cuckoos.Length) {
                 var cuckoo = _cuckoos[_iNextCuckoo++];                
                 cuckoo.Call(this);
@@ -92,7 +100,10 @@ namespace Cuckoo.Impl
                 return _return;
             }
             set {
-                //check whether this is appropriate...
+                if(!typeof(TReturn).IsAssignableFrom(value.GetType())) {
+                    throw new InvalidCastException(string.Format("Method {0} can't return value of type {1}!", _roost.Method.Name, value.GetType().Name));
+                }
+
                 _return = (TReturn)value;
             }
         }
@@ -103,5 +114,13 @@ namespace Cuckoo.Impl
 
         #endregion
 
+
+        #region ICallArgChangeSink
+
+        void ICallArgChangeSink.RegisterChange(int index) {
+            _argFlags |= (1LU << index);
+        }
+
+        #endregion
     }
 }

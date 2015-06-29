@@ -26,12 +26,13 @@ namespace Cuckoo.Fody
 
         public readonly TypeReference ICall_Type;
         public readonly TypeReference CallBase_Type;
-        public readonly MethodReference CallBase_mPreInvoke;
-        public readonly MethodReference CallBase_mInvokeNext;
+        public readonly MethodReference CallBase_mPrepare;
+        public readonly MethodReference CallBase_mInvoke;
         public readonly MethodReference CallBase_mInvokeFinal;
         public readonly FieldReference CallBase_fInstance;
         public readonly FieldReference CallBase_fReturn;
         public readonly FieldReference CallBase_fCallArgs;
+        public readonly FieldReference CallBase_fArgFlags;
 
         public readonly TypeReference Roost_Type;
         public readonly MethodReference Roost_mCtor;
@@ -67,11 +68,11 @@ namespace Cuckoo.Fody
             ICuckoo_mCall = module.ImportReference(
                                         typeof(ICuckoo).GetMethod("Call"));
 
-            CallBase_mPreInvoke = module.ImportReference(
-                                        CallBase_Type.GetMethod("PreInvoke"));
+            CallBase_mPrepare = module.ImportReference(
+                                        CallBase_Type.GetMethod("Prepare"));
 
-            CallBase_mInvokeNext = module.ImportReference(
-                                        CallBase_Type.GetMethod("InvokeNext"));
+            CallBase_mInvoke = module.ImportReference(
+                                        CallBase_Type.GetMethod("Invoke"));
 
             CallBase_mInvokeFinal = module.ImportReference(
                                         CallBase_Type.GetMethod("InvokeFinal"));
@@ -85,6 +86,8 @@ namespace Cuckoo.Fody
             CallBase_fCallArgs = module.ImportReference(
                                         CallBase_Type.GetField("_callArgs"));
 
+            CallBase_fArgFlags = module.ImportReference(
+                                        CallBase_Type.GetField("_argFlags"));
 
 
             Roost_Type = module.ImportReference(typeof(Roost));

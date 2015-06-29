@@ -10,12 +10,21 @@ namespace Cuckoo.Impl
     public class CallArg<TVal> : ICallArg<TVal>
     {
         ParameterInfo _param;
+        int _index;
+        ICallArgChangeSink _changeSink;
 
         public TVal _value;
 
 
-        public CallArg(ParameterInfo param, TVal value) {
+        public CallArg(
+                    ParameterInfo param, 
+                    int index, 
+                    ICallArgChangeSink changeSink, 
+                    TVal value ) 
+        {
             _param = param;
+            _index = index;
+            _changeSink = changeSink;
             _value = value;
         }
 
@@ -54,6 +63,7 @@ namespace Cuckoo.Impl
                 }
 
                 _value = (TVal)value;
+                _changeSink.RegisterChange(_index);
             }
         }
 
@@ -64,6 +74,7 @@ namespace Cuckoo.Impl
             }
             set {
                 _value = value;
+                _changeSink.RegisterChange(_index);
             }
         }
 

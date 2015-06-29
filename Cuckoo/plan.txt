@@ -1,21 +1,11 @@
 ﻿
-CTORS:
-> PreCall currently not affecting value sent to base ctor...
-
-
-
-
-
 ********************************************************************
 TO DO:
-
-> Cuckoos on Constructors
+> async
 > No abstract methods! Enforce at weaving stage: throw error if discovered.
 > structs rather than classes
-> async
 > Test Cuckoos declared in other assemblies
 > Beware array types: in both ctor args and gen params!
-> Return value to police its type
 > CallInner and Proceed to check call phase
 > Nullable types in generic args
 
@@ -23,15 +13,9 @@ TO DO:
 
 
 *******************************************************************
-DOUBTFUL:
-
-> Light-weight SyncLock on lazy args creation
-	- args are only created once per call, but cuckoo may thread off and access args from there...
-
-
-
-*******************************************************************
 DONE:
+> Return value to police its type DONE
+> Cuckoos on Constructors DONE
 > Static roost field to be nested within Call class DONE
 > Static classes DONE
 > Static methods DONE

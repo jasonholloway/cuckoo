@@ -127,7 +127,7 @@ namespace Cuckoo.Fody
 
             var fArgs = tCallBaseRef.ReferenceField(R.CallBase_fCallArgs.Name);
 
-
+            var fArgFlags = tCallBaseRef.ReferenceField(R.CallBase_fArgFlags.Name);
 
 
             //Create static roost field and append to cctor to populate
@@ -239,27 +239,16 @@ namespace Cuckoo.Fody
 
 
 
-
-
-
-
-
-
-
-            var CallBase_mCtor = tCallBaseRef.ReferenceMethod(m => m.IsConstructor);
+            var CallBase_mCtor = tCallBaseRef
+                                    .ReferenceMethod(m => m.IsConstructor && !m.IsStatic);
 
             var mCtor = tCall.AddCtor(
-                                new[] {
-                                    R.Roost_Type,
-                                    isStaticMethod ? mod.TypeSystem.Object : tContRef,
-                                    R.ICallArg_Type.MakeArrayType()
-                                },
+                                new[] { R.Roost_Type },
                                 (i, m) => {
                                     i.Emit(OpCodes.Ldarg_0);
-                                    i.Emit(OpCodes.Ldarg_1);
-                                    i.Emit(OpCodes.Ldarg_2);
-                                    i.Emit(OpCodes.Ldarg_3);
 
+                                    i.Emit(OpCodes.Ldarg_1);
+                                    
                                     i.Emit(isStaticMethod
                                                 ? OpCodes.Ldc_I4_0
                                                 : OpCodes.Ldc_I4_1);
@@ -272,7 +261,9 @@ namespace Cuckoo.Fody
                                     i.Emit(OpCodes.Ret);
                                 });
 
-            var CallBase_mDispatchFinal = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeFinal.Name);
+
+            var CallBase_mInvokeFinal = tCallBaseRef
+                                            .ReferenceMethod(R.CallBase_mInvokeFinal.Name);
 
             var mInner = tContRef.ReferenceMethod(_ctx.mInner.Name);
 
@@ -281,7 +272,7 @@ namespace Cuckoo.Fody
             }
 
             tCall.OverrideMethod(
-                        CallBase_mDispatchFinal,
+                        CallBase_mInvokeFinal,
                         (i, m) => {
                             if(!isStaticMethod) {
                                 i.Emit(OpCodes.Ldarg_0);
@@ -290,12 +281,18 @@ namespace Cuckoo.Fody
 
                             if(args.Any()) {
                                 var vArgs = i.Body.AddVariable<ICallArg[]>();
-
+                                
                                 i.Emit(OpCodes.Ldarg_0);
                                 i.Emit(OpCodes.Ldfld, fArgs);
                                 i.Emit(OpCodes.Stloc_S, vArgs);
 
                                 foreach(var arg in args) {
+                                    //CHECK CHANGED FLAG BEFORE LOADING EACH ARG
+                                    //if not changed, can load more directly?
+
+                                    //direct route would be by args to method, but this would 
+                                    //only be doable via IL emitting, ie not by nice C# coding
+
                                     i.Emit(OpCodes.Ldloc_S, vArgs);
                                     i.Emit(OpCodes.Ldc_I4, arg.Index);
                                     i.Emit(OpCodes.Ldelem_Ref);
@@ -326,8 +323,8 @@ namespace Cuckoo.Fody
                         });
             
 
-            var CallBase_mPreInvoke = tCallBaseRef.ReferenceMethod(R.CallBase_mPreInvoke.Name);
-            var CallBase_mInvokeNext = tCallBaseRef.ReferenceMethod(R.CallBase_mInvokeNext.Name);
+            var CallBase_mPreInvoke = tCallBaseRef.ReferenceMethod(R.CallBase_mPrepare.Name);
+            var CallBase_mInvokeNext = tCallBaseRef.ReferenceMethod(R.CallBase_mInvoke.Name);
             
 
             return new CallInfo(
@@ -338,6 +335,7 @@ namespace Cuckoo.Fody
                             fRoost,
                             fReturn,
                             fArgs,
+                            fArgFlags,
                             args
                             );
         }

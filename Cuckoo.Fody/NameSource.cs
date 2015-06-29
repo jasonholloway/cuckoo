@@ -10,6 +10,10 @@ namespace Cuckoo.Fody
         public NameSource(TypeDefinition typeDef) {
             _hash = new HashSet<string>();
 
+            foreach(var c in typeDef.NestedTypes) {
+                _hash.Add(c.Name);
+            }
+
             foreach(var m in typeDef.Methods) {
                 _hash.Add(m.Name);
             }

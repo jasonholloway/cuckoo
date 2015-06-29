@@ -108,6 +108,15 @@ namespace Cuckoo.TestAssembly
             {
                 DerivedValue = derivedValue;
             }
+
+
+            [CheckInstanceInPlaceCuckoo]
+            public CtorClass(int a, int b, int c)
+                : base(1) {
+                DerivedValue = a;
+            }
+
+
         }
 
 

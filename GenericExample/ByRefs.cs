@@ -14,7 +14,7 @@ namespace GenericExample
         class Call<TRet> : CallBase<ByRefs, TRet>
         {
             public Call() 
-                : base(null, null, null, true, true) { }
+                : base(null, true, true) { }
 
             protected override void InvokeFinal() {
                 //...
@@ -27,9 +27,9 @@ namespace GenericExample
         public T GenTest<T>(int a) {
             var call = new Call<T>();
 
-            call.PreInvoke();
+            call.Prepare(new CallArg<int>[1]);
 
-            call.InvokeNext();
+            call.Invoke(null);
 
             var r = call._return;
 

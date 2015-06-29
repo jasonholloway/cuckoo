@@ -56,13 +56,11 @@ namespace Cuckoo.Fody
         {   
             var ctx = CreateContext(_spec);
 
-            //var fRoostRef = CreateRoost(ctx);
-
             var mInner = TransplantOuterToInner(ctx);
             
             var mOuter = WeaveOuterMethod(ctx, _spec.Cuckoos, mInner);
             
-            //AddCuckooedAttribute(ctx, mOuter, mInner);
+            AddCuckooedAttribute(ctx, mOuter, mInner);
 
             //ctx.Logger(string.Format("Mod applied to {0}!", ctx.mOuter.FullName));
         }
@@ -97,7 +95,7 @@ namespace Cuckoo.Fody
                                         if(mOuter.IsConstructor) {
                                             m.Attributes &= ~MethodAttributes.SpecialName & ~MethodAttributes.RTSpecialName;
 
-                                            GetInitialCtorInstructions(m.Body).ToList()
+                                            GetInitialCtorInsts(m.Body).ToList()
                                                 .ForEach(i => m.Body.Instructions.Remove(i));
                                         }
                                     });
@@ -107,7 +105,7 @@ namespace Cuckoo.Fody
             return mInner;
         }
 
-        Instruction[] GetInitialCtorInstructions(MethodBody methodBody) {
+        Instruction[] GetInitialCtorInsts(MethodBody methodBody) {
             Instruction last = null;
 
             return methodBody.Instructions
@@ -122,8 +120,7 @@ namespace Cuckoo.Fody
 
                                     last = i;
                                     return true;
-                                })
-                                .ToArray();
+                                }).ToArray();
         }
 
 
@@ -297,8 +294,8 @@ namespace Cuckoo.Fody
             }
 
 
-            var initialCtorInstructions = mOuter.IsConstructor
-                                            ? GetInitialCtorInstructions(mOuter.Body)
+            var initialCtorInsts = mOuter.IsConstructor
+                                            ? GetInitialCtorInsts(mOuter.Body)
                                             : null;
                         
 
@@ -308,6 +305,8 @@ namespace Cuckoo.Fody
                 (i, m) => {
                     var vCall = m.Body.AddVariable(call.Type);
                     var vParams = m.Body.AddVariable<Refl.ParameterInfo[]>();
+                    var vCallArgs = m.Body.AddVariable<ICallArg[]>();
+                    var vArgFlags = m.Body.AddVariable<ulong>();
                     
                     i.Emit(OpCodes.Ldsfld, call.RoostField);
 
@@ -315,13 +314,12 @@ namespace Cuckoo.Fody
                     i.Emit(OpCodes.Call, R.Roost_mGetParams);
                     i.Emit(OpCodes.Stloc_S, vParams);
 
-                    if(m.IsStatic) {
-                        i.Emit(OpCodes.Ldnull);
-                    }
-                    else {
-                        i.Emit(OpCodes.Ldarg_0);
-                    }
+                    i.Emit(OpCodes.Newobj, call.CtorMethod);
+                    i.Emit(OpCodes.Stloc_S, vCall);
                     
+
+                    i.Emit(OpCodes.Ldloc_S, vCall);
+
                     i.Emit(OpCodes.Ldc_I4, args.Length);
                     i.Emit(OpCodes.Newarr, R.ICallArg_Type);
 
@@ -332,6 +330,10 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Ldloc_S, vParams);
                         i.Emit(OpCodes.Ldc_I4, arg.Index);
                         i.Emit(OpCodes.Ldelem_Ref);
+
+                        i.Emit(OpCodes.Ldc_I4, arg.Index);
+
+                        i.Emit(OpCodes.Ldloc_S, vCall);
 
                         if(arg.IsByRef) {
                             i.Emit(OpCodes.Ldarg_S, arg.OuterParam.Resolve());
@@ -346,27 +348,70 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Stelem_Ref);
                     }
 
-                    i.Emit(OpCodes.Newobj, call.CtorMethod);
-                    i.Emit(OpCodes.Stloc_S, vCall);
-                    
+                    i.Emit(OpCodes.Dup);
+                    i.Emit(OpCodes.Stloc_S, vCallArgs);
 
-                    i.Emit(OpCodes.Ldloc_S, vCall);
-                    i.Emit(OpCodes.Callvirt, call.PreInvokeMethod);
+                    i.Emit(OpCodes.Callvirt, call.PrepareMethod);
+                                        
+                    if(mOuter.IsConstructor) {
+                        i.Emit(OpCodes.Ldloc_S, vCall);
+                        i.Emit(OpCodes.Ldfld, call.ArgFlagsField);
+                        i.Emit(OpCodes.Stloc_S, vArgFlags);
 
-                    //NEED TO COPY BACK ARG VALUES HERE!!!!
-                    //have to replace all ldarg_s opcodes with loads from callargs
-                    //would be nice to have a long int of flags
-                    //or indeed loads of bools, limiting updates to changed args (and same below!)
-
-                    if(initialCtorInstructions != null) {
-                        foreach(var inst in initialCtorInstructions) {
+                        foreach(var inst in initialCtorInsts) {
                             i.Append(inst);
+                        }
+
+                        foreach(var callArg in call.Args) {
+                            int argIndexAdj = callArg.MethodArg.Index + 1;
+
+                            var insts = initialCtorInsts
+                                            .Where(n => (n.OpCode.Name == "ldarg" && n.Operand.Equals(argIndexAdj)) //better testing here...
+                                                        || (n.OpCode.Name == "ldarg." + argIndexAdj.ToString()))
+                                            .ToArray();
+
+                            foreach(var inst in insts) {
+                                var cursor = i.Create(OpCodes.Nop);
+                                i.Replace(inst, cursor);
+
+                                //should check arg flag before doing all this
+
+                                var lbLoadArg = i.Create(OpCodes.Nop);
+                                var lbEnd = i.Create(OpCodes.Nop);
+
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldloc_S, vArgFlags));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldc_I8, (long)(1L << callArg.MethodArg.Index)));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Or));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Brfalse_S, lbLoadArg));
+                                
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldloc_S, vCallArgs));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldc_I4, callArg.MethodArg.Index));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldelem_Ref));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Castclass, callArg.CallArg_Type));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldfld, callArg.CallArg_fValue));
+                                i.InsertBefore(cursor, i.Create(OpCodes.Br_S, lbEnd));
+
+                                i.InsertBefore(cursor, lbLoadArg);
+                                i.InsertBefore(cursor, i.Create(OpCodes.Ldarg, argIndexAdj));
+
+                                i.InsertBefore(cursor, lbEnd);
+
+                                i.Remove(cursor);
+                            }
                         }
                     }
 
 
                     i.Emit(OpCodes.Ldloc_S, vCall);
-                    i.Emit(OpCodes.Callvirt, call.InvokeNextMethod);
+
+                    if(m.IsStatic) {
+                        i.Emit(OpCodes.Ldnull);
+                    }
+                    else {
+                        i.Emit(OpCodes.Ldarg_0);
+                    }
+
+                    i.Emit(OpCodes.Callvirt, call.InvokeMethod);
 
 
                     foreach(var callArg in call.Args.Where(a => a.IsByRef)) {

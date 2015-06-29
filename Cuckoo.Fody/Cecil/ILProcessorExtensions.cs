@@ -142,5 +142,15 @@ namespace Cuckoo.Fody.Cecil
 
         #endregion
 
+
+        public static void Replace(
+                                this ILProcessor @this, 
+                                Func<Instruction, bool> fnMatch, 
+                                Action<ILProcessor, MethodBody> fnReplace ) 
+        {
+
+        }
+
+
     }
 }

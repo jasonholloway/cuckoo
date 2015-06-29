@@ -33,22 +33,22 @@ namespace Cuckoo.Test
         }
 
 
-        [TestMethod]
-        public void RoostsInPlace() {
-            foreach(var method in UsurpedMethods) {
-                var fRoost = method.DeclaringType.GetField(
-                                                    "<ROOST>_" + method.Name, 
-                                                    BindingFlags.Static | BindingFlags.NonPublic);
+        //[TestMethod]
+        //public void RoostsInPlace() {
+        //    foreach(var method in UsurpedMethods) {
+        //        var fRoost = method.DeclaringType.GetField(
+        //                                            "<ROOST>_" + method.Name, 
+        //                                            BindingFlags.Static | BindingFlags.NonPublic);
 
-                object value = fRoost.GetValue(null);
-                Assert.IsTrue(value is IRoost);
+        //        object value = fRoost.GetValue(null);
+        //        Assert.IsTrue(value is IRoost);
                 
-                var roost = value as IRoost;
-                Assert.AreEqual(roost.Method, method);
-                Assert.IsTrue(roost.Cuckoos is ICuckoo[]);
-                Assert.IsTrue(roost.Cuckoos.All(u => u is CuckooAttribute));
-            }
-        }
+        //        var roost = value as IRoost;
+        //        Assert.AreEqual(roost.Method, method);
+        //        Assert.IsTrue(roost.Cuckoos is ICuckoo[]);
+        //        Assert.IsTrue(roost.Cuckoos.All(u => u is CuckooAttribute));
+        //    }
+        //}
 
         [TestMethod]
         public void CuckooReturnsValue() {            
@@ -101,6 +101,13 @@ namespace Cuckoo.Test
 
             Assert.IsTrue(result == 99);
         }
+
+
+        //[TestMethod]
+        //public void CuckooOnCtorGetsInstance() {
+        //    Tester.Static()
+        //              .Run(() => new Basic.CtorClass(1, 2));
+        //}
 
 
 
