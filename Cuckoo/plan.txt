@@ -1,52 +1,14 @@
 ﻿
 ********************************************************************
 TO DO:
-
-> SUDDEN CRISIS!!!
-	ValueTypes can't have their instance communicated by value, as the cuckooed inner
-	will then operate on a copy. (SET UP A TEST TO PROVE THIS)
-
-	The address MUST reach the inside, and the only way for to occur is for it to be
-	passed by arg. The invocation mechanism within CallBase must therefore be emitted
-	rather than written in C#.
-
-	This is a significant pain, but does at least force me to allow change tracking.
-
-
-
-	All values can be passed by args to the invocation funcs, but how can the same values
-	be passed via ICall.CallInner? There's no way, unless we tolerate unsafe assemblies
-	storing pointers.
-
-	Only way to do it would involve some ugly nastiness involving special CallInner methods
-	and a requirement for the user to manually pass through the struct value byref. This is
-	unacceptable; and, as struct methods should hardly ever be cuckoed anyway, the best course
-	now would be to outlaw such usage, along with CuckooProviders on abstract methods.
-
-
-
-	Could we copy back by value? That would work, I reckon, though there might be an issue
-	with threading (there would be an issue with this anyway unless locks were used).
-
-	The inner method gets called on OUR version of the valuetype, sitting pretty in a call field,
-	and potentially alters it there; only afterwards, as some final, final act - along with the
-	copying back of byref args.
-
-
-	FIRST OF ALL - NEED TO WRITE A TEST TO EXPOSE THIS PROBLEM then fixit.
-
-
-
-
-
-
-> Hide stack as much as we can
 > NuGet
 > Mono
 
 
 *******************************************************************
 DONE:
+> Hide stack as much as we can DONE
+> Struct values are written back into place after cuckooing DONE
 > Clean away MethodDecorator remnants DONE
 > Remove and sort all usings DONE
 > structs rather than classes DONE

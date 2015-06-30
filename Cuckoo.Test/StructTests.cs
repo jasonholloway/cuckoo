@@ -19,7 +19,7 @@ namespace Cuckoo.Test
         [TestMethod]
         public void CuckoosOnStructMethods() {
             var result = Tester.Static()
-                                .Run(() => new Structs(123).GetNumber());
+                                .Run(() => new TestStruct(123).GetNumber());
 
             Assert.IsTrue(result == 223);
         }
@@ -27,10 +27,19 @@ namespace Cuckoo.Test
         [TestMethod]
         public void CuckooGetsStructInstance() {
             var number = Tester.Static()
-                                  .Run(() => ((Structs)new Structs(123).GetInstance()).Number);
+                                  .Run(() => ((TestStruct)new TestStruct(123).GetInstance())._number);
 
             Assert.IsTrue(number == 123);
         }
+
+        [TestMethod]
+        public void CuckooAffectsOriginalStruct() {
+            var number = Tester.Static()
+                                .Run(() => (new TestStruct(123) { Number = 8 })._number );
+
+            Assert.IsTrue(number == 8);
+        }
+
 
 
     }

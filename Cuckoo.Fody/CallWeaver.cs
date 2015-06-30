@@ -30,7 +30,7 @@ namespace Cuckoo.Fody
 
 
             
-            string callClassName = _ctx.NameSource.GetElementName("CALL", methodName);
+            string callClassName = _ctx.NameSource.GetElementName("CuckooCall", methodName);
 
             var tCall = new TypeDefinition(
                                 tCont.Namespace,
@@ -257,63 +257,66 @@ namespace Cuckoo.Fody
                 mInner = mInner.MakeGenericInstanceMethod(((GenericInstanceMethod)mOuterRef).GenericArguments.ToArray());
             }
 
-            tCall.OverrideMethod(
-                        CallBase_mInvokeFinal,
-                        (i, m) => {
-                            if(!isStaticMethod) {
-                                i.Emit(OpCodes.Ldarg_0);
+            var mInvokeFinal = tCall.OverrideMethod(
+                                        CallBase_mInvokeFinal,
+                                        (i, m) => {
+                                            if(!isStaticMethod) {
+                                                i.Emit(OpCodes.Ldarg_0);
 
-                                if(tCont.IsValueType) {
-                                    i.Emit(OpCodes.Ldflda, fInstance);
-                                }
-                                else {
-                                    i.Emit(OpCodes.Ldfld, fInstance);
-                                }
-                            }
+                                                if(tCont.IsValueType) {
+                                                    i.Emit(OpCodes.Ldflda, fInstance);
+                                                }
+                                                else {
+                                                    i.Emit(OpCodes.Ldfld, fInstance);
+                                                }
+                                            }
 
-                            if(args.Any()) {
-                                var vArgs = i.Body.AddVariable<ICallArg[]>();
+                                            if(args.Any()) {
+                                                var vArgs = i.Body.AddVariable<ICallArg[]>();
                                 
-                                i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldfld, fArgs);
-                                i.Emit(OpCodes.Stloc_S, vArgs);
+                                                i.Emit(OpCodes.Ldarg_0);
+                                                i.Emit(OpCodes.Ldfld, fArgs);
+                                                i.Emit(OpCodes.Stloc_S, vArgs);
 
-                                foreach(var arg in args) {
-                                    //CHECK CHANGED FLAG BEFORE LOADING EACH ARG
-                                    //if not changed, can load more directly?
+                                                foreach(var arg in args) {
+                                                    //CHECK CHANGED FLAG BEFORE LOADING EACH ARG
+                                                    //if not changed, can load more directly?
 
-                                    //direct route would be by args to method, but this would 
-                                    //only be doable via IL emitting, ie not by nice C# coding
+                                                    //direct route would be by args to method, but this would 
+                                                    //only be doable via IL emitting, ie not by nice C# coding
 
-                                    i.Emit(OpCodes.Ldloc_S, vArgs);
-                                    i.Emit(OpCodes.Ldc_I4, arg.Index);
-                                    i.Emit(OpCodes.Ldelem_Ref);
-                                    i.Emit(OpCodes.Castclass, arg.CallArg_Type);
+                                                    i.Emit(OpCodes.Ldloc_S, vArgs);
+                                                    i.Emit(OpCodes.Ldc_I4, arg.Index);
+                                                    i.Emit(OpCodes.Ldelem_Ref);
+                                                    i.Emit(OpCodes.Castclass, arg.CallArg_Type);
                                     
-                                    if(arg.IsByRef) {
-                                        i.Emit(OpCodes.Ldflda, arg.CallArg_fValue);
-                                    }
-                                    else {
-                                        i.Emit(OpCodes.Ldfld, arg.CallArg_fValue);
-                                    }
-                                }
-                            }
+                                                    if(arg.IsByRef) {
+                                                        i.Emit(OpCodes.Ldflda, arg.CallArg_fValue);
+                                                    }
+                                                    else {
+                                                        i.Emit(OpCodes.Ldfld, arg.CallArg_fValue);
+                                                    }
+                                                }
+                                            }
 
-                            i.Emit(OpCodes.Call, mInner);
+                                            i.Emit(OpCodes.Call, mInner);
 
-                            if(returnsValue) {
-                                var vReturn = i.Body.AddVariable(tReturn);
+                                            if(returnsValue) {
+                                                var vReturn = i.Body.AddVariable(tReturn);
                                 
-                                i.Emit(OpCodes.Stloc_S, vReturn);
+                                                i.Emit(OpCodes.Stloc_S, vReturn);
                                 
-                                i.Emit(OpCodes.Ldarg_0);
-                                i.Emit(OpCodes.Ldloc_S, vReturn);
-                                i.Emit(OpCodes.Stfld, fReturn);
-                            }
+                                                i.Emit(OpCodes.Ldarg_0);
+                                                i.Emit(OpCodes.Ldloc_S, vReturn);
+                                                i.Emit(OpCodes.Stfld, fReturn);
+                                            }
                             
-                            i.Emit(OpCodes.Ret);
-                        });
-            
+                                            i.Emit(OpCodes.Ret);
+                                        });
+
+            mInvokeFinal.CustomAttributes
+                            .Add(new CustomAttribute(R.DebuggerHiddenAtt_mCtor));
+
 
             var CallBase_mPreInvoke = tCallBaseRef.ReferenceMethod(R.CallBase_mPrepare.Name);
             var CallBase_mInvokeNext = tCallBaseRef.ReferenceMethod(R.CallBase_mInvoke.Name);
@@ -325,6 +328,7 @@ namespace Cuckoo.Fody
                             CallBase_mPreInvoke,
                             CallBase_mInvokeNext,
                             fRoost,
+                            fInstance,
                             fReturn,
                             fArgs,
                             fArgFlags,

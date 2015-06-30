@@ -34,6 +34,7 @@ namespace Cuckoo.Fody
         public MethodReference PrepareMethod { get; private set; }
         public MethodReference InvokeMethod { get; private set; }
         public FieldReference RoostField { get; private set; }
+        public FieldReference InstanceField { get; private set; }
         public FieldReference ReturnField { get; private set; }
         public FieldReference ArgsField { get; private set; }
         public FieldReference ArgFlagsField { get; private set; }
@@ -48,6 +49,7 @@ namespace Cuckoo.Fody
                     MethodReference prepareMethod,
                     MethodReference invokeMethod,
                     FieldReference roostField,
+                    FieldReference instanceField,
                     FieldReference returnField,
                     FieldReference argsField,
                     FieldReference argFlagsField,
@@ -58,6 +60,7 @@ namespace Cuckoo.Fody
             PrepareMethod = prepareMethod;
             InvokeMethod = invokeMethod;
             RoostField = roostField;
+            InstanceField = instanceField;
             ReturnField = returnField;
             ArgsField = argsField;
             ArgFlagsField = argFlagsField;
@@ -83,6 +86,7 @@ namespace Cuckoo.Fody
                                     tCallBaseRef.ReferenceMethod(PrepareMethod.Name),
                                     tCallBaseRef.ReferenceMethod(InvokeMethod.Name),
                                     tCallRef.ReferenceField(RoostField.Name),
+                                    tCallBaseRef.ReferenceField(InstanceField.Name),
                                     ReturnsValue
                                         ? tCallBaseRef.ReferenceField(ReturnField.Name)
                                         : null,

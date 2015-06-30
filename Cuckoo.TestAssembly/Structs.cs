@@ -8,23 +8,29 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public struct Structs {
+    public struct TestStruct {
 
-        public Structs(int number) {
-            Number = number;
+        public TestStruct(int number) {
+            _number = number;
         }
 
-        public int Number;
+        public int _number;
 
         [AddingCuckoo(100)]
         public int GetNumber() {     
-            return Number;
+            return _number;
         }
 
         [ReturnInstanceCuckoo]
         public object GetInstance() {
             return null;
         }
+
+        public int Number {
+            [BareCuckoo]
+            set { _number = value; }
+        }
+
 
 
 

@@ -8,6 +8,7 @@ namespace Cuckoo.Fody
 {
     using Cuckoo.Attributes;
     using Cuckoo.Impl;
+    using System.Diagnostics;
     using Refl = System.Reflection;
 
     class RefMap
@@ -44,6 +45,9 @@ namespace Cuckoo.Fody
         public readonly MethodReference ICuckoo_mCall;
         
         public readonly MethodReference CuckooedAtt_mCtor;
+
+        public readonly MethodReference DebuggerHiddenAtt_mCtor;
+
         public readonly MethodReference MethodBase_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
 
@@ -121,6 +125,9 @@ namespace Cuckoo.Fody
 
             CuckooedAtt_mCtor = module.ImportReference(
                                         typeof(CuckooedAttribute).GetConstructor(new[] { typeof(string) }));
+
+            DebuggerHiddenAtt_mCtor = module.ImportReference(
+                                        typeof(DebuggerHiddenAttribute).GetConstructor(Type.EmptyTypes));
 
             MethodBase_mGetMethodFromHandle =
                     module.ImportReference(typeof(Refl.MethodBase)

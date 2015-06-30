@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Cuckoo.Impl
@@ -10,10 +11,10 @@ namespace Cuckoo.Impl
         public ICallArg[] _callArgs;
         public TReturn _return;
         public ulong _argFlags = 0;
+        public TInstance _instance;
         
         protected IRoost _roost;
-        protected TInstance _instance;
-      
+
         ICuckoo[] _cuckoos;
         int _iNextCuckoo = 0;
         bool _hasInstance;
@@ -31,7 +32,7 @@ namespace Cuckoo.Impl
             _returnsValue = returnsValue;
         }
 
-        
+        [DebuggerHidden]
         public void Prepare(ICallArg[] callArgs) {
             _callArgs = callArgs;
 
@@ -40,12 +41,13 @@ namespace Cuckoo.Impl
             }
         }
 
+        [DebuggerHidden]
         public void Invoke(TInstance instance) {
             _instance = instance;
             InvokeNext();
         }
 
-
+        [DebuggerHidden]
         void InvokeNext() {
             if(_iNextCuckoo < _cuckoos.Length) {
                 var cuckoo = _cuckoos[_iNextCuckoo++];                
@@ -56,6 +58,7 @@ namespace Cuckoo.Impl
             }
         }
 
+        [DebuggerHidden]
         protected abstract void InvokeFinal();
 
 
@@ -98,6 +101,7 @@ namespace Cuckoo.Impl
             }
         }
 
+        [DebuggerHidden]
         void ICall.CallInner() {
             InvokeNext();
         }

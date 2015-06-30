@@ -84,7 +84,7 @@ namespace Cuckoo.Fody
             var mInner = mOuter.CloneTo(
                                     tCont,
                                     m => {
-                                        m.Name = names.GetElementName("CUCKOOED", mOuter.Name);
+                                        m.Name = names.GetElementName("Cuckooed", mOuter.Name);
 
                                         m.Attributes ^= MethodAttributes.Public | MethodAttributes.Private;
 
@@ -423,6 +423,13 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Castclass, callArg.CallArg_Type);
                         i.Emit(OpCodes.Ldfld, callArg.CallArg_fValue);
                         i.Emit(OpCodes.Stobj, callArg.Type);
+                    }
+
+                    if(tCont.IsValueType) {
+                        i.Emit(OpCodes.Ldarg_0);
+                        i.Emit(OpCodes.Ldloc_S, vCall);
+                        i.Emit(OpCodes.Ldfld, call.InstanceField);
+                        i.Emit(OpCodes.Stobj, tContRef);
                     }
 
                     if(call.ReturnsValue) {
