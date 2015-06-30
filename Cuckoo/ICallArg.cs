@@ -7,7 +7,7 @@ namespace Cuckoo
     {
         string Name { get; }
         object Value { get; set; }
-        Type ValueType { get; }
+        Type Type { get; }
         bool IsByRef { get; }
         ParameterInfo Parameter { get; }
     }

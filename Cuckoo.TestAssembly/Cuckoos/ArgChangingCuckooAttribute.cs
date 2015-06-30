@@ -17,11 +17,11 @@ namespace Cuckoo.TestAssembly.Cuckoos
         }
                 
         public override void Call(ICall call) {
-            foreach(var stringArg in call.Args.Where(a => a.ValueType == typeof(string))) {
+            foreach(var stringArg in call.Args.Where(a => a.Type == typeof(string))) {
                 stringArg.Value = "Growl";
             }
 
-            foreach(var intArg in call.Args.Where(a => a.ValueType == typeof(int))) {
+            foreach(var intArg in call.Args.Where(a => a.Type == typeof(int))) {
                 intArg.Value = 13;
             }
 

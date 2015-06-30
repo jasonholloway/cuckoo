@@ -3,20 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40A4C9F0-C6C6-467D-B076-E9F0EBB4A7B4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bits", "Bits", "{40A4C9F0-C6C6-467D-B076-E9F0EBB4A7B4}"
 	ProjectSection(SolutionItems) = preProject
-		Fody_ToBeDeleted.txt = Fody_ToBeDeleted.txt
-		install.ps1 = install.ps1
-		MethodDecoratorEx.Fody.nuspec = MethodDecoratorEx.Fody.nuspec
 		README.md = README.md
-		uninstall.ps1 = uninstall.ps1
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{637383F9-F5C1-4C9A-9ED5-1A761A1F6186}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo", "Cuckoo\Cuckoo.csproj", "{892D38CC-E0F7-4691-B9E6-8F52B2B194D0}"
@@ -40,6 +30,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.AnotherTestAssembly", "Cuckoo.AnotherTestAssembly\Cuckoo.AnotherTestAssembly.csproj", "{20CEE2C9-A38E-4F66-95C6-30AF60328A6F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AB0DB700-160E-43C2-B2A8-B9B54A6791DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{770A1612-EA7E-48E1-A011-B897B464C2C8}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\Cuckoo.nuspec = NuGet\Cuckoo.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

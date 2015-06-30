@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ICuckooProvider.cs" />
     <Compile Include="Impl\CallArg.cs" />
     <Compile Include="ICallArg.cs" />
@@ -52,7 +55,6 @@
     <Compile Include="ICall.cs" />
     <Compile Include="Attributes\CuckooAttribute.cs" />
     <Compile Include="Attributes\CuckooedAttribute.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="plan.txt" />

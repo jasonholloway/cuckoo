@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata minClientVersion="2.8">
+    <id>Cuckoo.Fody</id>
+    <version>1.0</version>
+    <title>Cuckoo.Fody</title>
+    <authors>Jason Holloway</authors>
+    <owners>Jason Holloway</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://github.com/jasonholloway/cuckoo</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.github.com/Fody/Publicize/master/Icons/package_icon.png</iconUrl>
+    <summary>The full-feathered method interceptor, wrapping and tweaking calls by aspect.</summary>
+    <description>
+Cuckoo is a full-feathered method interceptor, allowing method calls to be wrapped and tweaked. It applies its aspects at compile-time to minimise runtime bumph - much like PostSharp, but free and modular.
+
+And Mono-compatible!
+
+</description>
+    <language>en-GB</language>
+    <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil</tags>
+	<developmentDependency>true</developmentDependency>
+    <dependencies>
+      <dependency id="Fody"/>
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="..\cuckoo.fody\bin\release\*.*" target="" />
+	<file src="..\cuckoo\bin\release\*.*" target="lib\40" />
+	<file src="content\*" target="content" />
+	<file src="tools\*" target="tools" />
+  </files>
+</package>

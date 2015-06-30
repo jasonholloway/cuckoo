@@ -21,8 +21,8 @@ namespace Cuckoo.Test
             var callArgs = Tester.WithClass<TypeSpecArgs>()
                                 .Run(t => t.ReturnGenericCallArgs<int[], string[]>(null, null));
 
-            Assert.IsTrue(callArgs[0].ValueType == typeof(int[]));
-            Assert.IsTrue(callArgs[1].ValueType == typeof(string[]));
+            Assert.IsTrue(callArgs[0].Type == typeof(int[]));
+            Assert.IsTrue(callArgs[1].Type == typeof(string[]));
         }
 
         [TestMethod]
@@ -30,8 +30,8 @@ namespace Cuckoo.Test
             var callArgs = Tester.WithClass<TypeSpecArgs>()
                                 .Run(t => t.ReturnGenericCallArgs<int?, float?>(null, null));
 
-            Assert.IsTrue(callArgs[0].ValueType == typeof(int?));
-            Assert.IsTrue(callArgs[1].ValueType == typeof(float?));
+            Assert.IsTrue(callArgs[0].Type == typeof(int?));
+            Assert.IsTrue(callArgs[1].Type == typeof(float?));
         }
 
 

@@ -20,7 +20,7 @@ namespace Cuckoo.TestAssembly.Cuckoos
         public override void Call(ICall call) {
             call.CallInner();
 
-            foreach(var arg in call.Args.Where(a => a.IsByRef && a.ValueType == typeof(int))) {
+            foreach(var arg in call.Args.Where(a => a.IsByRef && a.Type == typeof(int))) {
                 arg.Value = _i;
             }
         }

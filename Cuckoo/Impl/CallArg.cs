@@ -33,7 +33,7 @@ namespace Cuckoo.Impl
             get { return Parameter.Name; }
         }
 
-        public Type ValueType {
+        public Type Type {
             get {
                 return IsByRef
                         ? Parameter.ParameterType.GetElementType()
