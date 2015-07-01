@@ -44,7 +44,7 @@ namespace Cuckoo.Fody
                     type = newGen;
                 }
                 else {
-                    type = _module.ImportReference(sourceType);
+                    type = _module.Import(sourceType);
                 }
 
                 _dMap[sourceType] = type;

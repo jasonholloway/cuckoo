@@ -1,15 +1,16 @@
 ﻿
 ********************************************************************
 TO DO:
+> CallArgs of arrays and nullables...
 > Fill in metadata
 > NuGet
 > Mono
-> Cecil must be packaged with Cuckoo!
 
 
 
 *******************************************************************
 DONE:
+> Now references Fody.Cecil DONE
 > Hide stack as much as we can DONE
 > Struct values are written back into place after cuckooing DONE
 > Clean away MethodDecorator remnants DONE

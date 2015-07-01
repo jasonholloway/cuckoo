@@ -53,84 +53,84 @@ namespace Cuckoo.Fody
 
         public RefMap(ModuleDefinition module, MethodDefinition method) 
         {
-            MethodInfo_Type = module.ImportReference(typeof(Refl.MethodInfo));
-            ParamInfo_Type = module.ImportReference(typeof(Refl.ParameterInfo));
+            MethodInfo_Type = module.Import(typeof(Refl.MethodInfo));
+            ParamInfo_Type = module.Import(typeof(Refl.ParameterInfo));
 
-            ICall_Type = module.ImportReference(typeof(ICall));
-            CallBase_Type = module.ImportReference(typeof(CallBase<,>));
-            ICallArg_Type = module.ImportReference(typeof(ICallArg));
+            ICall_Type = module.Import(typeof(ICall));
+            CallBase_Type = module.Import(typeof(CallBase<,>));
+            ICallArg_Type = module.Import(typeof(ICallArg));
 
-            ICuckooProvider_Type = module.ImportReference(
+            ICuckooProvider_Type = module.Import(
                                             typeof(ICuckooProvider));
 
-            ICuckoo_Type = module.ImportReference(
+            ICuckoo_Type = module.Import(
                                             typeof(ICuckoo));
 
-            ICuckoo_mInit = module.ImportReference(
+            ICuckoo_mInit = module.Import(
                                         typeof(ICuckoo).GetMethod("Init"));
 
-            ICuckoo_mPreCall = module.ImportReference(
+            ICuckoo_mPreCall = module.Import(
                                         typeof(ICuckoo).GetMethod("PreCall"));
 
-            ICuckoo_mCall = module.ImportReference(
+            ICuckoo_mCall = module.Import(
                                         typeof(ICuckoo).GetMethod("Call"));
 
-            CallBase_mPrepare = module.ImportReference(
+            CallBase_mPrepare = module.Import(
                                         CallBase_Type.GetMethod("Prepare"));
 
-            CallBase_mInvoke = module.ImportReference(
+            CallBase_mInvoke = module.Import(
                                         CallBase_Type.GetMethod("Invoke"));
 
-            CallBase_mInvokeFinal = module.ImportReference(
+            CallBase_mInvokeFinal = module.Import(
                                         CallBase_Type.GetMethod("InvokeFinal"));
 
-            CallBase_fInstance = module.ImportReference(
+            CallBase_fInstance = module.Import(
                                         CallBase_Type.GetField("_instance"));
 
-            CallBase_fReturn = module.ImportReference(
+            CallBase_fReturn = module.Import(
                                         CallBase_Type.GetField("_return"));
 
-            CallBase_fCallArgs = module.ImportReference(
+            CallBase_fCallArgs = module.Import(
                                         CallBase_Type.GetField("_callArgs"));
 
-            CallBase_fArgFlags = module.ImportReference(
+            CallBase_fArgFlags = module.Import(
                                         CallBase_Type.GetField("_argFlags"));
 
 
-            Roost_Type = module.ImportReference(typeof(Roost));
+            Roost_Type = module.Import(typeof(Roost));
 
-            Roost_mCtor = module.ImportReference(
+            Roost_mCtor = module.Import(
                                         Roost_Type.Resolve().GetConstructors().First());
 
-            Roost_mInit = module.ImportReference(
+            Roost_mInit = module.Import(
                                         Roost_Type.Resolve().GetMethod("Init"));
 
-            Roost_mGetParams = module.ImportReference(
+            Roost_mGetParams = module.Import(
                                         Roost_Type.GetMethod("get_Parameters"));
 
-            Roost_mGetCuckoos = module.ImportReference(
+            Roost_mGetCuckoos = module.Import(
                                         Roost_Type.GetMethod("get_Cuckoos"));
 
 
 
-            CallArg_Type = module.ImportReference(typeof(CallArg<>));
+            CallArg_Type = module.Import(typeof(CallArg<>));
 
-            CallArg_mCtor = module.ImportReference(
+            CallArg_mCtor = module.Import(
                                         CallArg_Type.Resolve().GetConstructors().First());
 
-            CallArg_fValue = module.ImportReference(
+            CallArg_fValue = module.Import(
                                         CallArg_Type.GetField("_value"));
 
 
 
-            CuckooedAtt_mCtor = module.ImportReference(
+            CuckooedAtt_mCtor = module.Import(
                                         typeof(CuckooedAttribute).GetConstructor(new[] { typeof(string) }));
 
-            DebuggerHiddenAtt_mCtor = module.ImportReference(
+            DebuggerHiddenAtt_mCtor = module.Import(
                                         typeof(DebuggerHiddenAttribute).GetConstructor(Type.EmptyTypes));
 
             MethodBase_mGetMethodFromHandle =
-                    module.ImportReference(typeof(Refl.MethodBase)
+                    module.Import(typeof(Refl.MethodBase)
                                                 .GetMethod(
                                                     "GetMethodFromHandle",
                                                     Refl.BindingFlags.Static
@@ -141,7 +141,7 @@ namespace Cuckoo.Fody
                                                     )
                                                 );
             
-            Object_mCtor = module.ImportReference(
+            Object_mCtor = module.Import(
                                     module.TypeSystem.Object.ReferenceMethod(m => m.IsConstructor));
         }
 

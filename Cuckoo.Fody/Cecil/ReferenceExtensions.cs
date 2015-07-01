@@ -39,7 +39,7 @@ namespace Cuckoo.Fody.Cecil
                 methodRef.Parameters.Add(new ParameterDefinition(
                                                             paramDef.Name, 
                                                             paramDef.Attributes, 
-                                                            declaringTypeRef.Module.ImportReference(paramDef.ParameterType, methodRef)
+                                                            declaringTypeRef.Module.Import(paramDef.ParameterType, methodRef)
                                                             ));
             }
 
@@ -91,7 +91,7 @@ namespace Cuckoo.Fody.Cecil
                 //fieldType = matchedTup.Param; //.Arg;
             }
             else {
-                fieldType = typeRef.Module.ImportReference(fieldType);
+                fieldType = typeRef.Module.Import(fieldType);
             }
 
             return new FieldReference(fieldDef.Name, fieldType, typeRef);

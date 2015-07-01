@@ -149,10 +149,10 @@ namespace Cuckoo.Fody
                     
                         foreach(var provSpec in spec.ProvSpecs) {
                             var att = provSpec.Attribute;
-                            var tAtt = mod.ImportReference(att.AttributeType);
+                            var tAtt = mod.Import(att.AttributeType);
 
                             if(att.HasConstructorArguments) {
-                                var mProvCtor = mod.ImportReference(
+                                var mProvCtor = mod.Import(
                                                         tAtt.ReferenceMethod(c => m.IsConstructor
                                                                                     && !c.IsStatic
                                                                                     && c.Parameters.Select(p => p.ParameterType)
@@ -167,7 +167,7 @@ namespace Cuckoo.Fody
                                 i.Emit(OpCodes.Newobj, mProvCtor);
                             }
                             else {
-                                var mProvCtor = mod.ImportReference(
+                                var mProvCtor = mod.Import(
                                                         tAtt.ReferenceMethod(c => c.IsConstructor 
                                                                                     && !c.IsStatic 
                                                                                     && !c.HasParameters ));
@@ -179,7 +179,7 @@ namespace Cuckoo.Fody
 
                             if(att.HasFields) {
                                 foreach(var namedCtorArg in att.Fields) {
-                                    var field = mod.ImportReference(
+                                    var field = mod.Import(
                                                         tAtt.ReferenceField(namedCtorArg.Name));
 
                                     i.Emit(OpCodes.Ldloc, vProv);
@@ -191,7 +191,7 @@ namespace Cuckoo.Fody
 
                             if(att.HasProperties) {
                                 foreach(var propArg in att.Properties) {
-                                    var mSet = mod.ImportReference(
+                                    var mSet = mod.Import(
                                                         tAtt.ReferencePropertySetter(propArg.Name));
 
                                     i.Emit(OpCodes.Ldloc, vProv);
@@ -546,7 +546,7 @@ namespace Cuckoo.Fody
                         "get_Method",
                         R.ICall_Type,
                         (i, m) => {
-                            var Roost_mGetMethod = mod.ImportReference(
+                            var Roost_mGetMethod = mod.Import(
                                                                 R.Roost_Type.Resolve().GetMethod("get_Method"));
                             i.Emit(OpCodes.Ldarg_0);
                             i.Emit(OpCodes.Ldfld, _fRoostRef);

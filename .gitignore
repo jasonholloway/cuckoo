@@ -34,6 +34,8 @@
 .builds
 *.dotCover
 
+*.nupkg
+
 ##  If you have NuGet Package Restore enabled, uncomment this
 packages/
 ForSample/
@@ -74,4 +76,3 @@ Thumbs.db
 
 # Folder config file
 Desktop.ini
-

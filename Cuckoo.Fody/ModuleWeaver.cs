@@ -11,7 +11,12 @@ namespace Cuckoo.Fody
         public Action<string> LogInfo { get; set; }
 
         public void Execute() {
-            var commonModule = ModuleDefinition.ReadModule("Cuckoo.dll");
+
+
+            if(ModuleDefinition == null) {
+                throw new InvalidOperationException("MethodDefinition is strangely null!");
+            }
+
 
             var weaveSpecs = GetAllTypes(this.ModuleDefinition)
                                 .SelectMany(t => t.Methods)

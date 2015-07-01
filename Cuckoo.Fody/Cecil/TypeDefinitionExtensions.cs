@@ -74,10 +74,10 @@ namespace Cuckoo.Fody.Cecil
             Action<ILProcessor, ParameterDefinition[]> fnIL) 
         {
             var rArgTypeRefs = rArgTypes
-                                    .Select(t => @this.Module.ImportReference(t))
+                                    .Select(t => @this.Module.Import(t))
                                     .ToArray();
 
-            var returnTypeRef = @this.Module.ImportReference(returnType);
+            var returnTypeRef = @this.Module.Import(returnType);
 
             return @this.AddMethod(name, rArgTypeRefs, returnTypeRef, fnIL);
         }
@@ -94,20 +94,20 @@ namespace Cuckoo.Fody.Cecil
         {
             var module = @this.Module;
 
-            baseMethodRef = module.ImportReference(baseMethodRef);
+            baseMethodRef = module.Import(baseMethodRef);
             var baseMethod = baseMethodRef.Resolve();
 
             var m = new MethodDefinition(
                 baseMethod.Name,
                 baseMethod.Attributes ^ (MethodAttributes.Abstract | MethodAttributes.NewSlot),
-                module.ImportReference(baseMethod.ReturnType)
+                module.Import(baseMethod.ReturnType)
                 );
 
             @this.Methods.Add(m);
 
             var rParams = baseMethod.Parameters
                                         .Select(p => new ParameterDefinition(
-                                                            module.ImportReference(p.ParameterType)
+                                                            module.Import(p.ParameterType)
                                                             ))
                                         .ToArray();
 
@@ -132,7 +132,7 @@ namespace Cuckoo.Fody.Cecil
         {
             var decType = declaringTypeRef.Resolve();
 
-            var baseMethod = @this.Module.ImportReference(
+            var baseMethod = @this.Module.Import(
                                                 decType.Methods.First(m => m.Name == methodName)
                                                 );
 
@@ -153,7 +153,7 @@ namespace Cuckoo.Fody.Cecil
             var f = new FieldDefinition(
                             name,
                             atts,
-                            @this.Module.ImportReference(typeRef)
+                            @this.Module.Import(typeRef)
                             );
 
             @this.Fields.Add(f);
@@ -166,7 +166,7 @@ namespace Cuckoo.Fody.Cecil
             string name,
             FieldAttributes atts = FieldAttributes.Private) 
         {
-            return @this.AddField(@this.Module.ImportReference(typeof(T)), name, atts);
+            return @this.AddField(@this.Module.Import(typeof(T)), name, atts);
         }
 
         #endregion
@@ -209,7 +209,7 @@ namespace Cuckoo.Fody.Cecil
             Action<ILProcessor, MethodDefinition> fnIL ) 
         {
             var paramDefs = argTypes
-                            .Select(t => new ParameterDefinition(@this.Module.ImportReference(t)));
+                            .Select(t => new ParameterDefinition(@this.Module.Import(t)));
 
             return @this.AddCtor(paramDefs, fnIL);
         }
@@ -221,7 +221,7 @@ namespace Cuckoo.Fody.Cecil
             Action<ILProcessor, MethodDefinition> fnIL ) 
         {
             return @this.AddCtor(
-                            rArgTypes.Select(t => @this.Module.ImportReference(t)).ToArray(), 
+                            rArgTypes.Select(t => @this.Module.Import(t)).ToArray(), 
                             fnIL );
         }
 
@@ -229,7 +229,7 @@ namespace Cuckoo.Fody.Cecil
 
 
         public static MethodReference GetMethod(this TypeReference @this, string name) {
-            return @this.Module.ImportReference(
+            return @this.Module.Import(
                                     @this.Resolve().Methods.First(m => m.Name == name)
                                     );
         }
@@ -239,13 +239,13 @@ namespace Cuckoo.Fody.Cecil
         #region AddVariable
 
         public static VariableDefinition AddVariable(this MethodBody @this, TypeReference typeRef) {
-            var v = new VariableDefinition(@this.Method.Module.ImportReference(typeRef));
+            var v = new VariableDefinition(@this.Method.Module.Import(typeRef));
             @this.Variables.Add(v);
             return v;
         }
 
         public static VariableDefinition AddVariable(this MethodBody @this, Type type) {
-            var typeRef = @this.Method.Module.ImportReference(type);
+            var typeRef = @this.Method.Module.Import(type);
             return @this.AddVariable(typeRef);
         }
 
