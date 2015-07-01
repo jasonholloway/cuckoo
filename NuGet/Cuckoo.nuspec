@@ -14,20 +14,20 @@
     <description>
 Cuckoo is a full-feathered method interceptor, allowing method calls to be wrapped and tweaked. It applies its aspects at compile-time to minimise runtime bumph - much like PostSharp, but free and modular.
 
-Also Mono-compatible!
+And Mono-compatible!
 
 </description>
     <language>en-GB</language>
     <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil</tags>
-	<developmentDependency>true</developmentDependency>
+	  <developmentDependency>true</developmentDependency>
     <dependencies>
       <dependency id="Fody"/>
     </dependencies>
   </metadata>
   <files>
-	<file src="..\cuckoo.fody\bin\release\cuckoo.fody.dll" target="" />
-	<file src="..\cuckoo\bin\release\*.*" target="lib\40" />
-	<file src="content\*" target="content" />
-	<file src="tools\*" target="tools" />
+	  <file src="..\cuckoo.fody\bin\release\Cuckoo*.dll" target="" />
+	  <file src="..\cuckoo\bin\release\*.*" target="lib\40" />
+	  <file src="install.ps1" target="tools" />
+    <file src="uninstall.ps1" target="tools" />
   </files>
 </package>

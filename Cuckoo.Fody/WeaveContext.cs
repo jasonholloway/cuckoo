@@ -10,7 +10,6 @@ namespace Cuckoo.Fody
         public TypeReference tContRef;
         public MethodDefinition mInner;
         public MethodDefinition mOuter;
-        public FieldDefinition fRoost;
 
         public NameSource NameSource;
         public RefMap RefMap;
