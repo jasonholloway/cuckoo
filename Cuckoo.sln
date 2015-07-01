@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Test", "Cuckoo.Test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.TestAssembly", "Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj", "{34AB5B1E-E2E1-4025-AD1D-C4701EE25715}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cecil", "Cecil", "{70752B15-688D-44E2-820F-BD42F7EC0FB2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.AnotherTestAssembly", "Cuckoo.AnotherTestAssembly\Cuckoo.AnotherTestAssembly.csproj", "{20CEE2C9-A38E-4F66-95C6-30AF60328A6F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AB0DB700-160E-43C2-B2A8-B9B54A6791DD}"

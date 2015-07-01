@@ -19,19 +19,25 @@ namespace Cuckoo.Test
         [TestMethod]
         public void ArrayArgs() {
             var callArgs = Tester.WithClass<TypeSpecArgs>()
-                                .Run(t => t.ReturnGenericCallArgs<int[], string[]>(null, null));
+                                .Run(t => t.MethodWithArrayArgs(new int[0], new string[0], new double[0]));
 
             Assert.IsTrue(callArgs[0].Type == typeof(int[]));
+            Assert.IsTrue(callArgs[0] is ICallArg<int[]>);
+
             Assert.IsTrue(callArgs[1].Type == typeof(string[]));
+            Assert.IsTrue(callArgs[1] is ICallArg<string[]>);
         }
 
         [TestMethod]
         public void NullableArgs() {
             var callArgs = Tester.WithClass<TypeSpecArgs>()
-                                .Run(t => t.ReturnGenericCallArgs<int?, float?>(null, null));
+                                .Run(t => t.MethodWithNullableArgs(9, 5F, 13UL));
 
             Assert.IsTrue(callArgs[0].Type == typeof(int?));
+            Assert.IsTrue(callArgs[0] is ICallArg<int?>);
+
             Assert.IsTrue(callArgs[1].Type == typeof(float?));
+            Assert.IsTrue(callArgs[1] is ICallArg<float?>);
         }
 
 

@@ -10,11 +10,26 @@ namespace Cuckoo.TestAssembly
 {
     public class TypeSpecArgs {
 
-        [BareCuckoo]
+        //[BareCuckoo]
+        //[ReturnCallArgsCuckoo]
+        //public ICallArg[] ReturnGenericCallArgs<A, B>(A a, B b) {
+        //    return null;
+        //}
+
         [ReturnCallArgsCuckoo]
-        public ICallArg[] ReturnGenericCallArgs<A, B>(A a, B b) {
+        [BareCuckoo]
+        public ICallArg[] MethodWithArrayArgs(int[] ri, string[] rs, double[] rd) {
             return null;
         }
+
+        [ReturnCallArgsCuckoo]
+        [BareCuckoo]
+        public ICallArg[] MethodWithNullableArgs(int? i, float? f, ulong? ul) {
+            return null;
+        }
+
+
+
 
     }
 }

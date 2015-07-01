@@ -31,7 +31,10 @@ namespace Cuckoo.Fody
 
                 return outerParams
                             .Select(p => {
-                                var argType = p.ParameterType.GetElementType();
+                                var argType = p.ParameterType.IsByReference
+                                                ? p.ParameterType.GetElementType()
+                                                : p.ParameterType;
+
                                 var tCallArgRef = R.CallArg_Type.MakeGenericInstanceType(argType);
 
                                 return new ArgSpec() {

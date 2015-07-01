@@ -4,6 +4,7 @@ TO DO:
 > CallArgs of arrays and nullables...
 > Fill in metadata
 > NuGet
+	nuspec should specify framework >= 4
 > Mono
 
 
