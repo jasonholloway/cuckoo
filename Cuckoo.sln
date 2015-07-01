@@ -24,6 +24,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{770A1612-EA7E-48E1-A011-B897B464C2C8}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Cuckoo.nuspec = NuGet\Cuckoo.nuspec
+		NuGet\tools\install.ps1 = NuGet\tools\install.ps1
+		NuGet\tools\uninstall.ps1 = NuGet\tools\uninstall.ps1
 	EndProjectSection
 EndProject
 Global

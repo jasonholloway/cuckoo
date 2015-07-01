@@ -1,6 +1,10 @@
-## Cuckoo: a fully-feathered method interceptor
+# Cuckoo: the full-feathered method interceptor
 
-- Wraps method calls according to attribute declarations
-- Monitors arguments and return values
-- Triggers arbitrary code on method invocation
-- Widely compatible
+Capabilities:
+
+- Wraps method calls
+- Triggers arbitrary code
+- Gives access to (and alters) arguments and return values
+- Controlled by attribute
+- Cross-platform compatible
+
