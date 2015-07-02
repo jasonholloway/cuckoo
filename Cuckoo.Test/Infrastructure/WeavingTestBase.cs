@@ -15,8 +15,7 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test.Infrastructure
 {
     public abstract class WeavingTestBase
-    {
-        
+    {        
         static Assembly _assembly;
         static MethodInfo[] _usurpedMethods;
         static MethodTester _tester;
@@ -24,40 +23,8 @@ namespace Cuckoo.Test.Infrastructure
         static WeavingTestBase() {
             string projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj"));
             string assemblyPath = Path.Combine(Path.GetDirectoryName(projectPath), @"bin\Debug\Cuckoo.TestAssembly.dll");
-            string newAssemblyPath = assemblyPath.Replace(".dll", "2.dll");
-            
-            var asmResolver = new DefaultAssemblyResolver();
 
-            var readerParams = new ReaderParameters() {
-                AssemblyResolver = asmResolver,
-                SymbolReaderProvider = new PdbReaderProvider(),
-                ReadSymbols = true,
-                ReadingMode = ReadingMode.Immediate 
-            };
-
-            var module = ModuleDefinition
-                                        .ReadModule(assemblyPath, readerParams);
-
-            module.Assembly.Name = new AssemblyNameDefinition("Woven", new Version());
-            module.Name = "Woven";
-
-            var weaver = new ModuleWeaver() {
-                                        ModuleDefinition = module,
-                                        LogInfo = _ => { }
-                                    };
-
-            weaver.Execute();
-
-
-            var writerParams = new WriterParameters() {
-                SymbolWriterProvider = new PdbWriterProvider(),
-                WriteSymbols = true
-            };
-
-            module.Write(newAssemblyPath, writerParams);
-
-
-            _assembly = Assembly.LoadFile(newAssemblyPath);
+            _assembly = WeaverRunner.Reweave(assemblyPath);
 
             _usurpedMethods = _assembly.GetTypes()
                                             .Select(t => {
@@ -74,26 +41,14 @@ namespace Cuckoo.Test.Infrastructure
 
             _tester = new MethodTester(_assembly.Modules.First());
         }
-
-
+        
         protected MethodTester Tester {
             get { return _tester; }
         }
-
-        /*
-        protected Module UsurpedModule {
-            get { return _assembly.Modules.First(); }
-        }*/
-
+        
         protected IEnumerable<MethodInfo> UsurpedMethods {
             get { return _usurpedMethods; }
         }
-
-        /*
-        protected MethodInfo GetUsurpedMethod(string name) {
-            return _usurpedMethods.First(m => m.Name == name);
-        }
-        */
 
     }
 }

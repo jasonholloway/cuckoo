@@ -302,7 +302,18 @@ namespace Cuckoo.Fody.Cecil
             mCtorStatic.Body.Instructions.Add(insReturn);
         }
 
+        
+        public static IEnumerable<TypeDefinition> GetAllTypes(this TypeDefinition type) {
+            yield return type;
 
+            if(type.HasNestedTypes) {
+                foreach(var nestedType in type.NestedTypes) {
+                    foreach(var t in GetAllTypes(nestedType)) {
+                        yield return t;
+                    }
+                }
+            }
+        }
 
 
     }

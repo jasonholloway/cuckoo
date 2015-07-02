@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{892D38CC-E0F7-4691-B9E6-8F52B2B194D0}</ProjectGuid>
+    <ProjectGuid>{2843B9AC-D48D-46F7-85D6-BAF1C1C3FDBA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cuckoo</RootNamespace>
-    <AssemblyName>Cuckoo</AssemblyName>
+    <RootNamespace>Cuckoo.Weaver</RootNamespace>
+    <AssemblyName>Cuckoo.Weaver</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,22 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="IRoostTargeter.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ICuckooProvider.cs" />
-    <Compile Include="Impl\CallArg.cs" />
-    <Compile Include="ICallArg.cs" />
-    <Compile Include="Impl\CallBase.cs" />
-    <Compile Include="Impl\ICallArgChangeSink.cs" />
-    <Compile Include="IRoost.cs" />
-    <Compile Include="Impl\Roost.cs" />
-    <Compile Include="ICuckoo.cs" />
-    <Compile Include="ICall.cs" />
-    <Compile Include="CuckooAttribute.cs" />
-    <Compile Include="Impl\CuckooedAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">
+      <Project>{c4392ec3-616a-42e3-8604-8edcce234040}</Project>
+      <Name>Cuckoo.Gather</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
+      <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
+      <Name>Cuckoo</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

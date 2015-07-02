@@ -21,7 +21,6 @@ namespace Cuckoo.Impl
             foreach(var cuckoo in Cuckoos) {
                 cuckoo.Init(this);
             }
-        }
-
+        }        
     }
 }

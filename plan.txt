@@ -1,7 +1,43 @@
 ﻿
+ROOST TARGETING:
+
+RoostTargeters specify MethodBases and ICuckooProvider types.
+
+One of each needed CuckooProvider must be constructed at run time, on module load.
+
+Each roost is then constructed with its specified CuckooProviders, which it queries to load its cuckoos.
+- this is done already!
+
+At the moment, providers are constructed by each call class's .cctor, which is provided with a list of atts decorating mOuter.
+
+Instead the MethodWeaver is to be given an array of tokens (string fullnames of the provider type) 
+which the Roost can then redeem at runtime, as part of its initiation.
+
+OR this extra complication can be nicely side-stepped by simply providing ICuckooProvider TypeReferences, which, as now, the
+Call must instantiate for itself, then pass to the Roost ctor.
+
+YES! Sod the unnecessary fuss. Do as does now, but with input from targeters in general.
+
+*****************
+
+Problem of not being possible to instantiate embedded RoostTargeters at weave-time!
+
+Each subject assembly is to be loaded up in its own AppDomain. A proxy assembly 
+
+
+
+
+
+
+
+
+
 ********************************************************************
 TO DO:
-> Add rudimentary mechanism for specifying cuckoos in general
+> General roost-targeting mechanism
+> Rewrite attributes to use roost-targeting
+> Separate Cuckoo.Fody and Cuckoo.
+> Test picking up of private + public methods
 
 *******************************************************************
 DONE

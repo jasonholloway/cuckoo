@@ -78,6 +78,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Infrastructure\WeaverRunner.cs" />
+    <Compile Include="RoostTargetTests.cs" />
     <Compile Include="StructTests.cs" />
     <Compile Include="VirtualTests.cs" />
     <Compile Include="PropertyTests.cs" />
