@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    internal class AttributeRoostTargeter : IRoostTargeter
+    internal class AttributeRoostTargeter : IRoostPicker
     {
-        public IEnumerable<TargetRoost> GetTargets(Assembly assembly) 
+        public IEnumerable<RoostSpec> PickRoosts(Assembly assembly) 
         {
             var allTypes = GetAllTypes(assembly);
 
@@ -29,28 +29,27 @@ namespace Cuckoo.Gather
                             
                         })
                         .Where(t => t.Atts.Any());
-
-            //But what about ctor data?
-
-
-            //as currently envisioned, CuckooProviders are specified solely by type, ready for them to be
-            //constructed at run time.
-
-            //Specs need to store serializable ctor args it seems
-
             
 
-            //And our targets need something better than method name, as there are overloads...
-            //maybe we should fall back on using the token
+            return tups.SelectMany(
+                    t => t.Atts.Select(
+                        att => {
+                            var ctorArgs = att.ConstructorArguments
+                                                .Select(a => a.Value);
 
+                            var namedArgs = att.NamedArguments
+                                                .Select(a => new KeyValuePair<string, object>(
+                                                                                a.MemberInfo.Name, 
+                                                                                a.TypedValue.Value ));
 
-            return tups
-                    .SelectMany(t => t.Atts.Select(a => {
-                        return new TargetRoost(
-                                        t.Method, 
-                                        a.Constructor.DeclaringType );
-                    })).ToArray();
+                            return new RoostSpec(
+                                            t.Method,
+                                            att.Constructor,
+                                            ctorArgs.ToArray(),
+                                            namedArgs.ToArray() );
+                        })).ToArray();
         }
+
 
 
         IEnumerable<Type> GetAllTypes(Assembly assembly) {

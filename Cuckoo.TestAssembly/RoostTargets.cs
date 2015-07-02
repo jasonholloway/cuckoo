@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class SimpleRoostTargeter : IRoostTargeter
+    public class SimpleRoostTargeter : IRoostPicker
     {
         public static int InstanceCount = 0;
         public static int RunCount = 0;
@@ -16,16 +16,18 @@ namespace Cuckoo.TestAssembly
             InstanceCount++;
         }
 
-        public IEnumerable<TargetRoost> GetTargets(Assembly assembly) {
+        public IEnumerable<RoostSpec> PickRoosts(Assembly assembly) {
             RunCount++;
-            return new TargetRoost[] {
-                new TargetRoost(
-                        new TargetMethod("Method1", "Type1", 1), 
-                        new TargetCuckooProvider() ),
-                new TargetRoost(
-                        new TargetMethod("Method2", "Type2", 2), 
-                        new TargetCuckooProvider() ),
-            };
+            return new RoostSpec[0];
+            
+            //{
+            //    new RoostSpec(
+            //            new MethodSpec("Method1", "Type1", 1), 
+            //            new CuckooProviderSpec() ),
+            //    new RoostSpec(
+            //            new MethodSpec("Method2", "Type2", 2), 
+            //            new CuckooProviderSpec() ),
+            //};
         }
     }
 

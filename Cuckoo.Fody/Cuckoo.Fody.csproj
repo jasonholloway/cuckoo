@@ -61,6 +61,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Cecil\ModuleDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeReferenceExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CallInfo.cs" />
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">
       <Project>{c4392ec3-616a-42e3-8604-8edcce234040}</Project>
       <Name>Cuckoo.Gather</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cuckoo.Weaver\Cuckoo.Weaver.csproj">
+      <Project>{2843b9ac-d48d-46f7-85d6-baf1c1c3fdba}</Project>
+      <Name>Cuckoo.Weaver</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>

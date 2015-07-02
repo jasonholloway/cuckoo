@@ -12,17 +12,17 @@ namespace Cuckoo.Fody
 
     internal partial class MethodWeaver
     {
-        WeaveSpec _spec;
+        WeaveRoostSpec _spec;
         Action<string> _logger;
 
-        public MethodWeaver(WeaveSpec spec, Action<string> logger) 
+        public MethodWeaver(WeaveRoostSpec spec, Action<string> logger) 
         {
             _spec = spec;
             _logger = logger;
         }
 
 
-        WeaveContext CreateContext(WeaveSpec spec) {
+        WeaveContext CreateContext(WeaveRoostSpec spec) {
             var tCont = spec.Method.DeclaringType;
 
             var tContRef = tCont.HasGenericParameters
@@ -50,7 +50,7 @@ namespace Cuckoo.Fody
 
             var mInner = TransplantOuterToInner(ctx);
             
-            var mOuter = WeaveOuterMethod(ctx, _spec.ProvSpecs, mInner);
+            var mOuter = WeaveOuterMethod(ctx, _spec.WeaveProvSpecs, mInner);
             
             AddCuckooedAttribute(ctx, mOuter, mInner);
 
@@ -119,7 +119,7 @@ namespace Cuckoo.Fody
 
         MethodDefinition WeaveOuterMethod(
                                 WeaveContext ctx, 
-                                IEnumerable<CuckooProvSpec> cuckoos, 
+                                IEnumerable<WeaveProvSpec> cuckoos, 
                                 MethodDefinition mInner) 
         {            
             var R = ctx.RefMap;

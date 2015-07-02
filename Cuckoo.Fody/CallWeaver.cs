@@ -7,6 +7,7 @@ using System.Linq;
 namespace Cuckoo.Fody
 {
     using Cuckoo.Impl;
+    using System;
     using Refl = System.Reflection;
 
     internal partial class CallWeaver
@@ -17,7 +18,7 @@ namespace Cuckoo.Fody
             _ctx = ctx;
         }
 
-        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs, WeaveSpec spec) 
+        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs, WeaveRoostSpec spec) 
         {
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
@@ -142,64 +143,98 @@ namespace Cuckoo.Fody
                         i.Emit(OpCodes.Stloc_S, vMethod);
                     
                         /////////////////////////////////////////////////////////////////////
-                        //Load ICuckoo instances into array ////////////////////////////////
-                        i.Emit(OpCodes.Ldc_I4, spec.ProvSpecs.Length);
+                        //Build ICuckooProvider array n feed to Roost ctor /////////////////
+                        i.Emit(OpCodes.Ldc_I4, spec.WeaveProvSpecs.Length);
                         i.Emit(OpCodes.Newarr, R.ICuckooProvider_Type);
                         i.Emit(OpCodes.Stloc_S, vProvs);
                     
-                        foreach(var provSpec in spec.ProvSpecs) {
-                            var att = provSpec.Attribute;
-                            var tAtt = mod.Import(att.AttributeType);
+                        foreach(var provSpec in spec.WeaveProvSpecs) {
 
-                            if(att.HasConstructorArguments) {
-                                var mProvCtor = mod.Import(
-                                                        tAtt.ReferenceMethod(c => m.IsConstructor
-                                                                                    && !c.IsStatic
-                                                                                    && c.Parameters.Select(p => p.ParameterType)
-                                                                                        .SequenceEqual(
-                                                                                            att.ConstructorArguments.Select(a => a.Type) 
-                                                                                        )));
+                            //Below to be changed to construct just using ctors etc...
 
-                                foreach(var ctorArg in att.ConstructorArguments) {
-                                    i.EmitConstant(ctorArg.Type, ctorArg.Value);
+                            foreach(var ctorArg in provSpec.CtorArgs) {
+                                i.EmitConstant(mod.Import(ctorArg.GetType()), ctorArg);
+                            }
+
+                            i.Emit(OpCodes.Newobj, provSpec.CtorMethod);
+                            i.Emit(OpCodes.Dup);
+                            i.Emit(OpCodes.Stloc_S, vProv);
+
+                            foreach(var namedArg in provSpec.NamedArgs) {
+                                i.Emit(OpCodes.Dup);
+                                i.EmitConstant(mod.Import(namedArg.Value.GetType()), namedArg.Value);
+
+                                var f = provSpec.CtorMethod.DeclaringType.ReferenceField(namedArg.Key);
+
+                                if(f != null) {
+                                    i.Emit(OpCodes.Stfld, f);
                                 }
+                                else {
+                                    var mSet = provSpec.CtorMethod.DeclaringType.ReferencePropertySetter(namedArg.Key);
 
-                                i.Emit(OpCodes.Newobj, mProvCtor);
-                            }
-                            else {
-                                var mProvCtor = mod.Import(
-                                                        tAtt.ReferenceMethod(c => c.IsConstructor 
-                                                                                    && !c.IsStatic 
-                                                                                    && !c.HasParameters ));
-                                i.Emit(OpCodes.Newobj, mProvCtor);
-                            }
+                                    if(mSet == null) {
+                                        throw new InvalidOperationException("Named arg not found on CuckooProvider!");
+                                    }
 
-                            i.Emit(OpCodes.Stloc, vProv);
-
-
-                            if(att.HasFields) {
-                                foreach(var namedCtorArg in att.Fields) {
-                                    var field = mod.Import(
-                                                        tAtt.ReferenceField(namedCtorArg.Name));
-
-                                    i.Emit(OpCodes.Ldloc, vProv);
-                                    i.Emit(OpCodes.Castclass, tAtt);
-                                    i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
-                                    i.Emit(OpCodes.Stfld, field);
+                                    i.Emit(mSet.Resolve().IsVirtual ? OpCodes.Callvirt : OpCodes.Call, mSet);
                                 }
                             }
+        
+                            i.Emit(OpCodes.Pop);
 
-                            if(att.HasProperties) {
-                                foreach(var propArg in att.Properties) {
-                                    var mSet = mod.Import(
-                                                        tAtt.ReferencePropertySetter(propArg.Name));
 
-                                    i.Emit(OpCodes.Ldloc, vProv);
-                                    i.Emit(OpCodes.Castclass, tAtt);
-                                    i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
-                                    i.Emit(OpCodes.Call, mSet);
-                                }
-                            }
+                            //var att = provSpec.Attribute;
+                            //var tAtt = mod.Import(att.AttributeType);
+
+                            //if(att.HasConstructorArguments) {
+                            //    var mProvCtor = mod.Import(
+                            //                            tAtt.ReferenceMethod(c => m.IsConstructor
+                            //                                                        && !c.IsStatic
+                            //                                                        && c.Parameters.Select(p => p.ParameterType)
+                            //                                                            .SequenceEqual(
+                            //                                                                att.ConstructorArguments.Select(a => a.Type) 
+                            //                                                            )));
+
+                            //    foreach(var ctorArg in att.ConstructorArguments) {
+                            //        i.EmitConstant(ctorArg.Type, ctorArg.Value);
+                            //    }
+
+                            //    i.Emit(OpCodes.Newobj, mProvCtor);
+                            //}
+                            //else {
+                            //    var mProvCtor = mod.Import(
+                            //                            tAtt.ReferenceMethod(c => c.IsConstructor 
+                            //                                                        && !c.IsStatic 
+                            //                                                        && !c.HasParameters ));
+                            //    i.Emit(OpCodes.Newobj, mProvCtor);
+                            //}
+
+                            //i.Emit(OpCodes.Stloc, vProv);
+
+
+                            //if(att.HasFields) {
+                            //    foreach(var namedCtorArg in att.Fields) {
+                            //        var field = mod.Import(
+                            //                            tAtt.ReferenceField(namedCtorArg.Name));
+
+                            //        i.Emit(OpCodes.Ldloc, vProv);
+                            //        i.Emit(OpCodes.Castclass, tAtt);
+                            //        i.EmitConstant(namedCtorArg.Argument.Type, namedCtorArg.Argument.Value);
+                            //        i.Emit(OpCodes.Stfld, field);
+                            //    }
+                            //}
+
+                            //if(att.HasProperties) {
+                            //    foreach(var propArg in att.Properties) {
+                            //        var mSet = mod.Import(
+                            //                            tAtt.ReferencePropertySetter(propArg.Name));
+
+                            //        i.Emit(OpCodes.Ldloc, vProv);
+                            //        i.Emit(OpCodes.Castclass, tAtt);
+                            //        i.EmitConstant(propArg.Argument.Type, propArg.Argument.Value);
+                            //        i.Emit(OpCodes.Call, mSet);
+                            //    }
+                            //}
 
                             i.Emit(OpCodes.Ldloc_S, vProvs);
                             i.Emit(OpCodes.Ldc_I4, provSpec.Index);

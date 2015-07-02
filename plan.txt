@@ -38,6 +38,9 @@ TO DO:
 > Rewrite attributes to use roost-targeting
 > Separate Cuckoo.Fody and Cuckoo.
 > Test picking up of private + public methods
+> Test ctor args and named params on att ctors - of all types!
+> Test nested classes
+> Providers can't be abstract or generic
 
 *******************************************************************
 DONE

@@ -59,9 +59,5 @@ namespace Cuckoo.Fody.Cecil
             return mNew;
         }
 
-        public static IEnumerable<TypeDefinition> GetAllTypes(this ModuleDefinition mod) {
-            return mod.Types.SelectMany(t => t.GetAllTypes());
-        }
-
     }
 }
