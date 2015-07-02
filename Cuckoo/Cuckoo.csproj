@@ -54,11 +54,8 @@
     <Compile Include="Impl\Roost.cs" />
     <Compile Include="ICuckoo.cs" />
     <Compile Include="ICall.cs" />
-    <Compile Include="Attributes\CuckooAttribute.cs" />
-    <Compile Include="Attributes\CuckooedAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="plan.txt" />
+    <Compile Include="CuckooAttribute.cs" />
+    <Compile Include="Impl\CuckooedAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

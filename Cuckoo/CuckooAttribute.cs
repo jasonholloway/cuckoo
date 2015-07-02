@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cuckoo.Attributes
+namespace Cuckoo
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
     public abstract class CuckooAttribute : Attribute, ICuckoo, ICuckooProvider

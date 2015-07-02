@@ -37,5 +37,13 @@ namespace Cuckoo.Test
 
             Assert.IsTrue(result == 77);
         }
+
+        [TestMethod]
+        public void CuckooOnConcreteMethodInAbstractClass() {
+            var result = Tester.WithClass<DerivedFromAbstractClass>()
+                                .Run(d => d.ConcreteMethod(399));
+
+            Assert.IsTrue(result == 299);
+        }
     }
 }

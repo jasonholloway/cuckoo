@@ -10,7 +10,7 @@
     <projectUrl>http://github.com/jasonholloway/cuckoo</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://raw.github.com/Fody/Publicize/master/Icons/package_icon.png</iconUrl>
-    <summary>A compile-time method interceptor. Wraps and tweaks calls by aspect.</summary>
+    <summary>A compile-time method interceptor. Wraps calls by aspect.</summary>
     <description>
 Cuckoo is a full-feathered method interceptor, allowing method calls to be wrapped and tweaked. It applies its aspects at compile-time to minimise runtime bumph - much like PostSharp, but free and modular.
 

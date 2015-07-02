@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cuckoo.Attributes
+namespace Cuckoo.Impl
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
     public class CuckooedAttribute : Attribute

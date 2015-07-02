@@ -1,6 +1,6 @@
 ﻿using Cuckoo;
-using Cuckoo.Attributes;
 using Cuckoo.Fody;
+using Cuckoo.Impl;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using Sequences;

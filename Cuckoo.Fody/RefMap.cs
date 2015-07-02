@@ -3,12 +3,11 @@ using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using System;
 using System.Linq;
+using Cuckoo.Impl;
+using System.Diagnostics;
 
 namespace Cuckoo.Fody
 {
-    using Cuckoo.Attributes;
-    using Cuckoo.Impl;
-    using System.Diagnostics;
     using Refl = System.Reflection;
 
     class RefMap

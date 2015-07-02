@@ -1,17 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Reflection;
-using System.IO;
-using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Pdb;
-using Cuckoo.Fody;
-using Cuckoo;
-using Cuckoo.Test.Infrastructure;
+﻿using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
-using System.Linq.Expressions;
-using Cuckoo.Impl;
-using Cuckoo.Attributes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Cuckoo.Test
 {

@@ -1,16 +1,14 @@
 ﻿
 ********************************************************************
 TO DO:
-> CallArgs of arrays and nullables...
-> Fill in metadata
-> NuGet
-	nuspec should specify framework >= 4
-> Mono
-
-
+> Add rudimentary mechanism for specifying cuckoos in general
 
 *******************************************************************
-DONE:
+DONE
+> NuGet DONE
+> Mono tesing DONE
+> CallArgs of arrays and nullables DONE
+> Fill in metadata DONE
 > Now references Fody.Cecil DONE
 > Hide stack as much as we can DONE
 > Struct values are written back into place after cuckooing DONE

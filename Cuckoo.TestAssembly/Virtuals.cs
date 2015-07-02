@@ -28,6 +28,13 @@ namespace Cuckoo.TestAssembly
     {
         [DeductingCuckoo(50)]
         public abstract int AbstractMethod(int a);
+
+        [DeductingCuckoo(100)]
+        public int ConcreteMethod(int a) {
+            return a;
+        }
+
+
     }
 
     public class DerivedFromAbstractClass : AbstractBaseClass

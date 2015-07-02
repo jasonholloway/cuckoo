@@ -1,4 +1,4 @@
-﻿using Cuckoo.Attributes;
+﻿using Cuckoo;
 using System;
 using System.Collections.Generic;
 using System.Linq;

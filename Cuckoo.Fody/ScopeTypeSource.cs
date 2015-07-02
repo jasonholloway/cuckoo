@@ -19,12 +19,7 @@ namespace Cuckoo.Fody
 
         public TypeReference Map(TypeReference sourceType) {
             var sourceTypeSpec = sourceType as TypeSpecification;
-
-            if(sourceType.Name.StartsWith("Nullable")) {
-
-            }
-
-
+            
             if(sourceType is TypeSpecification) {
                 sourceType = Map(sourceType.GetElementType());
             }
