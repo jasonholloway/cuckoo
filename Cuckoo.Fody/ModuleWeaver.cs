@@ -16,9 +16,7 @@ namespace Cuckoo.Fody
         public string AssemblyFilePath { get; set; }
         public ModuleDefinition ModuleDefinition { get; set; }
         public Action<string> LogInfo { get; set; }
-
-
-
+        
 
         IEnumerable<RoostSpec> GatherTargets() {
             var childAppDomain = AppDomain.CreateDomain("CuckooGathering");
@@ -42,7 +40,7 @@ namespace Cuckoo.Fody
         public void Execute() {
 
             var targets = GatherTargets();
-
+            
             var groupedTargets = targets.GroupBy(
                                             t => t.Method.Token,
                                             (k, r) => new {
@@ -70,9 +68,24 @@ namespace Cuckoo.Fody
 
                         var provSpecs = target.CuckooProviderSpecs
                                                 .Select(s => {
+
+                                                    //Some kind of mapping has to be put in to AssemblyResolver
+                                                    //To forward references to the new module - that is, the current subject moduledef
+
+                                                    //AssemblyResolver is always provided by fody - what if we could
+                                                    //inject our own interceptor?
+
+
+                                                    //var asm = ModuleDefinition.AssemblyResolver
+                                                    //                            .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
+                                                    
+                                                    //var ctorRef = (MethodReference)asm.MainModule.LookupToken(s.CtorToken);
+                                                        
+
                                                     var ctorRef = (MethodReference)ModuleDefinition
                                                                                     .LookupToken(s.CtorToken);
-                                                            
+                                                    
+        
                                                     return new WeaveProvSpec(
                                                                         iProv++, 
                                                                         ctorRef,
@@ -92,6 +105,7 @@ namespace Cuckoo.Fody
                             .Where(spec => !spec.Method.IsAbstract)
                             .Select(spec => new MethodWeaver(spec, LogInfo))
                             .ToArray();
+
 
             foreach(var weave in weaves) {
                 weave.Weave();

@@ -13,28 +13,39 @@ namespace Cuckoo.Test.Infrastructure
 {
     public static class WeaverRunner
     {
-        public static Assembly Reweave(string inputPath, string outputPath = null) 
+        public static Assembly Reweave(string inputPath) 
         {
-            var asmResolver = new DefaultAssemblyResolver();
+
+            var path = inputPath.Replace(".dll", ".Rewoven.dll");
+
+            var inputPdbPath = inputPath.Replace(".dll", ".pdb");
+            var pdbPath = inputPdbPath.Replace(".pdb", ".Rewoven.pdb");
+
+            File.Copy(inputPath, path, true);
+            File.Copy(inputPdbPath, pdbPath, true);
+
+
+
 
             var readerParams = new ReaderParameters() {
-                AssemblyResolver = asmResolver,
+                AssemblyResolver = new DefaultAssemblyResolver(),
                 SymbolReaderProvider = new PdbReaderProvider(),
                 ReadSymbols = true,
                 ReadingMode = ReadingMode.Immediate
             };
 
             var module = ModuleDefinition
-                            .ReadModule(inputPath, readerParams);
+                            .ReadModule(path, readerParams);
 
-            string newName = module.Name + ".Rewoven";
+
+            string newName = module.Name.Replace(".dll", ".Rewoven.dll");
 
             module.Assembly.Name = new AssemblyNameDefinition(newName, new Version());
             module.Name = newName;
 
 
             var weaver = new ModuleWeaver() {
-                AssemblyFilePath = inputPath,
+                AssemblyFilePath = path,
                 ModuleDefinition = module,
                 LogInfo = _ => { }
             };
@@ -48,13 +59,10 @@ namespace Cuckoo.Test.Infrastructure
             };
 
 
-            if(outputPath == null) {
-                outputPath = inputPath.Replace(".dll", ".Rewoven.dll");
-            }
 
-            module.Write(outputPath, writerParams);
+            module.Write(path, writerParams);
 
-            return Assembly.LoadFile(outputPath);
+            return Assembly.LoadFile(path);
         }
 
 

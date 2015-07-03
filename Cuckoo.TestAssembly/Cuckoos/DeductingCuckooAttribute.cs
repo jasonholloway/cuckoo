@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly.Cuckoos
 {
+    [AttributeUsage(AttributeTargets.Method, Inherited=false)]
     public class DeductingCuckooAttribute : CuckooAttribute
     {
         int _subtrahend;

@@ -10,17 +10,14 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class RoostTargetTests
+    public class RoostTargetTests : WeavingTestBase
     {
         [TestMethod]
-        public void RoostTargetPickedUpAndRun() {
-            int oldCtorCount = SimpleRoostTargeter.InstanceCount;
-            int oldRunCount = SimpleRoostTargeter.RunCount;
+        public void RoostTargeterPickedUpAndRun() {
+            var result = Tester.WithClass<RoostTargetClass>()
+                                .Run(r => r.RoostTarget(123));
 
-            var rewovenAsm = WeaverRunner.Reweave(typeof(SimpleRoostTargeter).Assembly);
-
-            Assert.IsTrue(oldCtorCount == (SimpleRoostTargeter.InstanceCount - 1));
-            Assert.IsTrue(oldCtorCount == (SimpleRoostTargeter.RunCount - 1));
+            Assert.IsTrue(result == 100);
         }
 
 

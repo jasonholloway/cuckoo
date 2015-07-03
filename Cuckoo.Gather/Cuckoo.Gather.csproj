@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GatherAgent.cs" />
-    <Compile Include="AttributeRoostTargeter.cs" />
+    <Compile Include="AttributeTargeter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

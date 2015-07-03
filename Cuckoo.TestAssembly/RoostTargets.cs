@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cuckoo.TestAssembly.Cuckoos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,27 +8,28 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class SimpleRoostTargeter : IRoostPicker
-    {
-        public static int InstanceCount = 0;
-        public static int RunCount = 0;
 
-        public SimpleRoostTargeter() {
-            InstanceCount++;
+    public class RoostTargetClass {
+        public int RoostTarget(int i) {
+            return i;
         }
+    }
 
+
+
+    public class TestRoostTargeter : IRoostPicker
+    {
         public IEnumerable<RoostSpec> PickRoosts(Assembly assembly) {
-            RunCount++;
-            return new RoostSpec[0];
-            
-            //{
-            //    new RoostSpec(
-            //            new MethodSpec("Method1", "Type1", 1), 
-            //            new CuckooProviderSpec() ),
-            //    new RoostSpec(
-            //            new MethodSpec("Method2", "Type2", 2), 
-            //            new CuckooProviderSpec() ),
-            //};
+
+            var method = assembly
+                            .GetType(typeof(RoostTargetClass).FullName)
+                            .GetMethod("RoostTarget");
+
+            yield return new RoostSpec(
+                                    method,
+                                    typeof(DeductingCuckooAttribute).GetConstructor(new[] { typeof(int) }),
+                                    new object[] { 23 },
+                                    new KeyValuePair<string, object>[0]);
         }
     }
 

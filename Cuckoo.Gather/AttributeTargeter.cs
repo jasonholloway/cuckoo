@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    internal class AttributeRoostTargeter : IRoostPicker
+    internal class AttributeTargeter : IRoostPicker
     {
         public IEnumerable<RoostSpec> PickRoosts(Assembly assembly) 
         {
@@ -17,8 +17,11 @@ namespace Cuckoo.Gather
                                 | BindingFlags.Public
                                 | BindingFlags.NonPublic;
 
-            var allMethods = allTypes.SelectMany(t => t.GetMethods(bindingFlags).Cast<MethodBase>())
-                                        .Concat(allTypes.SelectMany(t => t.GetConstructors(bindingFlags)));
+            var allMethods = allTypes.SelectMany(t => t.GetMethods(bindingFlags)
+                                                        .Where(m => m.DeclaringType == t)
+                                                        .Cast<MethodBase>())
+                                        .Concat(allTypes
+                                                .SelectMany(t => t.GetConstructors(bindingFlags)));
 
             var tups = allMethods
                         .Select(m => new {
@@ -41,7 +44,7 @@ namespace Cuckoo.Gather
                                                 .Select(a => new KeyValuePair<string, object>(
                                                                                 a.MemberInfo.Name, 
                                                                                 a.TypedValue.Value ));
-
+                            
                             return new RoostSpec(
                                             t.Method,
                                             att.Constructor,

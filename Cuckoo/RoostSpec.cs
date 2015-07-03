@@ -57,19 +57,21 @@ namespace Cuckoo
     public struct CuckooProviderSpec
     {
         public readonly string Name;
+        public readonly string AssemblyName;
         public readonly int CtorToken;
         public readonly object[] CtorArgs;
         public readonly NamedArg[] NamedArgs;
 
-        public CuckooProviderSpec(string name, int ctorToken, object[] ctorArgs, NamedArg[] namedArgs) {
+        public CuckooProviderSpec(string name, string assemblyName, int ctorToken, object[] ctorArgs, NamedArg[] namedArgs) {
             Name = name;
+            AssemblyName = assemblyName;
             CtorToken = ctorToken;
             CtorArgs = ctorArgs;
             NamedArgs = namedArgs;
         }
 
         public CuckooProviderSpec(ConstructorInfo ctor, object[] args, NamedArg[] namedArgs)
-            : this(ctor.DeclaringType.FullName, ctor.MetadataToken, args, namedArgs) { }
+            : this(ctor.DeclaringType.FullName, ctor.DeclaringType.Assembly.FullName, ctor.MetadataToken, args, namedArgs) { }
 
         public override string ToString() {
             return Name;

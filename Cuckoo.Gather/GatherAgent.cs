@@ -15,7 +15,7 @@ namespace Cuckoo.Gather
                                                 && typeof(IRoostPicker).IsAssignableFrom(t));
             
             var targeters = new[] { 
-                                new AttributeRoostTargeter() 
+                                new AttributeTargeter() 
                             } 
                             .Concat(targeterTypes
                                         .Select(t => (IRoostPicker)Activator.CreateInstance(t)));
