@@ -78,7 +78,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Infrastructure\IMethodTester.cs" />
+    <Compile Include="Infrastructure\MethodTester2.cs" />
+    <Compile Include="Infrastructure\WeaverSandbox.cs" />
     <Compile Include="Infrastructure\WeaverRunner.cs" />
+    <Compile Include="Infrastructure\ShadowFolder.cs" />
+    <Compile Include="Infrastructure\WeavingTestBase2.cs" />
     <Compile Include="RoostTargetTests.cs" />
     <Compile Include="StructTests.cs" />
     <Compile Include="VirtualTests.cs" />

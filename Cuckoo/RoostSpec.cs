@@ -10,7 +10,7 @@ namespace Cuckoo
 
 
     [Serializable]
-    public struct RoostSpec
+    public class RoostSpec
     {
         public readonly MethodSpec Method;
         public readonly CuckooProviderSpec CuckooProvider;
@@ -32,7 +32,7 @@ namespace Cuckoo
     }
 
     [Serializable]
-    public struct MethodSpec
+    public class MethodSpec
     {
         public readonly string Name;
         public readonly string TypeName;
@@ -54,7 +54,7 @@ namespace Cuckoo
 
 
     [Serializable]
-    public struct CuckooProviderSpec
+    public class CuckooProviderSpec
     {
         public readonly string Name;
         public readonly string AssemblyName;

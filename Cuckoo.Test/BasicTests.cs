@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class BasicTests : WeavingTestBase
+    public class BasicTests : WeavingTestBase2
     {
 
         [TestMethod]

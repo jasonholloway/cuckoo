@@ -19,7 +19,12 @@ namespace Cuckoo.Fody
         
 
         IEnumerable<RoostSpec> GatherTargets() {
-            var childAppDomain = AppDomain.CreateDomain("CuckooGathering");
+            var childAppDomain = AppDomain.CreateDomain(
+                                            "CuckooGathering",
+                                            null,
+                                            new AppDomainSetup() {
+                                                ShadowCopyFiles = "true"
+                                            });
 
             try {
                 var targetAssembly = childAppDomain.Load(AssemblyName.GetAssemblyName(AssemblyFilePath));

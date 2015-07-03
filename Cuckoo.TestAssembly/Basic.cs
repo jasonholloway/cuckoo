@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Basic
+
+    public class Basic : MarshalByRefObject
     {
         public void Dummy1() { }
 
