@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="2.8">
-    <id>Cuckoo.Fody</id>
+    <id>Cuckoo.Weave</id>
     <version>1.0</version>
-    <title>Cuckoo.Fody</title>
+    <title>Cuckoo.Weave</title>
     <authors>Jason Holloway</authors>
     <owners>Jason Holloway</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>

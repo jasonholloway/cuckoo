@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class RoostTargetTests : WeavingTestBase
+    public class RoostTargetTests : WeavingTestBase2
     {
         [TestMethod]
         public void RoostTargeterPickedUpAndRun() {
-            var result = Tester.WithClass<RoostTargetClass>()
+            var result = Tester.With<RoostTargetClass>()
                                 .Run(r => r.RoostTarget(123));
 
             Assert.IsTrue(result == 100);

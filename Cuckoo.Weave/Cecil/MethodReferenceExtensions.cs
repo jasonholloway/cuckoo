@@ -1,6 +1,6 @@
 ﻿using Mono.Cecil;
 
-namespace Cuckoo.Fody.Cecil
+namespace Cuckoo.Weave.Cecil
 {
     public static class MethodReferenceExtensions
     {

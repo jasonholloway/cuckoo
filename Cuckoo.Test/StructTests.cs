@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
-using Cuckoo.Fody;
+using Cuckoo.Weave;
 using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
@@ -13,29 +13,29 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class StructTests : WeavingTestBase
+    public class StructTests : WeavingTestBase2
     {
 
         [TestMethod]
         public void CuckoosOnStructMethods() {
-            var result = Tester.Static()
-                                .Run(() => new TestStruct(123).GetNumber());
+            var result = Tester.With<StructRunner>()
+                                  .Run(s => s.GetNumber(123));
 
             Assert.IsTrue(result == 223);
         }
 
         [TestMethod]
         public void CuckooGetsStructInstance() {
-            var number = Tester.Static()
-                                  .Run(() => ((TestStruct)new TestStruct(123).GetInstance())._number);
+            var number = Tester.With<StructRunner>()
+                                .Run(s => ((TestStruct)s.GetInstance(123))._number);
 
             Assert.IsTrue(number == 123);
         }
 
         [TestMethod]
         public void CuckooAffectsOriginalStruct() {
-            var number = Tester.Static()
-                                .Run(() => (new TestStruct(123) { Number = 8 })._number );
+            var number = Tester.With<StructRunner>()
+                                .Run(s => s.SetAndRetrieveNumber(8));
 
             Assert.IsTrue(number == 8);
         }

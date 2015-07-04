@@ -1,5 +1,5 @@
 ﻿using Cuckoo;
-using Cuckoo.Fody;
+using Cuckoo.Weave;
 using Cuckoo.Impl;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;

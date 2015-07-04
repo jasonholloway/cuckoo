@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
-using Cuckoo.Fody;
+using Cuckoo.Weave;
 using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
@@ -13,12 +13,12 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class PropertyTests : WeavingTestBase
+    public class PropertyTests : WeavingTestBase2
     {
 
         [TestMethod]
         public void CuckooOnPropertyGetter() {
-            var result = Tester.WithClass<Properties>()
+            var result = Tester.With<Properties>()
                                 .Run(p => p.Prop);
 
             Assert.IsTrue(result == 17);
@@ -26,8 +26,11 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnPropertySetter() {
-            var result = Tester.Static()
-                                .Run(() => new Properties() { Prop = 22 }.Value);
+            var result = Tester.With<Properties>()
+                                    .Run(p => {
+                                        p.Prop = 22;
+                                        return p.Value;
+                                    });
 
             Assert.IsTrue(result == 13);
         }

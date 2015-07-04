@@ -2,7 +2,7 @@
 using Mono.Cecil.Rocks;
 using System.Linq;
 
-namespace Cuckoo.Fody.Cecil
+namespace Cuckoo.Weave.Cecil
 {
     internal static class GenericInstanceTypeExtensions
     {

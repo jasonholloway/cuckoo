@@ -7,6 +7,24 @@ using Cuckoo.TestAssembly.Cuckoos;
 
 namespace Cuckoo.TestAssembly
 {
+
+    public class StaticRunner : MarshalByRefObject
+    {
+        public int StaticMethodInInstanceClass(int a, int b) {
+            return StaticMethods.StaticMethod(a, b);
+        }
+
+        public int StaticMethodInStaticClass(int a) {
+            return StaticClass.StaticMethodInStaticClass(a);
+        }
+
+        public int ExtensionMethod(int b) {
+            return new StaticMethods().ExtensionMethod(b);
+        }
+    }
+
+
+
     public class StaticMethods
     {
         [DeductingCuckoo(10)]

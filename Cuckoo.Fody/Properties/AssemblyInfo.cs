@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
 [assembly: AssemblyTitle("Cuckoo.Fody")]
-[assembly: AssemblyDescription("Fody add-in to do cuckoo's bidding")]
+[assembly: AssemblyDescription("Fody add-in for running Cuckoo.Weave")]

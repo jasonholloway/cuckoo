@@ -1,21 +1,12 @@
 ﻿
-CURRENT PROBLEM:
-
-When gathering attributed methods, AttributeTargeter picks up inherited methods multiple times,
-once for each non-overriding subclass.
-
-Should only gather the att if it is declared on current class's method.
-
-
-
 
 ********************************************************************
 TO DO:
-> General roost-targeting mechanism
-> Rewrite attributes to use roost-targeting
+> Separate Cuckoo.Weave and Cuckoo.Weave
+> Update NuGet
+> Test package on Mono again
 > RoostTargeter -> CuckooHatcher producing CuckooSpecs; is CuckooProvider needed???
 > Cuckoo.Gather -> Cuckoo.Hatch
-> Separate Cuckoo.Fody and Cuckoo.Weaver
 > Test picking up of private + public methods
 > Test ctor args and named params on att ctors - of all types!
 > Test nested classes
@@ -23,6 +14,8 @@ TO DO:
 
 *******************************************************************
 DONE
+> General roost-targeting mechanism DONE
+> Rewrite attributes to use roost-targeting DONE
 > NuGet DONE
 > Mono tesing DONE
 > CallArgs of arrays and nullables DONE

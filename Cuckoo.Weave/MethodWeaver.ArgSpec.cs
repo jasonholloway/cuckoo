@@ -1,10 +1,10 @@
-﻿using Cuckoo.Fody.Cecil;
+﻿using Cuckoo.Weave.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cuckoo.Fody
+namespace Cuckoo.Weave
 {
     internal partial class MethodWeaver
     {

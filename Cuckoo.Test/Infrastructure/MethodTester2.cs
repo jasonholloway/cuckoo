@@ -21,30 +21,10 @@ namespace Cuckoo.Test.Infrastructure
             _sandbox = sandbox;
         }
 
-        public IClassMethodTester<TClass> WithClass<TClass>() {
+        public IClassMethodTester<TClass> With<TClass>() {
             return new ClassMethodTester<TClass>(_sandbox);
         }
 
-
-        public IStaticMethodTester Static() {
-            return new StaticMethodTester(_sandbox);
-        }
-
-
-
-        class StaticMethodTester
-            : IStaticMethodTester
-        {
-            WeaverSandbox _sandbox;
-
-            public StaticMethodTester(WeaverSandbox sandbox) {
-                _sandbox = sandbox;
-            }
-
-            public TResult Run<TResult>(Expression<Func<TResult>> exFn) {
-                throw new NotImplementedException();
-            }
-        }
 
 
         class ClassMethodTester<TClass>

@@ -1,22 +1,23 @@
 ﻿using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class CtorTests : WeavingTestBase
+    public class CtorTests : WeavingTestBase2
     {
 
         [TestMethod]
         public void CuckoosOnCtor() {
-            var result = Tester.Static()
-                                    .Run(() => new CtorClass(12, 12).BaseValue);
+            var result = Tester.With<CtorRunner>()
+                                    .Run(r => r.CtorWithBaseCalculation(12, 12).BaseValue);
 
             Assert.IsTrue(result == 7700);
 
-            result = Tester.Static()
-                                .Run(() => new CtorClass(12, 12).DerivedValue);
+            result = Tester.With<CtorRunner>()
+                                .Run(r => r.CtorWithBaseCalculation(12, 12).DerivedValue);
 
             Assert.IsTrue(result == 99);
         }
@@ -24,8 +25,8 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnCtorGetsInstance() {
-            Tester.Static()
-                      .Run(() => new CtorClass(1, 2, 3).DerivedValue);
+            Tester.With<CtorRunner>()
+                      .Run(r => r.Ctor(1, 2, 3).DerivedValue);
         }
 
     }

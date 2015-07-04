@@ -9,47 +9,7 @@ using System.Threading.Tasks;
 namespace Cuckoo.TestAssembly
 {
 
-    //public class GenRet
-    //{
-
-    //    public T MethodWithGenericResult2<T>(int a) {
-    //        var call = new DummyCall<T>();
-
-    //        call.PreInvoke();
-
-    //        call.InvokeNext();
-
-    //        var result = call._return;
-
-    //        return result;
-    //    }
-
-
-
-    //    class DummyCall<TRet> : CallBase<GenRet, TRet>
-    //    {
-    //        public DummyCall()
-    //            : base(null, null, null) {
-    //            //...
-    //        }
-
-    //        protected override void InvokeInnerMethod() {
-
-    //            var arg = new CallArg<TRet>(null, default(TRet));
-
-
-    //            var v = arg._value;
-
-    //            //throw new NotImplementedException();
-    //        }
-    //    }
-
-
-
-    //}
-
-
-    public class GenericArgs
+    public class GenericArgs : MarshalByRefObject
     {
         [BareCuckoo]
         public int MethodWithGenericArgs<A, B>(A a, B b) {

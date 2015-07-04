@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class ClassWithStaticCtor
+    public class ClassWithStaticCtor : MarshalByRefObject
     {
 
         static int _aNum = 8;

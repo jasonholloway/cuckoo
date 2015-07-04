@@ -1,1 +1,1 @@
-start "" ildasm ..\cuckoo.testassembly\bin\debug\cuckoo.testassembly.rewoven.dll
+start "" ildasm c:\users\jason\appdata\local\temp\cuckoosandbox\cuckoo.testassembly.dll

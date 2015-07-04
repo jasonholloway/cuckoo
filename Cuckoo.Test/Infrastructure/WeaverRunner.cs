@@ -1,4 +1,4 @@
-﻿using Cuckoo.Fody;
+﻿using Cuckoo.Weave;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using System;
@@ -44,13 +44,14 @@ namespace Cuckoo.Test.Infrastructure
             module.Name = newName;
 
 
-            var weaver = new ModuleWeaver() {
-                AssemblyFilePath = path,
-                ModuleDefinition = module,
-                LogInfo = _ => { }
-            };
+            var weaver = new Weaver();
+            
+            weaver.Init(
+                    module,
+                    path,
+                    _ => { } );
 
-            weaver.Execute();
+            weaver.Weave();
 
 
             var writerParams = new WriterParameters() {

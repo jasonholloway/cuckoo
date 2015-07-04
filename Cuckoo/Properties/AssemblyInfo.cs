@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
 [assembly: AssemblyTitle("Cuckoo")]
-[assembly: AssemblyDescription("The full-feathered method interceptor")]
+[assembly: AssemblyDescription("Core interfaces and runtime infrastructure")]

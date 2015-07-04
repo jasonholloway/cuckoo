@@ -10,20 +10,14 @@ namespace Cuckoo.Test.Infrastructure
 {
     public interface IMethodTester
     {
-        IClassMethodTester<TClass> WithClass<TClass>();
-        IStaticMethodTester Static();
+        IClassMethodTester<TClass> With<TClass>();
     }
     
     public interface IClassMethodTester<TClass>
     {
         void Run(Action<TClass> exFn);
         TResult Run<TResult>(Func<TClass, TResult> exFn);
-        MethodInfo GetMethod(Func<MethodInfo, bool> fnSelect);
-    }
-
-    public interface IStaticMethodTester
-    {
-        TResult Run<TResult>(Expression<Func<TResult>> exFn);
+        //MethodInfo GetMethod(Func<MethodInfo, bool> fnSelect);
     }
 
 }

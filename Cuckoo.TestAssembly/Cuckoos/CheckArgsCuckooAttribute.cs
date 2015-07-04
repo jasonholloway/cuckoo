@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly.Cuckoos
 {
-    public class ReturnCallArgsCuckooAttribute : CuckooAttribute
+    public class ReturnCallArgTypesCuckooAttribute : CuckooAttribute
     {
         public override void Init(IRoost roost) {
-            if(!(roost.Method is MethodInfo && ((MethodInfo)roost.Method).ReturnType == typeof(ICallArg[]))) {
-                throw new InvalidOperationException("Cuckoo only fits methods returning ICallArg[]!");
+            if(!(roost.Method is MethodInfo && ((MethodInfo)roost.Method).ReturnType == typeof(string[]))) {
+                throw new InvalidOperationException("Cuckoo only fits methods returning string[]!");
             }
         }
 
         public override void Call(ICall call) {
             call.CallInner();
 
-            call.ReturnValue = call.Args;
+            call.ReturnValue = call.Args.Select(a => a.Type.FullName)
+                                            .ToArray();
         }
     }
 

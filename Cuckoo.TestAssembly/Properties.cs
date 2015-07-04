@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Properties {
+    public class Properties : MarshalByRefObject 
+    {
 
 
         public int Value = 25;

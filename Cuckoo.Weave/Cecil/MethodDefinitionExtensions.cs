@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cuckoo.Fody.Cecil
+namespace Cuckoo.Weave.Cecil
 {
     public static class MethodDefinitionExtensions
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Async {
+    public class Async : MarshalByRefObject {
 
         [BareCuckoo]
         public async void VoidAsyncMethod() {
@@ -16,8 +16,14 @@ namespace Cuckoo.TestAssembly
         }
 
 
+
+        public int IntAsyncMethodRunner() {
+            return IntAsyncMethod().Result;
+        }
+
+
         [BareCuckoo]
-        public async Task<int> IntAsyncMethod() {
+        async Task<int> IntAsyncMethod() {
             return await Task.Run(() => {
                                     Thread.Sleep(500);
                                     return 123;

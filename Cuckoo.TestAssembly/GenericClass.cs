@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class GenericClass<A, B>
+    public class GenericClass<A, B> : MarshalByRefObject
     {
 
         [BareCuckoo]

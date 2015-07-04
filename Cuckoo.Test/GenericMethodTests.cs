@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class GenericMethodTests : WeavingTestBase
+    public class GenericMethodTests : WeavingTestBase2
     {
 
         [TestMethod]
         public void CuckooOnMethodWithGenericArgs() {
-            int r = Tester.WithClass<GenericArgs>()
+            int r = Tester.With<GenericArgs>()
                             .Run(g => g.MethodWithGenericArgs<string, float>("", 2F));
 
 
@@ -25,7 +25,7 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodWithGenericResult() {
-            int r = Tester.WithClass<GenericArgs>()
+            int r = Tester.With<GenericArgs>()
                             .Run(g => g.MethodWithGenericResult<int>(99));
 
             Assert.IsTrue(r == default(int));
@@ -34,7 +34,7 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodWithNullableGenericResult() {
-            int? r = Tester.WithClass<GenericArgs>()
+            int? r = Tester.With<GenericArgs>()
                             .Run(g => g.MethodWithGenericResult<int?>(99));
 
             Assert.IsTrue(r == default(int?));
@@ -44,7 +44,7 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckoosCooperateOnMethodWithGenericArgs() {
-            int r = Tester.WithClass<GenericArgs>()
+            int r = Tester.With<GenericArgs>()
                             .Run(g => g.TreblyCuckooedMethodWithGenericArgs(1, 2, 3));
 
             Assert.IsTrue(r == 90);
@@ -54,7 +54,7 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void CuckooOnMethodReturningGenValue() {
-            var l = Tester.WithClass<GenericArgs>()
+            var l = Tester.With<GenericArgs>()
                             .Run(g => g.MethodReturningList());
 
             Assert.IsTrue(l.SequenceEqual(new[] { 1, 2, 3, 4, 5 }));

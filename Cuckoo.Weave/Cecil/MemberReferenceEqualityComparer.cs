@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cuckoo.Fody.Cecil
+namespace Cuckoo.Weave.Cecil
 {
     internal class MemberReferenceEqualityComparer 
         : IEqualityComparer<MemberReference>

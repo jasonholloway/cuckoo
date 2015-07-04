@@ -13,16 +13,16 @@ namespace Cuckoo.Test.Infrastructure
             _sourcePath = asmPath;
             _fileName = Path.GetFileName(_sourcePath);
 
-            _dir = new TempDir();
+            _dir = new TempDir("CuckooSandbox");
 
-            CopyDir(Path.GetDirectoryName(_sourcePath), _dir.Path);
+            CopyDir(Path.GetDirectoryName(_sourcePath), _dir.FolderPath);
 
-            _filePath = Path.Combine(_dir.Path, _fileName);
+            _filePath = Path.Combine(_dir.FolderPath, _fileName);
         }
 
 
         public string FolderPath { 
-            get { return _dir.Path; } 
+            get { return _dir.FolderPath; } 
         }
 
         public string AssemblyPath {
@@ -62,18 +62,24 @@ namespace Cuckoo.Test.Infrastructure
     {
         DirectoryInfo _info;
 
-        public TempDir() {
-            string path = System.IO.Path.GetTempFileName();
-            File.Delete(path);
+        public TempDir(string folderName = null) {
+            folderName = folderName 
+                            ?? Guid.NewGuid().ToString();
             
-            _info = Directory.CreateDirectory(path);
+            string folderPath = Path.Combine(Path.GetTempPath(), folderName);
+
+            if(Directory.Exists(folderPath)) {
+                Directory.Delete(folderPath, true);
+            }
+
+            _info = Directory.CreateDirectory(folderPath);
         }
 
         public DirectoryInfo Info {
             get { return _info; }
         }
 
-        public string Path {
+        public string FolderPath {
             get { return _info.FullName; }
         }
 

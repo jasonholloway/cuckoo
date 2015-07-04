@@ -3,7 +3,7 @@ using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
 
-namespace Cuckoo.Fody.Cecil
+namespace Cuckoo.Weave.Cecil
 {
     public static class IlProcessorExtensions
     {

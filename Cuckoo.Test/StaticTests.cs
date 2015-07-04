@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
-using Cuckoo.Fody;
+using Cuckoo.Weave;
 using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
@@ -13,35 +13,31 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class StaticTests : WeavingTestBase
+    public class StaticTests : WeavingTestBase2
     {
-
         [TestMethod]
-        public void CuckooOnStaticMethod() {
-            var result = Tester.Static()
-                                .Run(() => StaticMethods.StaticMethod(10, 10));
+        public void CuckooOnStaticMethod() {            
+            var result = Tester.With<StaticRunner>()
+                                .Run(r => r.StaticMethodInInstanceClass(10, 10));
 
             Assert.IsTrue(result == 40);
         }
 
         [TestMethod]
         public void CuckooOnStaticMethodInStaticClass() {
-            var result = Tester.Static()
-                                .Run(() => StaticClass.StaticMethodInStaticClass(20));
+            var result = Tester.With<StaticRunner>()
+                                .Run(r => r.StaticMethodInStaticClass(20));
 
             Assert.IsTrue(result == 40);
         }
 
         [TestMethod]
         public void CuckooOnExtensionMethod() {
-            var result = Tester.WithClass<StaticMethods>()
-                                .Run(s => s.ExtensionMethod(7));
+            var result = Tester.With<StaticRunner>()
+                                .Run(r => r.ExtensionMethod(7));
 
             Assert.IsTrue(result == 407);
         }
-
-
-
     }
 
 

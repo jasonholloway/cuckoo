@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
-using Cuckoo.Fody;
+using Cuckoo.Weave;
 using Cuckoo;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.TestAssembly;
@@ -13,12 +13,12 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class ArgTests : WeavingTestBase
+    public class ArgTests : WeavingTestBase2
     {
 
         [TestMethod]
         public void CuckooChangesArgs() {
-            var result = Tester.WithClass<Args>()
+            var result = Tester.With<Args>()
                                 .Run(a => a.MethodReturnsStrings(1, "", "", 1f, ""));
 
             Assert.IsTrue(result == "Growl! Growl! Growl!");
@@ -30,7 +30,7 @@ namespace Cuckoo.Test
             int x = 0;
             string y = "";
 
-            var result = Tester.WithClass<Args>()
+            var result = Tester.With<Args>()
                                 .Run(a => a.MethodWithOutArg(1, out x, out y));
 
             Assert.IsTrue(x == 666);
@@ -44,7 +44,7 @@ namespace Cuckoo.Test
             int x = 0;
             string y = "";
 
-            var result = Tester.WithClass<Args>()
+            var result = Tester.With<Args>()
                                 .Run(a => a.MethodWithOutArgAndManyCuckoos(1, out x, out y));
 
             Assert.IsTrue(x == 666);
@@ -58,7 +58,7 @@ namespace Cuckoo.Test
             string s = "";
             int i = 0;
 
-            var result = Tester.WithClass<Args>()
+            var result = Tester.With<Args>()
                                   .Run(a => a.MethodWithRefArg(ref s, ref i));
 
             Assert.IsTrue(result == "yup");
@@ -72,7 +72,7 @@ namespace Cuckoo.Test
             string s = "";
             int i = 0;
 
-            var result = Tester.WithClass<Args>()
+            var result = Tester.With<Args>()
                                   .Run(a => a.MethodWithChangedRefArgs(ref s, ref i));
 
             Assert.IsTrue(result == "yup");
@@ -81,16 +81,11 @@ namespace Cuckoo.Test
         }
 
         [TestMethod]
-        public void CuckoosAllowOptionalArgs() {
-            var method = Tester.WithClass<Args>()
-                                    .GetMethod(m => m.Name == "MethodWithOptionalArgs");
+        public void CuckoosAllowOptionalArgs() {            
+            var result = Tester.With<Args>()
+                                    .Run(a => a.MethodWithOptionalArgs(1));
 
-            Assert.IsTrue(method.GetParameters().Count(p => p.IsOptional) == 1);
-
-            var result = Tester.WithClass<Args>()
-                                    .Run(a => a.MethodWithOptionalArgs(1, 123));
-
-            Assert.IsTrue(result == "123");
+            Assert.IsTrue(result == "13");
         }
 
 

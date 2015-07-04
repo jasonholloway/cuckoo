@@ -3,7 +3,7 @@ using Mono.Cecil.Rocks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cuckoo.Fody
+namespace Cuckoo.Weave
 {
     class ScopeTypeSource
     {

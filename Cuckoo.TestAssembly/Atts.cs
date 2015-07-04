@@ -7,7 +7,7 @@ using Cuckoo.TestAssembly.Cuckoos;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Atts
+    public class Atts : MarshalByRefObject
     {
 
         [OptionalCtorArgsCuckoo(99)]

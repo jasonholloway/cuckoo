@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace Cuckoo.TestAssembly
 {
 
-    public class RoostTargetClass {
+    public class RoostTargetClass : MarshalByRefObject 
+    {
         public int RoostTarget(int i) {
             return i;
         }

@@ -1,4 +1,4 @@
-﻿using Cuckoo.Fody;
+﻿using Cuckoo.Weave;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using System;
@@ -14,12 +14,12 @@ namespace Cuckoo.Test.Infrastructure
     public class WeaverSandbox : IDisposable
     {
         string _asmPath;
-        ModuleWeaver _weaver;
+        Weaver _weaver;
 
         ShadowFolder _folder;
         AppDomain _appDomain;
 
-        public WeaverSandbox(string asmPath, ModuleWeaver weaver) {
+        public WeaverSandbox(string asmPath, Weaver weaver) {
             _asmPath = asmPath;
             _weaver = weaver;
         }
@@ -27,8 +27,10 @@ namespace Cuckoo.Test.Infrastructure
         public void Init() {
             _folder = new ShadowFolder(_asmPath);
 
+            var asmResolver = new AssemblyResolver(_folder.FolderPath);
+
             var readerParams = new ReaderParameters() {
-                AssemblyResolver = new DefaultAssemblyResolver(),
+                AssemblyResolver = asmResolver,
                 SymbolReaderProvider = new PdbReaderProvider(),
                 ReadSymbols = true,
                 ReadingMode = ReadingMode.Immediate
@@ -37,11 +39,14 @@ namespace Cuckoo.Test.Infrastructure
             var module = ModuleDefinition
                             .ReadModule(_folder.AssemblyPath, readerParams);
 
-            _weaver.AssemblyFilePath = _folder.AssemblyPath;
-            _weaver.ModuleDefinition = module;
-            _weaver.LogInfo = _ => { };
+            asmResolver.RegisterAssembly(module.Assembly);
 
-            _weaver.Execute();
+            _weaver.Init(
+                        module, 
+                        _folder.AssemblyPath, 
+                        _ => { } );
+
+            _weaver.Weave();
 
             var writerParams = new WriterParameters() {
                 SymbolWriterProvider = new PdbWriterProvider(),
@@ -67,16 +72,11 @@ namespace Cuckoo.Test.Infrastructure
 
 
         void IDisposable.Dispose() {
-            if(_appDomain != null) {
-                AppDomain.Unload(_appDomain);
-                _appDomain = null;
-            }
-
-            if(_folder != null) {
-                ((IDisposable)_folder).Dispose();
-                _folder = null;
+            if(_appDomain != null) {                
+                AppDomain.Unload(_appDomain);                
             }
         }
+
     }
 
 }

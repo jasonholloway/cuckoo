@@ -1,4 +1,4 @@
-﻿using Cuckoo.Fody.Cecil;
+﻿using Cuckoo.Weave.Cecil;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using System;
@@ -6,7 +6,7 @@ using System.Linq;
 using Cuckoo.Impl;
 using System.Diagnostics;
 
-namespace Cuckoo.Fody
+namespace Cuckoo.Weave
 {
     using Refl = System.Reflection;
 

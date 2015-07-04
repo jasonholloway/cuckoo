@@ -1,7 +1,7 @@
 ﻿using Mono.Cecil;
 using System;
 
-namespace Cuckoo.Fody
+namespace Cuckoo.Weave
 {
     class WeaveContext
     {

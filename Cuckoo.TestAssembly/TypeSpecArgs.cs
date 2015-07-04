@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class TypeSpecArgs {
+    public class TypeSpecArgs : MarshalByRefObject
+    {
 
         //[BareCuckoo]
         //[ReturnCallArgsCuckoo]
@@ -16,15 +17,15 @@ namespace Cuckoo.TestAssembly
         //    return null;
         //}
 
-        [ReturnCallArgsCuckoo]
+        [ReturnCallArgTypesCuckoo]
         [BareCuckoo]
-        public ICallArg[] MethodWithArrayArgs(int[] ri, string[] rs, double[] rd) {
+        public string[] MethodWithArrayArgs(int[] ri, string[] rs, double[] rd) {
             return null;
         }
 
-        [ReturnCallArgsCuckoo]
+        [ReturnCallArgTypesCuckoo]
         [BareCuckoo]
-        public ICallArg[] MethodWithNullableArgs(int? i, float? f, ulong? ul) {
+        public string[] MethodWithNullableArgs(int? i, float? f, ulong? ul) {
             return null;
         }
 

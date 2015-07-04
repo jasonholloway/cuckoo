@@ -1,7 +1,7 @@
 ﻿using Mono.Cecil;
 using System.Collections.Generic;
 
-namespace Cuckoo.Fody
+namespace Cuckoo.Weave
 {
     class NameSource
     {

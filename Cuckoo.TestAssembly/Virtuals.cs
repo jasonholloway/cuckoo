@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Virtuals
+    public class Virtuals : MarshalByRefObject
     {
         [DeductingCuckoo(100)]
         public virtual int VirtualMethod(int a) {
@@ -24,7 +24,7 @@ namespace Cuckoo.TestAssembly
     }
 
 
-    public abstract class AbstractBaseClass
+    public abstract class AbstractBaseClass : MarshalByRefObject
     {
         [DeductingCuckoo(50)]
         public abstract int AbstractMethod(int a);

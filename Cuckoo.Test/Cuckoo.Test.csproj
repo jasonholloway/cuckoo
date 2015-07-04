@@ -78,6 +78,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Infrastructure\AssemblyResolver.cs" />
+    <Compile Include="Infrastructure\CuckooTestContext.cs" />
     <Compile Include="Infrastructure\IMethodTester.cs" />
     <Compile Include="Infrastructure\MethodTester2.cs" />
     <Compile Include="Infrastructure\WeaverSandbox.cs" />
@@ -96,9 +98,6 @@
     <Compile Include="AttributeTests.cs" />
     <Compile Include="GenericClassTests.cs" />
     <Compile Include="GenericMethodTests.cs" />
-    <Compile Include="Infrastructure\BuildRunner.cs" />
-    <Compile Include="Infrastructure\MethodTester.cs" />
-    <Compile Include="Infrastructure\WeavingTestBase.cs" />
     <Compile Include="BasicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -106,13 +105,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cuckoo.Weave\Cuckoo.Weave.csproj">
+      <Project>{15a60ca7-49a7-4e64-a160-26f2d0da485c}</Project>
+      <Name>Cuckoo.Weave</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
       <Name>Cuckoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cuckoo.Fody\Cuckoo.Fody.csproj">
-      <Project>{15a60ca7-49a7-4e64-a160-26f2d0da485c}</Project>
-      <Name>Cuckoo.Fody</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj">
       <Project>{34ab5b1e-e2e1-4025-ad1d-c4701ee25715}</Project>

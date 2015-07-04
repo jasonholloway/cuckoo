@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.TestAssembly
 {
-    public class Args
+    public class Args : MarshalByRefObject
     {
 
         [ArgChangingCuckoo]
@@ -52,6 +52,7 @@ namespace Cuckoo.TestAssembly
 
 
         [BareCuckoo]
+        [ArgChangingCuckoo]
         public string MethodWithOptionalArgs(int a, int b = 9999) {
             return b.ToString();
         }
