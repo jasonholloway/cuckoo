@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Cuckoo
 {
-    public interface IRoostPicker
+    public interface IRoostTargeter
     {
-        IEnumerable<RoostSpec> Pick(Assembly assembly);    
+        IEnumerable<RoostSpec> TargetRoosts(Assembly assembly);    
     }
     
 

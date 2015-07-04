@@ -14,9 +14,9 @@ namespace Cuckoo.Impl
             Parameters = method.GetParameters();
         }
 
-        public void Init(ICuckooProvider[] provs) {
-            Cuckoos = provs.SelectMany(p => p.CreateCuckoos(this))
-                                .ToArray();
+        public void Init(ICuckooHatcher[] hatchers) {
+            Cuckoos = hatchers.SelectMany(p => p.HatchCuckoos(this))
+                                    .ToArray();
 
             foreach(var cuckoo in Cuckoos) {
                 cuckoo.Init(this);

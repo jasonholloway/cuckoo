@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Cuckoo
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
-    public abstract class CuckooAttribute : Attribute, ICuckooProvider, ICuckoo
+    public abstract class CuckooAttribute : Attribute, ICuckooHatcher, ICuckoo
     {
-        IEnumerable<ICuckoo> ICuckooProvider.CreateCuckoos(IRoost roost) {
+        IEnumerable<ICuckoo> ICuckooHatcher.HatchCuckoos(IRoost roost) {
             return new ICuckoo[] { this };
         }
 

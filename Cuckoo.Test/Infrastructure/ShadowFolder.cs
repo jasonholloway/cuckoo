@@ -9,11 +9,11 @@ namespace Cuckoo.Test.Infrastructure
         string _fileName, _filePath;
         TempDir _dir;
         
-        public ShadowFolder(string asmPath) {
+        public ShadowFolder(string asmPath, string folderName) {
             _sourcePath = asmPath;
             _fileName = Path.GetFileName(_sourcePath);
 
-            _dir = new TempDir("CuckooSandbox");
+            _dir = new TempDir(folderName);
 
             CopyDir(Path.GetDirectoryName(_sourcePath), _dir.FolderPath);
 

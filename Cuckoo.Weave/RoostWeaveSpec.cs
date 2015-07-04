@@ -8,22 +8,22 @@ namespace Cuckoo.Weave
     internal struct RoostWeaveSpec
     {
         public readonly MethodDefinition Method;
-        public readonly ProvWeaveSpec[] WeaveProvSpecs;
+        public readonly HatcherWeaveSpec[] HatcherSpecs;
 
-        public RoostWeaveSpec(MethodDefinition method, ProvWeaveSpec[] weaveProvSpecs) {
+        public RoostWeaveSpec(MethodDefinition method, HatcherWeaveSpec[] hatcherSpecs) {
             Method = method;
-            WeaveProvSpecs = weaveProvSpecs;
+            HatcherSpecs = hatcherSpecs;
         }
     }
 
-    internal struct ProvWeaveSpec
+    internal struct HatcherWeaveSpec
     {
         public readonly int Index;
         public readonly MethodReference CtorMethod;
         public readonly object[] CtorArgs;
         public readonly NamedArg[] NamedArgs;
 
-        public ProvWeaveSpec(int index, MethodReference ctorMethod, object[] ctorArgs, NamedArg[] namedArgs) {
+        public HatcherWeaveSpec(int index, MethodReference ctorMethod, object[] ctorArgs, NamedArg[] namedArgs) {
             Index = index;
             CtorMethod = ctorMethod;
             CtorArgs = ctorArgs;

@@ -18,16 +18,16 @@ namespace Cuckoo.TestAssembly
     }
 
 
-    public abstract class AbstractRoostPicker : IRoostPicker
+    public abstract class AbstractRoostPicker : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> Pick(Assembly assembly) {
+        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) {
             throw new NotImplementedException();
         }
     }
 
-    public class GenericRoostPicker<T> : IRoostPicker
+    public class GenericRoostPicker<T> : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> Pick(Assembly assembly) {
+        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) {
             throw new NotImplementedException();
         }
     }
@@ -35,9 +35,9 @@ namespace Cuckoo.TestAssembly
 
 
 
-    public class TestRoostPicker : IRoostPicker
+    public class TestRoostPicker : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> Pick(Assembly assembly) 
+        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) 
         {
             var method = assembly
                             .GetType(typeof(RoostPickerClass).FullName)

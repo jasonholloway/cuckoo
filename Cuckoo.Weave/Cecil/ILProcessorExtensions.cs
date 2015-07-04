@@ -33,6 +33,9 @@ namespace Cuckoo.Weave.Cecil
                 case "System.Int32":
                     return @this.EmitEx(OpCodes.Ldc_I4, (int)value);
 
+                case "System.Byte":
+                    return @this.EmitEx(OpCodes.Ldc_I4_S, (byte)value);
+
                 default:
                     throw new InvalidOperationException("Can't emit constant of such a type (for now!)...");
             }

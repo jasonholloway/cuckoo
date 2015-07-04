@@ -5,9 +5,11 @@ TO DO:
 
 > Test ctor args and named params on att ctors - of all types!
 > Test nested classes
+> Make specs structs once more...
 
 > Update NuGet
 > Test package on Mono again
+
 
 
 *******************************************************************

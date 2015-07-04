@@ -12,22 +12,22 @@ namespace Cuckoo
     [Serializable]
     public class RoostSpec
     {
-        public readonly MethodSpec Method;
-        public readonly CuckooProviderSpec CuckooProvider;
+        public readonly MethodSpec MethodSpec;
+        public readonly HatcherSpec HatcherSpec;
 
-        public RoostSpec(MethodSpec method, CuckooProviderSpec cuckooProvider) {
-            Method = method;
-            CuckooProvider = cuckooProvider;
+        public RoostSpec(MethodSpec methodSpec, HatcherSpec hatcherSpec) {
+            MethodSpec = methodSpec;
+            HatcherSpec = hatcherSpec;
         }
 
         public RoostSpec(MethodBase method, ConstructorInfo ctor, object[] args, NamedArg[] namedArgs)
-            : this(new MethodSpec(method), new CuckooProviderSpec(ctor, args, namedArgs)) { }
+            : this(new MethodSpec(method), new HatcherSpec(ctor, args, namedArgs)) { }
 
-        public RoostSpec(MethodBase method, Type cuckooProviderType)
-            : this(method, cuckooProviderType.GetConstructor(Type.EmptyTypes), new object[0], new NamedArg[0]) { }
+        public RoostSpec(MethodBase method, Type cuckooHatcherType)
+            : this(method, cuckooHatcherType.GetConstructor(Type.EmptyTypes), new object[0], new NamedArg[0]) { }
 
         public override string ToString() {
-            return string.Format("{0} <- {1}", Method, CuckooProvider);
+            return string.Format("{0} <- {1}", MethodSpec, HatcherSpec);
         }
     }
 
@@ -54,7 +54,7 @@ namespace Cuckoo
 
 
     [Serializable]
-    public class CuckooProviderSpec
+    public class HatcherSpec
     {
         public readonly string Name;
         public readonly string AssemblyName;
@@ -62,7 +62,7 @@ namespace Cuckoo
         public readonly object[] CtorArgs;
         public readonly NamedArg[] NamedArgs;
 
-        public CuckooProviderSpec(string name, string assemblyName, int ctorToken, object[] ctorArgs, NamedArg[] namedArgs) {
+        public HatcherSpec(string name, string assemblyName, int ctorToken, object[] ctorArgs, NamedArg[] namedArgs) {
             Name = name;
             AssemblyName = assemblyName;
             CtorToken = ctorToken;
@@ -70,7 +70,7 @@ namespace Cuckoo
             NamedArgs = namedArgs;
         }
 
-        public CuckooProviderSpec(ConstructorInfo ctor, object[] args, NamedArg[] namedArgs)
+        public HatcherSpec(ConstructorInfo ctor, object[] args, NamedArg[] namedArgs)
             : this(ctor.DeclaringType.FullName, ctor.DeclaringType.Assembly.FullName, ctor.MetadataToken, args, namedArgs) { }
 
         public override string ToString() {

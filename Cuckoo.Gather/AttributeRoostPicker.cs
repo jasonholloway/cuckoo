@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    internal class AttributeRoostPicker : IRoostPicker
+    internal class AttributeRoostPicker : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> Pick(Assembly assembly) 
+        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) 
         {
             var allTypes = GetAllTypes(assembly);
 
@@ -27,7 +27,7 @@ namespace Cuckoo.Gather
                         .Select(m => new {
                             Method = m,
                             Atts = m.GetCustomAttributesData()
-                                    .Where(a => typeof(ICuckooProvider).IsAssignableFrom(a.Constructor.DeclaringType))
+                                    .Where(a => typeof(ICuckooHatcher).IsAssignableFrom(a.Constructor.DeclaringType))
                                     .ToArray()
                             
                         })

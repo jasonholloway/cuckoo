@@ -134,44 +134,44 @@ namespace Cuckoo.Weave
             tCall.AppendToStaticCtor(
                     (i, m) => {
                         var vMethod = m.Body.AddVariable<Refl.MethodBase>();
-                        var vProv = m.Body.AddVariable<ICuckooProvider>();
-                        var vProvs = m.Body.AddVariable<ICuckooProvider[]>();
+                        var vHatcher = m.Body.AddVariable<ICuckooHatcher>();
+                        var vHatchers = m.Body.AddVariable<ICuckooHatcher[]>();
                     
                         i.Emit(OpCodes.Ldtoken, mOuterRef);
                         i.Emit(OpCodes.Ldtoken, tContRef);
                         i.Emit(OpCodes.Call, R.MethodBase_mGetMethodFromHandle);
                         i.Emit(OpCodes.Stloc_S, vMethod);
                     
-                        /////////////////////////////////////////////////////////////////////
-                        //Build ICuckooProvider array n feed to Roost ctor /////////////////
-                        i.Emit(OpCodes.Ldc_I4, spec.WeaveProvSpecs.Length);
-                        i.Emit(OpCodes.Newarr, R.ICuckooProvider_Type);
-                        i.Emit(OpCodes.Stloc_S, vProvs);
+                        ////////////////////////////////////////////////////////////////////
+                        //Build ICuckooHatcher array n feed to Roost ctor /////////////////
+                        i.Emit(OpCodes.Ldc_I4, spec.HatcherSpecs.Length);
+                        i.Emit(OpCodes.Newarr, R.ICuckooHatcher_Type);
+                        i.Emit(OpCodes.Stloc_S, vHatchers);
 
-                        foreach(var provSpec in spec.WeaveProvSpecs) 
+                        foreach(var hatchSpec in spec.HatcherSpecs) 
                         {                        
-                            foreach(var ctorArg in provSpec.CtorArgs) {
+                            foreach(var ctorArg in hatchSpec.CtorArgs) {
                                 i.EmitConstant(mod.Import(ctorArg.GetType()), ctorArg);
                             }
 
-                            i.Emit(OpCodes.Newobj, mod.Import(provSpec.CtorMethod)); //!!!!!
+                            i.Emit(OpCodes.Newobj, mod.Import(hatchSpec.CtorMethod)); //!!!!!
                             i.Emit(OpCodes.Dup);
-                            i.Emit(OpCodes.Stloc_S, vProv);
+                            i.Emit(OpCodes.Stloc_S, vHatcher);
 
-                            foreach(var namedArg in provSpec.NamedArgs) {
+                            foreach(var namedArg in hatchSpec.NamedArgs) {
                                 i.Emit(OpCodes.Dup);
                                 i.EmitConstant(mod.Import(namedArg.Value.GetType()), namedArg.Value);
 
-                                var f = provSpec.CtorMethod.DeclaringType.ReferenceField(namedArg.Key);
+                                var f = hatchSpec.CtorMethod.DeclaringType.ReferenceField(namedArg.Key);
 
                                 if(f != null) {
                                     i.Emit(OpCodes.Stfld, f);
                                 }
                                 else {
-                                    var mSet = provSpec.CtorMethod.DeclaringType.ReferencePropertySetter(namedArg.Key);
+                                    var mSet = hatchSpec.CtorMethod.DeclaringType.ReferencePropertySetter(namedArg.Key);
 
                                     if(mSet == null) {
-                                        throw new InvalidOperationException("Named arg not found on CuckooProvider!");
+                                        throw new InvalidOperationException("Named arg not found on CuckooHatcher!");
                                     }
 
                                     i.Emit(mSet.Resolve().IsVirtual ? OpCodes.Callvirt : OpCodes.Call, mSet);
@@ -180,9 +180,9 @@ namespace Cuckoo.Weave
         
                             i.Emit(OpCodes.Pop);
 
-                            i.Emit(OpCodes.Ldloc_S, vProvs);
-                            i.Emit(OpCodes.Ldc_I4, provSpec.Index);
-                            i.Emit(OpCodes.Ldloc_S, vProv);
+                            i.Emit(OpCodes.Ldloc_S, vHatchers);
+                            i.Emit(OpCodes.Ldc_I4, hatchSpec.Index);
+                            i.Emit(OpCodes.Ldloc_S, vHatcher);
                             i.Emit(OpCodes.Stelem_Ref);
                         }
                     
@@ -195,7 +195,7 @@ namespace Cuckoo.Weave
 
                         ////////////////////////////////////////////////////////////////////
                         //InitRoost ///////////////////////////////////////////////////////
-                        i.Emit(OpCodes.Ldloc, vProvs);
+                        i.Emit(OpCodes.Ldloc, vHatchers);
                         i.Emit(OpCodes.Call, R.Roost_mInit);
                     });
 
@@ -258,12 +258,6 @@ namespace Cuckoo.Weave
                                                 i.Emit(OpCodes.Stloc_S, vArgs);
 
                                                 foreach(var arg in args) {
-                                                    //CHECK CHANGED FLAG BEFORE LOADING EACH ARG
-                                                    //if not changed, can load more directly?
-
-                                                    //direct route would be by args to method, but this would 
-                                                    //only be doable via IL emitting, ie not by nice C# coding
-
                                                     i.Emit(OpCodes.Ldloc_S, vArgs);
                                                     i.Emit(OpCodes.Ldc_I4, arg.Index);
                                                     i.Emit(OpCodes.Ldelem_Ref);

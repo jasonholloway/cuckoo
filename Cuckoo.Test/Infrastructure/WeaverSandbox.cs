@@ -15,27 +15,23 @@ namespace Cuckoo.Test.Infrastructure
     public class WeaverSandbox : IDisposable
     {
         string _asmPath;
+        string _folderName;
         Weaver _weaver;
         
         ShadowFolder _folder;
         AppDomain _appDomain;
 
-        bool _isInitialized = false;
 
-        public WeaverSandbox(string asmPath) {
+        public WeaverSandbox(string asmPath, string folderName) {
             _asmPath = asmPath;
+            _folderName = folderName;
+            _folder = new ShadowFolder(_asmPath, _folderName);
         }
 
-        public void Init() {
-            if(_isInitialized) return;
 
-            _isInitialized = true;
-            
-            var gatherer = new Gatherer(_asmPath);
-            var roostSpecs = gatherer.Gather();
-            
-            _folder = new ShadowFolder(_asmPath);
 
+        public AssemblyDefinition GetAssembly() 
+        {
             var asmResolver = new AssemblyResolver(_folder.FolderPath);
 
             var readerParams = new ReaderParameters() {
@@ -46,10 +42,24 @@ namespace Cuckoo.Test.Infrastructure
             };
 
             var asm = AssemblyDefinition.ReadAssembly(
-                                            _folder.AssemblyPath, 
-                                            readerParams );
+                                            _folder.AssemblyPath,
+                                            readerParams);
 
             asmResolver.RegisterAssembly(asm);
+
+            return asm;
+        }
+
+
+        public IEnumerable<RoostSpec> Gather() {
+            var gatherer = new Gatherer(_folder.AssemblyPath);
+            return gatherer.Gather();
+        }
+
+
+        public void Weave(IEnumerable<RoostSpec> roostSpecs) 
+        {
+            var asm = GetAssembly();
 
             _weaver = new Weaver(
                             asm, 

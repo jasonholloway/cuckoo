@@ -23,7 +23,11 @@ namespace Cuckoo.Test.Infrastructure
                                         Environment.CurrentDirectory, 
                                         "Cuckoo.TestAssembly.dll" );
 
-            Sandbox = new WeaverSandbox(TargetAssemblyPath);
+            Sandbox = new WeaverSandbox(TargetAssemblyPath, "CuckooWeave1");
+
+            var roostSpecs = Sandbox.Gather();
+
+            Sandbox.Weave(roostSpecs);
         }
 
         [AssemblyCleanup]

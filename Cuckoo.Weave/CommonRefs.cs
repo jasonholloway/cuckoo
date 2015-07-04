@@ -36,7 +36,7 @@ namespace Cuckoo.Weave
         public readonly MethodReference Roost_mGetParams;
         public readonly MethodReference Roost_mGetCuckoos;
 
-        public readonly TypeReference ICuckooProvider_Type;
+        public readonly TypeReference ICuckooHatcher_Type;
 
         public readonly TypeReference ICuckoo_Type;
         public readonly MethodReference ICuckoo_mInit;
@@ -59,8 +59,8 @@ namespace Cuckoo.Weave
             CallBase_Type = module.Import(typeof(CallBase<,>));
             ICallArg_Type = module.Import(typeof(ICallArg));
 
-            ICuckooProvider_Type = module.Import(
-                                            typeof(ICuckooProvider));
+            ICuckooHatcher_Type = module.Import(
+                                            typeof(ICuckooHatcher));
 
             ICuckoo_Type = module.Import(
                                             typeof(ICuckoo));

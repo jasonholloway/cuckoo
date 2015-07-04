@@ -12,13 +12,13 @@ namespace Cuckoo.Gather
             var pickerTypes = targetAssembly.GetTypes()
                                     .Where(t => ! t.IsAbstract
                                                 && !t.IsGenericTypeDefinition
-                                                && typeof(IRoostPicker).IsAssignableFrom(t));       
+                                                && typeof(IRoostTargeter).IsAssignableFrom(t));       
      
             var pickers = new[] { new AttributeRoostPicker() } 
                             .Concat(pickerTypes
-                                        .Select(t => (IRoostPicker)Activator.CreateInstance(t)));
+                                        .Select(t => (IRoostTargeter)Activator.CreateInstance(t)));
             
-            return pickers.SelectMany(i => i.Pick(targetAssembly))
+            return pickers.SelectMany(i => i.TargetRoosts(targetAssembly))
                                 .ToArray();
         }
     }

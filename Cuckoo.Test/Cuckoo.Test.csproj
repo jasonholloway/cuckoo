@@ -86,7 +86,6 @@
     <Compile Include="Infrastructure\ShadowFolder.cs" />
     <Compile Include="Infrastructure\WeaveTestBase.cs" />
     <Compile Include="RoostTargetTests.cs" />
-    <Compile Include="RoostTests.cs" />
     <Compile Include="StructTests.cs" />
     <Compile Include="VirtualTests.cs" />
     <Compile Include="PropertyTests.cs" />

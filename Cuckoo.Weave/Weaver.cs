@@ -39,11 +39,11 @@ namespace Cuckoo.Weave
         public void WeaveModule(ModuleDefinition module) 
         {
             var groupedRoostSpecs = _roostSpecs.GroupBy(
-                                                s => s.Method.Token,
+                                                s => s.MethodSpec.Token,
                                                 (k, r) => new {
                                                     MethodToken = k,
-                                                    CuckooProviderSpecs = r.Select(f => f.CuckooProvider)
-                                                                              .ToArray()
+                                                    HatcherSpecs = r.Select(f => f.HatcherSpec)
+                                                                         .ToArray()
                                                 });
             
             var roostWeaveSpecs 
@@ -62,21 +62,21 @@ namespace Cuckoo.Weave
 
                             int iProvWeaveSpec = 0;
 
-                            var provWeaveSpecs = spec.CuckooProviderSpecs
-                                                    .Select(s => {
-                                                        var asm = module.AssemblyResolver
-                                                                                    .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
+                            var provWeaveSpecs = spec.HatcherSpecs
+                                                        .Select(s => {
+                                                            var asm = module.AssemblyResolver
+                                                                                        .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
 
-                                                        var ctorRef = (MethodReference)asm.MainModule
-                                                                                            .LookupToken(s.CtorToken);
+                                                            var ctorRef = (MethodReference)asm.MainModule
+                                                                                                .LookupToken(s.CtorToken);
                                                             
-                                                        return new ProvWeaveSpec(
-                                                                            iProvWeaveSpec++, 
-                                                                            ctorRef,
-                                                                            s.CtorArgs,
-                                                                            s.NamedArgs );
-                                                    })
-                                                    .ToArray();
+                                                            return new HatcherWeaveSpec(
+                                                                                iProvWeaveSpec++, 
+                                                                                ctorRef,
+                                                                                s.CtorArgs,
+                                                                                s.NamedArgs );
+                                                        })
+                                                        .ToArray();
 
                             return new RoostWeaveSpec(
                                                 methodDef, 

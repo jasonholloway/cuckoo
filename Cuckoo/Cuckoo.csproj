@@ -44,9 +44,9 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="IRoostPicker.cs" />
+    <Compile Include="IRoostTargeter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ICuckooProvider.cs" />
+    <Compile Include="ICuckooHatcher.cs" />
     <Compile Include="Impl\CallArg.cs" />
     <Compile Include="ICallArg.cs" />
     <Compile Include="Impl\CallBase.cs" />

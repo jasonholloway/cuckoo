@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Args.cs" />
+    <Compile Include="Cuckoos\AttPropsCuckooAttribute.cs" />
+    <Compile Include="Cuckoos\AttArgsCuckooAttribute.cs" />
     <Compile Include="Cuckoos\ReturnInstanceCuckooAttribute.cs" />
     <Compile Include="RoostPickers.cs" />
     <Compile Include="Structs.cs" />

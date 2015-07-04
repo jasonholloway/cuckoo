@@ -19,7 +19,6 @@ namespace Cuckoo.Test.Infrastructure
         protected IMethodTester Tester { get; private set; }
 
         public WeaveTestBase() {
-            CuckooTestContext.Sandbox.Init();
             this.Tester = new MethodTester2(CuckooTestContext.Sandbox);
         }
 

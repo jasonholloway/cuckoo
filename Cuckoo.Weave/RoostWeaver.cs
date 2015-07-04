@@ -50,7 +50,7 @@ namespace Cuckoo.Weave
 
             var mInner = TransplantOuterToInner(ctx);
             
-            var mOuter = WeaveOuterMethod(ctx, _spec.WeaveProvSpecs, mInner);
+            var mOuter = WeaveOuterMethod(ctx, _spec.HatcherSpecs, mInner);
             
             AddCuckooedAttribute(ctx, mOuter, mInner);
 
@@ -123,7 +123,7 @@ namespace Cuckoo.Weave
 
         MethodDefinition WeaveOuterMethod(
                                 WeaveContext ctx, 
-                                IEnumerable<ProvWeaveSpec> cuckoos, 
+                                IEnumerable<HatcherWeaveSpec> cuckoos, 
                                 MethodDefinition mInner) 
         {            
             var R = ctx.RefMap;
