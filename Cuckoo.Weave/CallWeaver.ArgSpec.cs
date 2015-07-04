@@ -17,13 +17,13 @@ namespace Cuckoo.Weave
 
             public TypeReference CallArg_Type { get; private set; }
             public FieldReference CallArg_fValue { get; private set; }
-            public MethodWeaver.ArgSpec MethodArg { get; private set; }
+            public RoostWeaver.ArgSpec MethodArg { get; private set; }
                        
 
             public static ArgSpec[] CreateAll(
                                         WeaveContext ctx, 
-                                        ScopeTypeSource types, 
-                                        MethodWeaver.ArgSpec[] methodArgSpecs ) 
+                                        ScopedTypeSource types, 
+                                        RoostWeaver.ArgSpec[] methodArgSpecs ) 
             {
                 return methodArgSpecs
                         .Select(ms => {

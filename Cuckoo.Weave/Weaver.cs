@@ -13,104 +13,85 @@ namespace Cuckoo.Weave
 
     public class Weaver
     {
-        string _asmPath;
-        ModuleDefinition _module;
+        AssemblyDefinition _asmDef;
+        IEnumerable<RoostSpec> _roostSpecs;
         Action<string> _fnLog;
 
-        public void Init(ModuleDefinition module, string assemblyFilePath, Action<string> fnLog) {
-            _module = module;
-            _asmPath = assemblyFilePath;
+
+        public Weaver(
+                AssemblyDefinition assemblyDef,
+                IEnumerable<RoostSpec> roostSpecs, 
+                Action<string> fnLog ) 
+        {
+            _asmDef = assemblyDef;
+            _roostSpecs = roostSpecs;
             _fnLog = fnLog;
         }
-        
 
-        IEnumerable<RoostSpec> GatherTargets() 
-        {
-            var childAppDomain = AppDomain.CreateDomain(
-                                            "CuckooGathering",
-                                            null,
-                                            new AppDomainSetup() {
-                                                ShadowCopyFiles = "true"
-                                            });
-            try {
-                var targetAssembly = childAppDomain.Load(AssemblyName.GetAssemblyName(_asmPath));
 
-                var agent = (GatherAgent)childAppDomain.CreateInstanceFromAndUnwrap(
-                                                                typeof(GatherAgent).Assembly.Location,
-                                                                typeof(GatherAgent).FullName);
-
-                return agent.GatherAllRoostTargets(targetAssembly.FullName);
+        public void Weave() {
+            foreach(var module in _asmDef.Modules) {
+                WeaveModule(module);
             }
-            finally {
-                AppDomain.Unload(childAppDomain);
-            }
-
         }
 
 
-        public void Weave() 
+        public void WeaveModule(ModuleDefinition module) 
         {
-            var targets = GatherTargets();
+            var groupedRoostSpecs = _roostSpecs.GroupBy(
+                                                s => s.Method.Token,
+                                                (k, r) => new {
+                                                    MethodToken = k,
+                                                    CuckooProviderSpecs = r.Select(f => f.CuckooProvider)
+                                                                              .ToArray()
+                                                });
             
-            var groupedTargets = targets.GroupBy(
-                                            t => t.Method.Token,
-                                            (k, r) => new {
-                                                MethodToken = k,
-                                                CuckooProviderSpecs = r.Select(f => f.CuckooProvider)
-                                                                          .ToArray()
-                                            });
-            
-            var weaveRoostSpecs 
-                = groupedTargets.Select(
-                    target => {
-                        var methodRef = (MethodReference)_module.LookupToken(target.MethodToken);
+            var roostWeaveSpecs 
+                = groupedRoostSpecs.Select(
+                        spec => {
+                            var methodRef = (MethodReference)module.LookupToken(spec.MethodToken);
 
-                        var methodDef = methodRef as MethodDefinition;
+                            var methodDef = methodRef as MethodDefinition;
 
-                        if(methodDef == null) {
-                            throw new InvalidOperationException(string.Format(
-                                            "Can't add cuckoo to method {0}, as it isn't defined in current module {1}!", 
-                                            methodRef.FullName, 
-                                            _module.Name ));
-                        }
+                            if(methodDef == null) {
+                                throw new InvalidOperationException(string.Format(
+                                                "Can't add cuckoo to method {0}, as it isn't defined in current module {1}!", 
+                                                methodRef.FullName, 
+                                                module.Name ));
+                            }
 
-                        int iProv = 0;
+                            int iProvWeaveSpec = 0;
 
-                        var provSpecs = target.CuckooProviderSpecs
-                                                .Select(s => {
-                                                    var asm = _module.AssemblyResolver
-                                                                                .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
+                            var provWeaveSpecs = spec.CuckooProviderSpecs
+                                                    .Select(s => {
+                                                        var asm = module.AssemblyResolver
+                                                                                    .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
 
-                                                    var ctorRef = (MethodReference)asm.MainModule
-                                                                                        .LookupToken(s.CtorToken);
+                                                        var ctorRef = (MethodReference)asm.MainModule
+                                                                                            .LookupToken(s.CtorToken);
                                                             
-                                                    return new WeaveProvSpec(
-                                                                        iProv++, 
-                                                                        ctorRef,
-                                                                        s.CtorArgs,
-                                                                        s.NamedArgs );
-                                                })
-                                                .ToArray();
+                                                        return new ProvWeaveSpec(
+                                                                            iProvWeaveSpec++, 
+                                                                            ctorRef,
+                                                                            s.CtorArgs,
+                                                                            s.NamedArgs );
+                                                    })
+                                                    .ToArray();
 
+                            return new RoostWeaveSpec(
+                                                methodDef, 
+                                                provWeaveSpecs );
+                        });
+            
 
-                        return new WeaveRoostSpec(
-                                            methodDef, 
-                                            provSpecs );
-                    });
-
-
-            var weaves = weaveRoostSpecs
-                            .Where(spec => !spec.Method.IsAbstract)
-                            .Select(spec => new MethodWeaver(spec, _fnLog))
-                            .ToArray();
-
-
-            foreach(var weave in weaves) {
-                weave.Weave();
+            var roostWeavers = roostWeaveSpecs
+                                    .Where(s => !s.Method.IsAbstract)
+                                    .Select(s => new RoostWeaver(s, _fnLog));
+            
+            foreach(var roostWeaver in roostWeavers.ToArray()) {
+                roostWeaver.Weave();
             }
         }
-
-
 
     }
 }

@@ -10,7 +10,7 @@ namespace Cuckoo.Weave
 {
     using Refl = System.Reflection;
 
-    class RefMap
+    class CommonRefs
     {
         public readonly TypeReference MethodInfo_Type;
         public readonly TypeReference ParamInfo_Type;
@@ -50,7 +50,7 @@ namespace Cuckoo.Weave
         public readonly MethodReference MethodBase_mGetMethodFromHandle;
         public readonly MethodReference Object_mCtor;
 
-        public RefMap(ModuleDefinition module, MethodDefinition method) 
+        public CommonRefs(ModuleDefinition module, MethodDefinition method) 
         {
             MethodInfo_Type = module.Import(typeof(Refl.MethodInfo));
             ParamInfo_Type = module.Import(typeof(Refl.ParameterInfo));

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cuckoo.Weave;
+using Cuckoo.Gather;
 
 namespace Cuckoo.Fody
 {
@@ -13,14 +14,16 @@ namespace Cuckoo.Fody
         public ModuleDefinition ModuleDefinition { get; set; }
         public Action<string> LogInfo { get; set; }
 
-        public void Execute() {
-            var weaver = new Weaver();
+        public void Execute() 
+        {
+            var gatherer = new Gatherer(AssemblyFilePath);
 
-            weaver.Init(
-                    ModuleDefinition,
-                    AssemblyFilePath,
-                    LogInfo
-                    );
+            var roostSpecs = gatherer.Gather();
+
+            var weaver = new Weaver(
+                                ModuleDefinition.Assembly,
+                                roostSpecs,
+                                LogInfo);
 
             weaver.Weave();
         }

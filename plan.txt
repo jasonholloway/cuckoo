@@ -1,19 +1,23 @@
 ﻿
 
-********************************************************************
+*******************************************************************
 TO DO:
-> Separate Cuckoo.Weave and Cuckoo.Weave
-> Update NuGet
-> Test package on Mono again
-> RoostTargeter -> CuckooHatcher producing CuckooSpecs; is CuckooProvider needed???
-> Cuckoo.Gather -> Cuckoo.Hatch
-> Test picking up of private + public methods
+
 > Test ctor args and named params on att ctors - of all types!
 > Test nested classes
-> Providers can't be abstract or generic
+
+> Update NuGet
+> Test package on Mono again
+
 
 *******************************************************************
 DONE
+> Separate gathering from weaving DONE
+> Weaver should take AssemblyDefinition DONE
+> Test picking up of private + public methods DONE
+> Providers can't be abstract or generic DONE
+> Ensure Cuckooeds are not virtual DONE
+> Separate Cuckoo.Weave and Cuckoo.Weave DONE
 > General roost-targeting mechanism DONE
 > Rewrite attributes to use roost-targeting DONE
 > NuGet DONE

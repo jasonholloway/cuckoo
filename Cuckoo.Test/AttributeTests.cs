@@ -13,16 +13,24 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class AttributeTests : WeavingTestBase2
+    public class AttributeTests : WeaveTestBase
     {
-
         [TestMethod]
-        public void CuckooAttributesWithOptionalArgs() {
+        public void AttributesWithOptionalArgs() {
             var result = Tester.With<Atts>()
                                 .Run(a => a.MethodWithOptArgAttribute());
 
             Assert.IsTrue(result == "blah");
         }
 
+        [TestMethod]
+        public void AttsFoundOnPrivateMethods() {
+            var result = Tester.With<Atts>()
+                                .Run(a => a.PrivateMethodRunner("wibblewibble"));
+
+            Assert.IsTrue(result == "Growl");
+        }
+
     }
+
 }

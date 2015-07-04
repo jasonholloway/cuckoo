@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Cuckoo.Weave
 {
-    internal partial class MethodWeaver
+    internal partial class RoostWeaver
     {
         internal class ArgSpec
         {

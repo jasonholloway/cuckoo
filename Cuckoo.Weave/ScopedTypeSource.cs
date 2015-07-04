@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Cuckoo.Weave
 {
-    class ScopeTypeSource
+    class ScopedTypeSource
     {
         ModuleDefinition _module;
         IGenericParameterProvider _genProv;
         Dictionary<TypeReference, TypeReference> _dMap;
 
-        public ScopeTypeSource(IGenericParameterProvider genProv) {
+        public ScopedTypeSource(IGenericParameterProvider genProv) {
             _module = genProv.Module;
             _genProv = genProv;
             _dMap = new Dictionary<TypeReference, TypeReference>(TypeRefEqualityComparer.Default);

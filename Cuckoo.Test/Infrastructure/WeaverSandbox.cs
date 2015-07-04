@@ -1,4 +1,5 @@
-﻿using Cuckoo.Weave;
+﻿using Cuckoo.Gather;
+using Cuckoo.Weave;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
 using System;
@@ -15,16 +16,24 @@ namespace Cuckoo.Test.Infrastructure
     {
         string _asmPath;
         Weaver _weaver;
-
+        
         ShadowFolder _folder;
         AppDomain _appDomain;
 
-        public WeaverSandbox(string asmPath, Weaver weaver) {
+        bool _isInitialized = false;
+
+        public WeaverSandbox(string asmPath) {
             _asmPath = asmPath;
-            _weaver = weaver;
         }
 
         public void Init() {
+            if(_isInitialized) return;
+
+            _isInitialized = true;
+            
+            var gatherer = new Gatherer(_asmPath);
+            var roostSpecs = gatherer.Gather();
+            
             _folder = new ShadowFolder(_asmPath);
 
             var asmResolver = new AssemblyResolver(_folder.FolderPath);
@@ -36,15 +45,16 @@ namespace Cuckoo.Test.Infrastructure
                 ReadingMode = ReadingMode.Immediate
             };
 
-            var module = ModuleDefinition
-                            .ReadModule(_folder.AssemblyPath, readerParams);
+            var asm = AssemblyDefinition.ReadAssembly(
+                                            _folder.AssemblyPath, 
+                                            readerParams );
 
-            asmResolver.RegisterAssembly(module.Assembly);
+            asmResolver.RegisterAssembly(asm);
 
-            _weaver.Init(
-                        module, 
-                        _folder.AssemblyPath, 
-                        _ => { } );
+            _weaver = new Weaver(
+                            asm, 
+                            roostSpecs, 
+                            _ => { } );
 
             _weaver.Weave();
 
@@ -53,7 +63,7 @@ namespace Cuckoo.Test.Infrastructure
                 WriteSymbols = true,
             };
 
-            module.Write(_folder.AssemblyPath, writerParams);
+            asm.Write(_folder.AssemblyPath, writerParams);
 
             _appDomain = AppDomain.CreateDomain(
                                         "WeaverSandbox", 
@@ -62,7 +72,8 @@ namespace Cuckoo.Test.Infrastructure
                                                 ApplicationBase = _folder.FolderPath 
                                         });
                         
-            _appDomain.Load(AssemblyName.GetAssemblyName(_folder.AssemblyPath));
+            _appDomain.Load(AssemblyName.GetAssemblyName(
+                                                _folder.AssemblyPath));
         }
 
 

@@ -14,7 +14,7 @@ using System.Threading;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class VirtualTests : WeavingTestBase2
+    public class VirtualTests : WeaveTestBase
     {
         [TestMethod]
         public void CuckooOnVirtualMethod() {

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class GenericMethodTests : WeavingTestBase2
+    public class GenericMethodTests : WeaveTestBase
     {
 
         [TestMethod]

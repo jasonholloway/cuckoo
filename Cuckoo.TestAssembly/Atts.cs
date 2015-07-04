@@ -16,6 +16,14 @@ namespace Cuckoo.TestAssembly
         }
 
 
+        [ArgChangingCuckoo]
+        private string PrivateMethod(string s) {
+            return s;
+        }
+
+        public string PrivateMethodRunner(string s) {
+            return PrivateMethod(s);
+        }
 
     }
 }

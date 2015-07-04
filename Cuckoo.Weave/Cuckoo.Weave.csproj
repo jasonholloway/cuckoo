@@ -71,15 +71,15 @@
     <Compile Include="Cecil\MethodReferenceExtensions.cs" />
     <Compile Include="Cecil\ReferenceExtensions.cs" />
     <Compile Include="CallWeaver.ArgSpec.cs" />
-    <Compile Include="MethodWeaver.ArgSpec.cs" />
-    <Compile Include="ScopeTypeSource.cs" />
+    <Compile Include="RoostWeaver.ArgSpec.cs" />
+    <Compile Include="ScopedTypeSource.cs" />
     <Compile Include="WeaveContext.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />
     <Compile Include="NameSource.cs" />
-    <Compile Include="RefMap.cs" />
-    <Compile Include="MethodWeaver.cs" />
-    <Compile Include="WeaveSpec.cs" />
+    <Compile Include="CommonRefs.cs" />
+    <Compile Include="RoostWeaver.cs" />
+    <Compile Include="RoostWeaveSpec.cs" />
     <Compile Include="Cecil\ILProcessorExtensions.cs" />
     <Compile Include="Weaver.cs" />
   </ItemGroup>

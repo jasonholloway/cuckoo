@@ -12,7 +12,7 @@ namespace Cuckoo.Weave
         public MethodDefinition mOuter;
 
         public NameSource NameSource;
-        public RefMap RefMap;
+        public CommonRefs RefMap;
         public Action<string> Logger;
     }
 }

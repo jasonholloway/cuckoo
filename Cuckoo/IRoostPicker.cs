@@ -8,7 +8,7 @@ namespace Cuckoo
 {
     public interface IRoostPicker
     {
-        IEnumerable<RoostSpec> PickRoosts(Assembly assembly);    
+        IEnumerable<RoostSpec> Pick(Assembly assembly);    
     }
     
 

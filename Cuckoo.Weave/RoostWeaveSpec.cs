@@ -5,37 +5,31 @@ namespace Cuckoo.Weave
 {
     using NamedArg = KeyValuePair<string, object>;
 
-    internal struct WeaveRoostSpec
+    internal struct RoostWeaveSpec
     {
         public readonly MethodDefinition Method;
-        public readonly WeaveProvSpec[] WeaveProvSpecs;
+        public readonly ProvWeaveSpec[] WeaveProvSpecs;
 
-        public WeaveRoostSpec(MethodDefinition method, WeaveProvSpec[] weaveProvSpecs) {
+        public RoostWeaveSpec(MethodDefinition method, ProvWeaveSpec[] weaveProvSpecs) {
             Method = method;
             WeaveProvSpecs = weaveProvSpecs;
         }
     }
 
-    internal struct WeaveProvSpec
+    internal struct ProvWeaveSpec
     {
         public readonly int Index;
         public readonly MethodReference CtorMethod;
         public readonly object[] CtorArgs;
         public readonly NamedArg[] NamedArgs;
 
-        public WeaveProvSpec(int index, MethodReference ctorMethod, object[] ctorArgs, NamedArg[] namedArgs) {
+        public ProvWeaveSpec(int index, MethodReference ctorMethod, object[] ctorArgs, NamedArg[] namedArgs) {
             Index = index;
             CtorMethod = ctorMethod;
             CtorArgs = ctorArgs;
             NamedArgs = namedArgs;
         }
 
-
-
-
-        //and arg info here please
-
-        public CustomAttribute Attribute { get { return null; } }
     }
 
 }

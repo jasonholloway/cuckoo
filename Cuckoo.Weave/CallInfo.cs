@@ -7,26 +7,6 @@ using System.Linq;
 
 namespace Cuckoo.Weave
 {
-
-    internal class CallArgInfo
-    {
-        public FieldReference Field { get; private set; }
-        public ParameterDefinition MethodParam { get; private set; }
-        public ParameterReference CtorParam { get; private set; }
-        public bool IsByRef { get; private set; }
-
-        public CallArgInfo(
-            FieldReference field,
-            ParameterDefinition methodParam,
-            ParameterReference ctorParam ) 
-        {
-            Field = field;
-            MethodParam = methodParam;
-            IsByRef = MethodParam.ParameterType.IsByReference;
-            CtorParam = ctorParam;
-        }
-    }
-
     internal class CallInfo
     {
         public TypeReference Type { get; private set; }
@@ -41,8 +21,7 @@ namespace Cuckoo.Weave
         public CallWeaver.ArgSpec[] Args { get; private set; }
         public bool RequiresInstanciation { get; private set; }
         public bool ReturnsValue { get; private set; }
-
-
+        
         public CallInfo(
                     TypeReference type,
                     MethodReference ctorMethod,
@@ -99,5 +78,22 @@ namespace Cuckoo.Weave
     }
 
 
+    internal class CallArgInfo
+    {
+        public FieldReference Field { get; private set; }
+        public ParameterDefinition MethodParam { get; private set; }
+        public ParameterReference CtorParam { get; private set; }
+        public bool IsByRef { get; private set; }
+
+        public CallArgInfo(
+            FieldReference field,
+            ParameterDefinition methodParam,
+            ParameterReference ctorParam) {
+            Field = field;
+            MethodParam = methodParam;
+            IsByRef = MethodParam.ParameterType.IsByReference;
+            CtorParam = ctorParam;
+        }
+    }
 
 }

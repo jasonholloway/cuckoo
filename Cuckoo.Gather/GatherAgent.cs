@@ -5,22 +5,20 @@ namespace Cuckoo.Gather
 {
     public class GatherAgent : MarshalByRefObject
     {
-        public RoostSpec[] GatherAllRoostTargets(string targetAssemblyName) 
+        public RoostSpec[] GatherAllRoostSpecs(string targetAssemblyName) 
         {
-            var targetAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                                    .First(a => a.FullName == targetAssemblyName);
+            var targetAssembly = AppDomain.CurrentDomain.Load(targetAssemblyName);
 
-            var targeterTypes = targetAssembly.GetTypes()
-                                    .Where(t => ! t.IsAbstract 
-                                                && typeof(IRoostPicker).IsAssignableFrom(t));
-            
-            var targeters = new[] { 
-                                new AttributeTargeter() 
-                            } 
-                            .Concat(targeterTypes
+            var pickerTypes = targetAssembly.GetTypes()
+                                    .Where(t => ! t.IsAbstract
+                                                && !t.IsGenericTypeDefinition
+                                                && typeof(IRoostPicker).IsAssignableFrom(t));       
+     
+            var pickers = new[] { new AttributeRoostPicker() } 
+                            .Concat(pickerTypes
                                         .Select(t => (IRoostPicker)Activator.CreateInstance(t)));
             
-            return targeters.SelectMany(i => i.PickRoosts(targetAssembly))
+            return pickers.SelectMany(i => i.Pick(targetAssembly))
                                 .ToArray();
         }
     }

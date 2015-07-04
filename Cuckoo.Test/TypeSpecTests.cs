@@ -13,7 +13,7 @@ using Cuckoo.TestAssembly;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class TypeSpecArgTests : WeavingTestBase2
+    public class TypeSpecArgTests : WeaveTestBase
     {
 
         [TestMethod]

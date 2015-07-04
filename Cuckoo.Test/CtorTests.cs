@@ -6,7 +6,7 @@ using System;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class CtorTests : WeavingTestBase2
+    public class CtorTests : WeaveTestBase
     {
 
         [TestMethod]

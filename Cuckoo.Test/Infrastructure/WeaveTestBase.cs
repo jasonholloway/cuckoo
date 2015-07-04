@@ -14,11 +14,12 @@ using System.Threading.Tasks;
 
 namespace Cuckoo.Test.Infrastructure
 {
-    public abstract class WeavingTestBase2 : IDisposable
+    public abstract class WeaveTestBase : IDisposable
     {
         protected IMethodTester Tester { get; private set; }
 
-        public WeavingTestBase2() {
+        public WeaveTestBase() {
+            CuckooTestContext.Sandbox.Init();
             this.Tester = new MethodTester2(CuckooTestContext.Sandbox);
         }
 

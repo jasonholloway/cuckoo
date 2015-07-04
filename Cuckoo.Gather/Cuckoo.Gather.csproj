@@ -44,7 +44,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GatherAgent.cs" />
-    <Compile Include="AttributeTargeter.cs" />
+    <Compile Include="AttributeRoostPicker.cs" />
+    <Compile Include="Gatherer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

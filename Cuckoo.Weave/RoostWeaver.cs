@@ -10,19 +10,19 @@ namespace Cuckoo.Weave
 {
     using Refl = System.Reflection;
 
-    internal partial class MethodWeaver
+    internal partial class RoostWeaver
     {
-        WeaveRoostSpec _spec;
+        RoostWeaveSpec _spec;
         Action<string> _logger;
 
-        public MethodWeaver(WeaveRoostSpec spec, Action<string> logger) 
+        public RoostWeaver(RoostWeaveSpec spec, Action<string> logger) 
         {
             _spec = spec;
             _logger = logger;
         }
 
 
-        WeaveContext CreateContext(WeaveRoostSpec spec) {
+        WeaveContext CreateContext(RoostWeaveSpec spec) {
             var tCont = spec.Method.DeclaringType;
 
             var tContRef = tCont.HasGenericParameters
@@ -37,7 +37,7 @@ namespace Cuckoo.Weave
                 Module = module,
                 mOuter = spec.Method,
                 NameSource = new NameSource(tCont),
-                RefMap = new RefMap(module, spec.Method),
+                RefMap = new CommonRefs(module, spec.Method),
                 Logger = _logger
             };
         }
@@ -82,8 +82,12 @@ namespace Cuckoo.Weave
 
                                         m.Attributes ^= MethodAttributes.Public | MethodAttributes.Private;
 
+                                        m.Attributes &= ~MethodAttributes.Virtual
+                                                        & ~MethodAttributes.NewSlot;
+
                                         if(mOuter.IsConstructor) {
-                                            m.Attributes &= ~MethodAttributes.SpecialName & ~MethodAttributes.RTSpecialName;
+                                            m.Attributes &= ~MethodAttributes.SpecialName 
+                                                            & ~MethodAttributes.RTSpecialName;
 
                                             GetInitialCtorInsts(m.Body).ToList()
                                                 .ForEach(i => m.Body.Instructions.Remove(i));
@@ -119,7 +123,7 @@ namespace Cuckoo.Weave
 
         MethodDefinition WeaveOuterMethod(
                                 WeaveContext ctx, 
-                                IEnumerable<WeaveProvSpec> cuckoos, 
+                                IEnumerable<ProvWeaveSpec> cuckoos, 
                                 MethodDefinition mInner) 
         {            
             var R = ctx.RefMap;

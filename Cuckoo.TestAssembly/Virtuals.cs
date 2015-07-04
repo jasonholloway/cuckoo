@@ -24,6 +24,11 @@ namespace Cuckoo.TestAssembly
     }
 
 
+
+
+
+
+
     public abstract class AbstractBaseClass : MarshalByRefObject
     {
         [DeductingCuckoo(50)]

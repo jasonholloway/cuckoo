@@ -10,17 +10,16 @@ using System.Threading.Tasks;
 namespace Cuckoo.Test
 {
     [TestClass]
-    public class RoostTargetTests : WeavingTestBase2
+    public class RoostPickerTests : WeaveTestBase
     {
         [TestMethod]
-        public void RoostTargeterPickedUpAndRun() {
-            var result = Tester.With<RoostTargetClass>()
+        public void RoostPickerFoundAndRun() {
+            var result = Tester.With<RoostPickerClass>()
                                 .Run(r => r.RoostTarget(123));
 
             Assert.IsTrue(result == 100);
         }
-
-
+        
 
     }
 }

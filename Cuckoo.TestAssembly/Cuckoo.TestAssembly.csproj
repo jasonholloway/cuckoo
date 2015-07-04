@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Args.cs" />
     <Compile Include="Cuckoos\ReturnInstanceCuckooAttribute.cs" />
-    <Compile Include="RoostTargets.cs" />
+    <Compile Include="RoostPickers.cs" />
     <Compile Include="Structs.cs" />
     <Compile Include="Ctors.cs" />
     <Compile Include="Cuckoos\CheckArgsCuckooAttribute.cs" />

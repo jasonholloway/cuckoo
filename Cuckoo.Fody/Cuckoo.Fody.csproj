@@ -61,9 +61,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">
+      <Project>{c4392ec3-616a-42e3-8604-8edcce234040}</Project>
+      <Name>Cuckoo.Gather</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cuckoo.Weave\Cuckoo.Weave.csproj">
       <Project>{15a60ca7-49a7-4e64-a160-26f2d0da485c}</Project>
       <Name>Cuckoo.Weave</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
+      <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
+      <Name>Cuckoo</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

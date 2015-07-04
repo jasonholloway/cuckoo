@@ -18,7 +18,7 @@ namespace Cuckoo.Weave
             _ctx = ctx;
         }
 
-        public CallInfo Weave(MethodReference mOuterRef, MethodWeaver.ArgSpec[] methodArgs, WeaveRoostSpec spec) 
+        public CallInfo Weave(MethodReference mOuterRef, RoostWeaver.ArgSpec[] methodArgs, RoostWeaveSpec spec) 
         {
             var R = _ctx.RefMap;
             var mod = _ctx.Module;
@@ -45,7 +45,7 @@ namespace Cuckoo.Weave
 
             tCont.NestedTypes.Add(tCall);
 
-            var types = new ScopeTypeSource(tCall);
+            var types = new ScopedTypeSource(tCall);
 
 
             var contGenArgs = new TypeReference[0]; 
