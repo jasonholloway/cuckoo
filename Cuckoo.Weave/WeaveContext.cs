@@ -1,4 +1,5 @@
-﻿using Mono.Cecil;
+﻿using Cuckoo.Common;
+using Mono.Cecil;
 using System;
 
 namespace Cuckoo.Weave
@@ -13,6 +14,6 @@ namespace Cuckoo.Weave
 
         public NameSource NameSource;
         public CommonRefs RefMap;
-        public Action<string> Logger;
+        public Logger Logger;
     }
 }

@@ -4,19 +4,21 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    public class GatherAgent : MarshalByRefObject
-    {
-        public void LoadAssemblies(string[] asmPaths) {
-            foreach(var asmPath in asmPaths) {
-                var asmName = AssemblyName.GetAssemblyName(asmPath);
-                Assembly.Load(asmName);
-            }
+    internal class GatherAgent : MarshalByRefObject
+    {        
+        public void Init(AssemblyLocator locator) {
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(
+                (o, r) => {
+                    var path = locator.LocateAssembly(r.Name);
+                    var asmName = AssemblyName.GetAssemblyName(path);
+                    return Assembly.Load(asmName);
+                });
         }
+        
 
-        public RoostSpec[] GatherAllRoostSpecs(string targetAsmPath) 
-        {
-            var asmName = AssemblyName.GetAssemblyName(targetAsmPath);            
-            var targetAsm = Assembly.Load(asmName);
+        public RoostSpec[] GatherAllRoostSpecs(string targetAsmName) 
+        {            
+            var targetAsm = Assembly.Load(targetAsmName);
 
             var pickerTypes = targetAsm.GetTypes()
                                     .Where(t => ! t.IsAbstract

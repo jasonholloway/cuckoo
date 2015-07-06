@@ -1,93 +1,62 @@
-﻿using Mono.Cecil;
-using Cuckoo.Weave.Cecil;
+﻿using Cuckoo.Common;
+using Cuckoo.Gather;
+using Cuckoo.Weave;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cuckoo.Weave;
-using Cuckoo.Gather;
-using Mono.Cecil.Cil;
 using System.Reflection;
 
 namespace Cuckoo.Fody
 {
     public class ModuleWeaver
     {
-        
-        // Will log an MessageImportance.Normal message to MSBuild. OPTIONAL
-        public Action<string> LogDebug { get; set; }
-
-        // Will log an MessageImportance.High message to MSBuild. OPTIONAL
         public Action<string> LogInfo { get; set; }
-
-        // Will log an warning message to MSBuild. OPTIONAL
-        public Action<string> LogWarning { get; set; }
-
-        // Will log an warning message to MSBuild at a specific point in the code. OPTIONAL
-        public Action<string, SequencePoint> LogWarningPoint { get; set; }
-
-        // Will log an error message to MSBuild. OPTIONAL
         public Action<string> LogError { get; set; }
-
-        // Will log an error message to MSBuild at a specific point in the code. OPTIONAL
-        public Action<string, SequencePoint> LogErrorPoint { get; set; }
-
-        // An instance of Mono.Cecil.IAssemblyResolver for resolving assembly references. OPTIONAL
         public IAssemblyResolver AssemblyResolver { get; set; }
-
-        // An instance of Mono.Cecil.ModuleDefinition for processing. REQUIRED
         public ModuleDefinition ModuleDefinition { get; set; }
-
-        // Will contain the full path of the target assembly. OPTIONAL
         public string AssemblyFilePath { get; set; }
-
-        // Will contain the full directory path of the target project. 
-        // A copy of $(ProjectDir). OPTIONAL
-        public string ProjectDirectoryPath { get; set; }
-
-        // Will contain the full directory path of the current weaver. OPTIONAL
         public string AddinDirectoryPath { get; set; }
-
-        // Will contain the full directory path of the current solution.
-        // A copy of `$(SolutionDir)` or, if it does not exist, a copy of `$(MSBuildProjectDirectory)..\..\..\`. OPTIONAL
-        public string SolutionDirectoryPath { get; set; }
-
-        // Will contain a semicomma delimetered string that contains 
-        // all the references for the target project. 
-        // A copy of the contents of the @(ReferencePath). OPTIONAL
         public string References { get; set; }
-
-        // Will a list of all the references marked as copy-local. 
-        // A copy of the contents of the @(ReferenceCopyLocalPaths). OPTIONAL
         public List<string> ReferenceCopyLocalPaths { get; set; }
-
-        // Will a list of all the msbuild constants. 
-        // A copy of the contents of the $(DefineConstants). OPTIONAL
-        public List<string> DefineConstants { get; set; }
-
-
-
-
-
-
+        
 
         public void Execute() 
         {
-            var targetAsmName = AssemblyName.GetAssemblyName(AssemblyFilePath);
+            var logger = new Logger(LogInfo, LogError);
+
+            var locator = BuildAssemblyLocator();
 
             var gatherer = new Gatherer(
                                     AddinDirectoryPath,
-                                    AssemblyFilePath,
-                                    References.Split(';')
-                                    );
+                                    ModuleDefinition.Assembly.FullName,
+                                    locator,
+                                    logger );
 
             var roostSpecs = gatherer.Gather();
+
+            logger.Info("Cuckoo.Fody: {0} roosts identified...", roostSpecs.Count());
 
             var weaver = new Weaver(
                                 ModuleDefinition.Assembly,
                                 roostSpecs,
-                                LogInfo);
+                                logger );
 
             weaver.Weave();
+
+            logger.Info("Cuckoo.Fody: All cuckoos applied!");
+        }
+
+
+        AssemblyLocator BuildAssemblyLocator() {
+            var paths = References.Split(';')
+                            .Concat(new string[] { AssemblyFilePath });
+
+            var d = paths.ToDictionary(
+                            p => AssemblyName.GetAssemblyName(p).FullName, 
+                            p => p );
+
+            return new AssemblyLocator(d);
         }
 
     }

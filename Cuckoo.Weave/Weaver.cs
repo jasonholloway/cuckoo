@@ -10,23 +10,24 @@ using Cuckoo.Gather;
 namespace Cuckoo.Weave
 {
     using NamedArg = KeyValuePair<string, object>;
+    using Cuckoo.Common;
 
     public class Weaver
     {
         AssemblyDefinition _asmDef;
         IEnumerable<RoostSpec> _roostSpecs;
-        Action<string> _fnLog;
+        Logger _log;
         IAssemblyResolver _asmResolver;
 
 
         public Weaver(
                 AssemblyDefinition assemblyDef,
                 IEnumerable<RoostSpec> roostSpecs, 
-                Action<string> fnLog ) 
+                Logger log ) 
         {
             _asmDef = assemblyDef;
             _roostSpecs = roostSpecs;
-            _fnLog = fnLog;
+            _log = log;
 
             _asmResolver = new CachedAssemblyResolver(assemblyDef.MainModule.AssemblyResolver);
             ((CachedAssemblyResolver)_asmResolver).Register(assemblyDef);
@@ -90,7 +91,7 @@ namespace Cuckoo.Weave
 
             var roostWeavers = roostWeaveSpecs
                                     .Where(s => !s.Method.IsAbstract)
-                                    .Select(s => new RoostWeaver(s, _fnLog));
+                                    .Select(s => new RoostWeaver(s, _log));
             
             foreach(var roostWeaver in roostWeavers.ToArray()) {
                 roostWeaver.Weave();

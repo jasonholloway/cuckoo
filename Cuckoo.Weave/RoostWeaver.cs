@@ -8,17 +8,18 @@ using System.Linq;
 
 namespace Cuckoo.Weave
 {
+    using Cuckoo.Common;
     using Refl = System.Reflection;
 
     internal partial class RoostWeaver
     {
         RoostWeaveSpec _spec;
-        Action<string> _logger;
+        Logger _log;
 
-        public RoostWeaver(RoostWeaveSpec spec, Action<string> logger) 
+        public RoostWeaver(RoostWeaveSpec spec, Logger log) 
         {
             _spec = spec;
-            _logger = logger;
+            _log = log;
         }
 
 
@@ -38,7 +39,7 @@ namespace Cuckoo.Weave
                 mOuter = spec.Method,
                 NameSource = new NameSource(tCont),
                 RefMap = new CommonRefs(module, spec.Method),
-                Logger = _logger
+                Logger = _log
             };
         }
 

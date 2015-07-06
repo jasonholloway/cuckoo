@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cuckoo.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,13 +11,15 @@ namespace Cuckoo.Gather
     public class Gatherer
     {
         string _baseDir;
-        string _targetAsmPath;
-        string[] _auxAsmPaths;
+        string _targetAsmName;
+        AssemblyLocator _locator;
+        Logger _log;
 
-        public Gatherer(string baseDir, string targetAsmPath, IEnumerable<string> auxAsmPaths) {
+        public Gatherer(string baseDir, string targetAsmName, AssemblyLocator locator, Logger logger) {
             _baseDir = baseDir;
-            _targetAsmPath = targetAsmPath;
-            _auxAsmPaths = auxAsmPaths.ToArray();
+            _targetAsmName = targetAsmName;
+            _locator = locator;
+            _log = logger;
         }
 
         public IEnumerable<RoostSpec> Gather() {
@@ -31,12 +34,10 @@ namespace Cuckoo.Gather
                 var agent = (GatherAgent)appDom.CreateInstanceAndUnwrap(
                                                                 typeof(GatherAgent).Assembly.FullName,
                                                                 typeof(GatherAgent).FullName);
-
-                agent.LoadAssemblies(_auxAsmPaths);
-
-                //var hostedAssemblies = appDom.GetAssemblies();
                 
-                return agent.GatherAllRoostSpecs(_targetAsmPath);
+                agent.Init(_locator);
+
+                return agent.GatherAllRoostSpecs(_targetAsmName);
             }
             finally {
                 AppDomain.Unload(appDom);

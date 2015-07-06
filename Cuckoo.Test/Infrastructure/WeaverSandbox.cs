@@ -1,4 +1,5 @@
-﻿using Cuckoo.Gather;
+﻿using Cuckoo.Common;
+using Cuckoo.Gather;
 using Cuckoo.Weave;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
@@ -21,11 +22,15 @@ namespace Cuckoo.Test.Infrastructure
         ShadowFolder _folder;
         AppDomain _appDomain;
 
+        Logger _log;
+
 
         public WeaverSandbox(string asmPath, string folderName) {
             _asmPath = asmPath;
             _folderName = folderName;
             _folder = new ShadowFolder(_asmPath, _folderName);
+
+            _log = new Logger(_ => { }, _ => { });
         }
 
 
@@ -53,12 +58,14 @@ namespace Cuckoo.Test.Infrastructure
 
         public IEnumerable<RoostSpec> Gather() {
             var targetAsmName = AssemblyName.GetAssemblyName(_folder.AssemblyPath);
-            
+
+            var locator = new AssemblyLocator(new Dictionary<string, string>()); //can be empty as everything should be in temp folder
+
             var gatherer = new Gatherer(
                                     _folder.FolderPath, 
-                                    _folder.AssemblyPath,
-                                    new string[0]
-                                    );
+                                    targetAsmName.FullName,
+                                    locator,
+                                    _log );
 
             return gatherer.Gather();
         }
@@ -71,7 +78,7 @@ namespace Cuckoo.Test.Infrastructure
             _weaver = new Weaver(
                             asm, 
                             roostSpecs, 
-                            _ => { } );
+                            _log );
 
             _weaver.Weave();
 

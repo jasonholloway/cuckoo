@@ -43,6 +43,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyLocator.cs" />
     <Compile Include="GatherAgent.cs" />
     <Compile Include="AttributeRoostPicker.cs" />
     <Compile Include="Gatherer.cs" />
