@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.8">
     <id>Cuckoo.Fody</id>
     <version>1.0</version>
-    <title>Cuckoo</title>
+    <title>Cuckoo.Fody</title>
     <authors>Jason Holloway</authors>
     <owners>Jason Holloway</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
@@ -25,8 +25,8 @@ And Mono-compatible!
     </dependencies>
   </metadata>
   <files>
-	  <file src="..\cuckoo.fody\bin\release\Cuckoo*.dll" target="" />
-	  <file src="..\cuckoo\bin\release\*.*" target="lib\40" />
+	  <file src="..\cuckoo.fody\bin\debug\Cuckoo*.*" target="" />
+	  <file src="..\cuckoo\bin\debug\*.*" target="lib\40" />
 	  <file src="install.ps1" target="tools" />
     <file src="uninstall.ps1" target="tools" />
   </files>

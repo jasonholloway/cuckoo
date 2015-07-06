@@ -82,6 +82,7 @@
     <Compile Include="RoostWeaveSpec.cs" />
     <Compile Include="Cecil\ILProcessorExtensions.cs" />
     <Compile Include="Weaver.cs" />
+    <Compile Include="CachedAssemblyResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">

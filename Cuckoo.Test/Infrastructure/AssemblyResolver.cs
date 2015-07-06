@@ -22,4 +22,7 @@ namespace Cuckoo.Test.Infrastructure
             base.RegisterAssembly(assembly);
         }
     }
+
+
+
 }

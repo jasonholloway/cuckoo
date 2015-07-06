@@ -23,8 +23,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{770A1612-EA7E-48E1-A011-B897B464C2C8}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Cuckoo.nuspec = NuGet\Cuckoo.nuspec
-		NuGet\tools\install.ps1 = NuGet\tools\install.ps1
-		NuGet\tools\uninstall.ps1 = NuGet\tools\uninstall.ps1
+		NuGet\install.ps1 = NuGet\install.ps1
+		NuGet\uninstall.ps1 = NuGet\uninstall.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Gather", "Cuckoo.Gather\Cuckoo.Gather.csproj", "{C4392EC3-616A-42E3-8604-8EDCCE234040}"

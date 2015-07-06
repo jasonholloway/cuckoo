@@ -16,6 +16,7 @@ namespace Cuckoo.Weave
         AssemblyDefinition _asmDef;
         IEnumerable<RoostSpec> _roostSpecs;
         Action<string> _fnLog;
+        IAssemblyResolver _asmResolver;
 
 
         public Weaver(
@@ -26,6 +27,9 @@ namespace Cuckoo.Weave
             _asmDef = assemblyDef;
             _roostSpecs = roostSpecs;
             _fnLog = fnLog;
+
+            _asmResolver = new CachedAssemblyResolver(assemblyDef.MainModule.AssemblyResolver);
+            ((CachedAssemblyResolver)_asmResolver).Register(assemblyDef);
         }
 
 
@@ -64,8 +68,8 @@ namespace Cuckoo.Weave
 
                             var provWeaveSpecs = spec.HatcherSpecs
                                                         .Select(s => {
-                                                            var asm = module.AssemblyResolver
-                                                                                        .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
+                                                            var asm = _asmResolver
+                                                                        .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
 
                                                             var ctorRef = (MethodReference)asm.MainModule
                                                                                                 .LookupToken(s.CtorToken);

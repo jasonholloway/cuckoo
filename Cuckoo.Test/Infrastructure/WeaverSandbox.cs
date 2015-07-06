@@ -52,7 +52,14 @@ namespace Cuckoo.Test.Infrastructure
 
 
         public IEnumerable<RoostSpec> Gather() {
-            var gatherer = new Gatherer(_folder.AssemblyPath);
+            var targetAsmName = AssemblyName.GetAssemblyName(_folder.AssemblyPath);
+            
+            var gatherer = new Gatherer(
+                                    _folder.FolderPath, 
+                                    _folder.AssemblyPath,
+                                    new string[0]
+                                    );
+
             return gatherer.Gather();
         }
 
