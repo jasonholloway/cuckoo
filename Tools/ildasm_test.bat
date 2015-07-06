@@ -1,1 +1,1 @@
-start "" ildasm c:\users\jason\appdata\local\temp\cuckoosandbox\cuckoo.testassembly.dll
+start "" ildasm c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll

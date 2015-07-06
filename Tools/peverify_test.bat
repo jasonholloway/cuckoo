@@ -1,2 +1,2 @@
-peverify /il /md /verbose c:\users\jason\appdata\local\temp\cuckoosandbox\cuckoo.testassembly.dll > verify.txt
+peverify /il /md /verbose c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll > verify.txt
 start "" "c:\program files (x86)\notepad++\notepad++" -multiInst -nosession -noPlugins verify.txt

@@ -25,6 +25,10 @@ namespace Cuckoo.TestAssembly.Cuckoos
         
         public override void Call(ICall call) {
             base.Call(call);
+
+            call.ReturnValue = new object[] { 
+                Byte, Char, Int, UInt, Long, ULong, Float, Double, String, Type
+            };
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Cuckoo.TestAssembly
         [OptionalCtorArgsCuckoo(99)]
         public string MethodWithOptArgAttribute() {
             return "GAH";
-        }
+        } 
 
 
         [ArgChangingCuckoo]
@@ -27,20 +27,30 @@ namespace Cuckoo.TestAssembly
         }
 
 
+        [AttTypeArgCuckoo(typeof(Atts))]
+        public string TypeArgInAttCtor() {
+            return "";
+        }
 
+        [AttArgsCuckoo(1, 'a', 0xFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 1F, 1D, "blah", typeof(Atts))]
+        public object[] VariousAttArgs() {
+            return new object[0];
+        }
 
-        //[AttArgsCuckoo(1, 'a', 0xFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 1F, 1D, "blah", typeof(Atts))]
-        //[AttPropsCuckoo(Byte = 1, Char='a', Double=1D, Float=1F, Int=1, Long=0xFFFFFFFFFF, String="brap", Type=typeof(DistantCuckooAttribute), UInt=0xFFFFFFFF, ULong=0xFFFFFFFFFFFFFFFF)]
-        //public void Dummy() {
+        [AttPropsCuckoo(Byte = 1, Char = 'a', Double = 1D, Float = 1F, Int = 1, Long = 0xFFFFFFFFFF, String = "brap", Type = typeof(DistantCuckooAttribute), UInt = 0xFFFFFFFF, ULong = 0xFFFFFFFFFFFFFFFF)]
+        public object[] VariousAttProps() {
+            return new object[0];
+        }
 
-        //}
+        [AttArgsCuckoo(123, 123, 123, 123)]
+        public object[] AttArgsByParamsArray() {
+            return new object[0];
+        }
 
-
-
-
-
-
-
+        [OptionalAttArgsCuckoo("plop", "pork")]
+        public string[] OptionalAttArgs() {
+            return new string[0];
+        }
 
     }
 }

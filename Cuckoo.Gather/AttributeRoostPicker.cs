@@ -38,7 +38,28 @@ namespace Cuckoo.Gather
                     t => t.Atts.Select(
                         att => {
                             var ctorArgs = att.ConstructorArguments
-                                                .Select(a => a.Value);
+                                                .Select(a => {
+                                                    if(a.Value is IEnumerable<CustomAttributeTypedArgument>) 
+                                                    {
+                                                        var vals = ((IEnumerable<CustomAttributeTypedArgument>)a.Value).ToArray();
+
+                                                        var tEl = a.ArgumentType.GetElementType(); 
+
+                                                        var r = Array.CreateInstance(tEl, vals.Length);
+
+                                                        for(int i = 0; i < vals.Length; i++) {
+                                                            var val = vals[i];
+                                                            r.SetValue(val.Value, i);
+                                                        }
+
+                                                        return r;
+                                                    }
+
+                                                    return a.Value;
+                                                });
+
+
+
 
                             var namedArgs = att.NamedArguments
                                                 .Select(a => new KeyValuePair<string, object>(

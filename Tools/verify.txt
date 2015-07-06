@@ -2,4 +2,5 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-All Classes and Methods in c:\users\jason\appdata\local\temp\cuckoosandbox\cuckoo.testassembly.dll Verified.
+[IL]: Error: [c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll : Cuckoo.TestAssembly.Atts+Cuckoo.TestAssembly.<CuckooCall>_AttArgsByParamsArray::.cctor][mdToken=0x60000b3][offset 0x00000057][found ref array mdarray 'System.Int32[]'][expected ref array mdarray 'System.Object[]'] Unexpected array type on the stack.
+1 Error(s) Verifying c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll

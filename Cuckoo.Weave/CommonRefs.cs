@@ -48,6 +48,7 @@ namespace Cuckoo.Weave
         public readonly MethodReference DebuggerHiddenAtt_mCtor;
 
         public readonly MethodReference MethodBase_mGetMethodFromHandle;
+        public readonly MethodReference Type_mGetTypeFromHandle;
         public readonly MethodReference Object_mCtor;
 
         public CommonRefs(ModuleDefinition module, MethodDefinition method) 
@@ -139,7 +140,13 @@ namespace Cuckoo.Weave
                                                     null
                                                     )
                                                 );
-            
+
+            Type_mGetTypeFromHandle =
+                    module.Import(typeof(Type).GetMethod(
+                                                "GetTypeFromHandle", 
+                                                Refl.BindingFlags.Static
+                                                | Refl.BindingFlags.Public ));
+
             Object_mCtor = module.Import(
                                     module.TypeSystem.Object.ReferenceMethod(m => m.IsConstructor));
         }

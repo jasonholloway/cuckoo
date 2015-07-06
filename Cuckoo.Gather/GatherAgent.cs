@@ -18,8 +18,10 @@ namespace Cuckoo.Gather
                             .Concat(pickerTypes
                                         .Select(t => (IRoostTargeter)Activator.CreateInstance(t)));
             
-            return pickers.SelectMany(i => i.TargetRoosts(targetAssembly))
-                                .ToArray();
+            var roostSpecs = pickers.SelectMany(i => i.TargetRoosts(targetAssembly))
+                                        .ToArray();
+
+            return roostSpecs;
         }
     }
 }

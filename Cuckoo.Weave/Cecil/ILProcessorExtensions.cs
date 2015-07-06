@@ -2,9 +2,12 @@
 using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cuckoo.Weave.Cecil
 {
+    using Refl = System.Reflection;
+
     public static class IlProcessorExtensions
     {
         public static void InsertBefore(this ILProcessor processor, Instruction target, IEnumerable<Instruction> instructions) {
@@ -21,10 +24,68 @@ namespace Cuckoo.Weave.Cecil
 
 
         public static Instruction EmitConstant(this ILProcessor @this, TypeReference type, object value) {
-            //int typeID = type.MetadataToken.ToInt32();
+            var mod = @this.Body.Method.Module;
+
+            if(type.IsArray) {
+                var r = (Array)value;
+                var tEl = type.GetElementType();
+
+                @this.Emit(OpCodes.Ldc_I4, r.Length);
+                @this.Emit(OpCodes.Newarr, tEl);
+
+                for(int i = 0; i < r.Length; i++) {
+                    @this.Emit(OpCodes.Dup);
+                    @this.Emit(OpCodes.Ldc_I4, i);
+
+                    object v = r.GetValue(i);
+                    var t = v != null
+                                ? mod.Import(v.GetType())
+                                : tEl;
+
+                    if(v == null) {
+                        @this.Emit(OpCodes.Ldnull);
+                    }
+                    else {
+                        @this.EmitConstant(t, v);
+                    }
+
+                    switch(tEl.FullName) {                        
+                        case "System.Int32":
+                            @this.Emit(OpCodes.Stelem_I4);
+                            break;
+
+                        case "System.Int64":
+                            @this.Emit(OpCodes.Stelem_I8);
+                            break;
+
+                        case "System.Single":
+                            @this.Emit(OpCodes.Stelem_R4);
+                            break;
+
+                        case "System.Double":
+                            @this.Emit(OpCodes.Stelem_R8);
+                            break;
+
+                        default:
+                            if(tEl.IsValueType) {
+                                throw new NotImplementedException("Emitting arrays of such element type not yet supported!");
+                            }
+
+                            if(t.IsValueType) {
+                                @this.Emit(OpCodes.Box, t);
+                            }
+
+                            @this.Emit(OpCodes.Stelem_Ref);
+                            break;
+                    }
+                }
+
+                return @this.Body.Instructions.Last();
+            }
+
 
             switch(type.FullName) {
-                case "System.Boolean": //This could surely be done by type-token id
+                case "System.Boolean":
                     return @this.EmitEx(OpCodes.Ldc_I4, (bool)value ? 1 : 0); //??????
 
                 case "System.String":
@@ -33,9 +94,42 @@ namespace Cuckoo.Weave.Cecil
                 case "System.Int32":
                     return @this.EmitEx(OpCodes.Ldc_I4, (int)value);
 
-                case "System.Byte":
-                    return @this.EmitEx(OpCodes.Ldc_I4_S, (byte)value);
+                case "System.UInt32":
+                    return @this.EmitEx(OpCodes.Ldc_I4, (int)(uint)value);
 
+                case "System.Int64":
+                    return @this.EmitEx(OpCodes.Ldc_I8, (long)value);
+
+                case "System.UInt64":
+                    return @this.EmitEx(OpCodes.Ldc_I8, (long)(ulong)value);
+
+                case "System.Byte":
+                    return @this.EmitEx(OpCodes.Ldc_I4, (int)(byte)value);
+
+                case "System.SByte":
+                    return @this.EmitEx(OpCodes.Ldc_I4_S, (sbyte)value);
+
+                case "System.Char":
+                    return @this.EmitEx(OpCodes.Ldc_I4, (char)value);
+
+                case "System.Single":
+                    return @this.EmitEx(OpCodes.Ldc_R4, (float)value);
+
+                case "System.Double":
+                    return @this.EmitEx(OpCodes.Ldc_R8, (double)value);
+
+                case "System.RuntimeType":                    
+                    var t = @this.Body.Method.Module.Import((Type)value);
+                    @this.EmitEx(OpCodes.Ldtoken, t);
+
+                    var mType_mGetTypeFromHandle = @this.Body.Method.Module
+                                                        .Import(typeof(Type).GetMethod(
+                                                                        "GetTypeFromHandle", 
+                                                                        Refl.BindingFlags.Public    
+                                                                        | Refl.BindingFlags.Static));
+                    
+                    return @this.EmitEx(OpCodes.Call, mType_mGetTypeFromHandle);
+                    
                 default:
                     throw new InvalidOperationException("Can't emit constant of such a type (for now!)...");
             }
