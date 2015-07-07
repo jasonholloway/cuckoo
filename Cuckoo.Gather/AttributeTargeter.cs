@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    internal class AttributeRoostPicker : IRoostTargeter
+    internal class AttributeTargeter : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) 
+        public IEnumerable<RoostTarget> TargetRoosts(Assembly assembly) 
         {
             var allTypes = GetAllTypes(assembly);
 
@@ -58,19 +58,17 @@ namespace Cuckoo.Gather
                                                     return a.Value;
                                                 });
 
+                            var dNamedArgs = att.NamedArguments
+                                                .ToDictionary(
+                                                    a => a.MemberInfo.Name,
+                                                    a => a.TypedValue.Value
+                                                );
 
-
-
-                            var namedArgs = att.NamedArguments
-                                                .Select(a => new KeyValuePair<string, object>(
-                                                                                a.MemberInfo.Name, 
-                                                                                a.TypedValue.Value ));
-                            
-                            return new RoostSpec(
+                            return new RoostTarget(
                                             t.Method,
                                             att.Constructor,
                                             ctorArgs.ToArray(),
-                                            namedArgs.ToArray() );
+                                            dNamedArgs);
                         })).ToArray();
         }
 

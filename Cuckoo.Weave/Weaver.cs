@@ -11,6 +11,7 @@ namespace Cuckoo.Weave
 {
     using NamedArg = KeyValuePair<string, object>;
     using Cuckoo.Common;
+    using Cuckoo.Gather.Specs;
 
     public class Weaver
     {
@@ -67,10 +68,22 @@ namespace Cuckoo.Weave
 
                             int iProvWeaveSpec = 0;
 
-                            var provWeaveSpecs = spec.HatcherSpecs
+                            var hatchWeaveSpecs = spec.HatcherSpecs
                                                         .Select(s => {
                                                             var asm = _asmResolver
-                                                                        .Resolve(AssemblyNameReference.Parse(s.AssemblyName));
+                                                                        .Resolve(AssemblyNameReference.Parse(s.TypeSpec.AssemblyName));
+                                                            
+                                                            var typeRef = new TypeReference(
+                                                                                    s.TypeSpec.Namespace,
+                                                                                    s.TypeSpec.Name,
+                                                                                    asm.MainModule,
+                                                                                    asm.MainModule );
+
+                                                            //var typeRef = (TypeReference)asm.MainModule                 
+                                                            //                                    .Import()               
+                                                            //                                    .LookupToken(s.TypeSpec..TypeToken);
+
+                                                            //type needs to be reconstructed from tokens...
 
                                                             var ctorRef = (MethodReference)asm.MainModule
                                                                                                 .LookupToken(s.CtorToken);
@@ -85,7 +98,7 @@ namespace Cuckoo.Weave
 
                             return new RoostWeaveSpec(
                                                 methodDef, 
-                                                provWeaveSpecs );
+                                                hatchWeaveSpecs );
                         });
             
 

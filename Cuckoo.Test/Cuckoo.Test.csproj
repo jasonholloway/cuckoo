@@ -39,6 +39,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssertExLib">
+      <HintPath>..\packages\AssertEx.1.0.0\lib\net45\AssertExLib.dll</HintPath>
+    </Reference>
     <Reference Include="FizzWare.NBuilder">
       <HintPath>..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
     </Reference>
@@ -88,7 +91,7 @@
     <Compile Include="Infrastructure\WeaverSandbox.cs" />
     <Compile Include="Infrastructure\ShadowFolder.cs" />
     <Compile Include="Infrastructure\WeaveTestBase.cs" />
-    <Compile Include="RoostTargetTests.cs" />
+    <Compile Include="GatheringTests.cs" />
     <Compile Include="StructTests.cs" />
     <Compile Include="VirtualTests.cs" />
     <Compile Include="PropertyTests.cs" />

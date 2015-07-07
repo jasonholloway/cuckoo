@@ -39,10 +39,10 @@ namespace Cuckoo.EffusiveTargeterExample
 
     public class EffusiveTargeter : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) {
+        public IEnumerable<RoostTarget> TargetRoosts(Assembly assembly) {
             return assembly.GetTypes()
                                 .SelectMany(t => t.GetMethods())
-                                .Select(m => new RoostSpec(m, typeof(Hatcher)));
+                                .Select(m => new RoostTarget(m, typeof(Hatcher)));
         }
     }
 

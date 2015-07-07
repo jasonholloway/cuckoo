@@ -1,15 +1,16 @@
 ﻿
 *******************************************************************
 TO DO:
-> Targeters should return specs with methodbases; tokens should be internal only
 > TypeInitializationFailure with RoostTargeter
 
-> Update NuGet
+> Sign it all
+> With signing in place, reduce public surface
 > Test package on Mono again
 > Remember to switch nuget to Release!
 
 *******************************************************************
 DONE
+> Targeters should return specs with methodbases; tokens should be internal only DONE
 > Rebuild nuget package after any changes DONE
 > Propogate nuget package to example project DONE
 > Att ctors with optional args DONE

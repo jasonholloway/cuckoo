@@ -8,7 +8,7 @@ namespace Cuckoo
 {
     public interface IRoostTargeter
     {
-        IEnumerable<RoostSpec> TargetRoosts(Assembly assembly);    
+        IEnumerable<RoostTarget> TargetRoosts(Assembly assembly);    
     }
     
 

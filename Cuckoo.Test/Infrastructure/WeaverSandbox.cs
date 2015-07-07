@@ -1,5 +1,6 @@
 ﻿using Cuckoo.Common;
 using Cuckoo.Gather;
+using Cuckoo.Gather.Specs;
 using Cuckoo.Weave;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;

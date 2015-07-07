@@ -9,12 +9,13 @@ namespace Cuckoo.Example
 {
     class CustomRoostTargeter : IRoostTargeter
     {
-        public IEnumerable<RoostSpec> TargetRoosts(Assembly asm) {
+        public IEnumerable<RoostTarget> TargetRoosts(Assembly asm) {
             var methods = asm.GetType(typeof(AClass).FullName)
-                                .GetMethods();
+                                .GetMethods()
+                                .Where(m => m.DeclaringType == typeof(AClass));
 
             return methods
-                    .Select(m => new RoostSpec(m, typeof(SimpleHatcher<AnotherCuckoo>)));        
+                    .Select(m => new RoostTarget(m, typeof(SimpleHatcher<AnotherCuckoo>)));        
         }
     }
 }

@@ -58,7 +58,7 @@
     <Compile Include="ICall.cs" />
     <Compile Include="CuckooAttribute.cs" />
     <Compile Include="Impl\CuckooedAttribute.cs" />
-    <Compile Include="RoostSpec.cs" />
+    <Compile Include="RoostTarget.cs" />
     <Compile Include="SimpleHatcher.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

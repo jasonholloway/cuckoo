@@ -1,4 +1,5 @@
 ﻿using Cuckoo.Common;
+using Cuckoo.Gather.Specs;
 using System;
 using System.Collections.Generic;
 using System.IO;
