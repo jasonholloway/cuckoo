@@ -7,8 +7,7 @@ using System.Text;
 namespace Cuckoo
 {
     using NamedArg = KeyValuePair<string, object>;
-
-
+    
     [Serializable]
     public class RoostSpec
     {

@@ -44,7 +44,7 @@ namespace Cuckoo.Fody
 
             weaver.Weave();
 
-            logger.Info("Cuckoo.Fody: All cuckoos applied!");
+            logger.Info("Cuckoo.Fody: All cuckoos nested!");
         }
 
 

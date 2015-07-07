@@ -1,6 +1,10 @@
 ﻿
 *******************************************************************
 TO DO:
+> TypeInitializationFailure with RoostTargeter
+
+
+
 > Update NuGet
 > Test package on Mono again
 

@@ -32,6 +32,8 @@ namespace Cuckoo.Gather
             var roostSpecs = pickers.SelectMany(i => i.TargetRoosts(targetAsm))
                                         .ToArray();
 
+            
+            
             return roostSpecs;
         }
     }
