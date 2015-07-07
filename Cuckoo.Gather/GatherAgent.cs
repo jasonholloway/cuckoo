@@ -4,8 +4,9 @@ using System.Reflection;
 
 namespace Cuckoo.Gather
 {
-    internal class GatherAgent : MarshalByRefObject
-    {        
+    public class GatherAgent : MarshalByRefObject
+    {
+        
         public void Init(AssemblyLocator locator) {
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(
                 (o, r) => {
@@ -31,9 +32,11 @@ namespace Cuckoo.Gather
             
             var roostSpecs = pickers.SelectMany(i => i.TargetRoosts(targetAsm))
                                         .ToArray();
+                        
+            //throw exception if bad specs found!
+            //...
 
-            
-            
+
             return roostSpecs;
         }
     }

@@ -107,6 +107,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cuckoo.BadTargeterExample\Cuckoo.EffusiveTargeterExample.csproj">
+      <Project>{6b0c2643-69aa-461e-97b7-0e58c2c6ad37}</Project>
+      <Name>Cuckoo.EffusiveTargeterExample</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">
       <Project>{c4392ec3-616a-42e3-8604-8edcce234040}</Project>
       <Name>Cuckoo.Gather</Name>

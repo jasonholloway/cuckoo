@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Example", "Cuckoo.Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.IntegrationTest", "Cuckoo.IntegrationTest\Cuckoo.IntegrationTest.csproj", "{44E3F969-BFBA-4D42-9730-1187F9179831}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.EffusiveTargeterExample", "Cuckoo.BadTargeterExample\Cuckoo.EffusiveTargeterExample.csproj", "{6B0C2643-69AA-461E-97B7-0E58C2C6AD37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{44E3F969-BFBA-4D42-9730-1187F9179831}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44E3F969-BFBA-4D42-9730-1187F9179831}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44E3F969-BFBA-4D42-9730-1187F9179831}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B0C2643-69AA-461E-97B7-0E58C2C6AD37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B0C2643-69AA-461E-97B7-0E58C2C6AD37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B0C2643-69AA-461E-97B7-0E58C2C6AD37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B0C2643-69AA-461E-97B7-0E58C2C6AD37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,5 +93,6 @@ Global
 		{20CEE2C9-A38E-4F66-95C6-30AF60328A6F} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
 		{351676D9-78D7-49AE-A2C1-0AD0981F1EB8} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
 		{44E3F969-BFBA-4D42-9730-1187F9179831} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
+		{6B0C2643-69AA-461E-97B7-0E58C2C6AD37} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
 	EndGlobalSection
 EndGlobal

@@ -18,7 +18,7 @@ And Mono-compatible!
 
 </description>
     <language>en-GB</language>
-    <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil</tags>
+    <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil, mono</tags>
 	  <developmentDependency>true</developmentDependency>
     <dependencies>
       <dependency id="Fody"/>

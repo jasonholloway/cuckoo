@@ -18,14 +18,14 @@ namespace Cuckoo.TestAssembly
     }
 
 
-    public abstract class AbstractRoostPicker : IRoostTargeter
+    public abstract class AbstractRoostTargeter : IRoostTargeter
     {
         public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) {
             throw new NotImplementedException();
         }
     }
 
-    public class GenericRoostPicker<T> : IRoostTargeter
+    public class GenericRoostTargeter<T> : IRoostTargeter
     {
         public IEnumerable<RoostSpec> TargetRoosts(Assembly assembly) {
             throw new NotImplementedException();
