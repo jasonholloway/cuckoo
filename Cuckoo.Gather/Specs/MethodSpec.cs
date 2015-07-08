@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cuckoo.Gather.Monikers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,24 +11,24 @@ namespace Cuckoo.Gather.Specs
     [Serializable]
     public class MethodSpec
     {
-        public readonly TypeSpec TypeSpec;
+        public readonly ITypeMoniker Type;
         public readonly string Name;
         public readonly int Token;
 
         public readonly MethodBase Method;
 
-        public MethodSpec(TypeSpec typeSpec, int token, string name, MethodBase method) {
-            TypeSpec = typeSpec;
+        public MethodSpec(ITypeMoniker typeMoniker, int token, string name, MethodBase method) {
+            Type = typeMoniker;
             Token = token;
             Name = name;
             Method = method;
         }
 
         public MethodSpec(MethodBase method)
-            : this(new TypeSpec(method.DeclaringType), method.MetadataToken, method.Name, method) { }
+            : this(TypeMoniker.Derive(method.DeclaringType), method.MetadataToken, method.Name, method) { }
 
         public override string ToString() {
-            return TypeSpec.Name + "." + Name;
+            return Name;
         }
     }
 

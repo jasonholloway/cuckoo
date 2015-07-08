@@ -5,23 +5,25 @@ using System.Text;
 
 namespace Cuckoo.Gather.Specs
 {
+    using Cuckoo.Gather.Monikers;
     using System.Reflection;
     using NamedArg = KeyValuePair<string, object>;
     
     [Serializable]
     public class HatcherSpec
     {
-        public readonly TypeSpec TypeSpec;
+        public readonly ITypeMoniker Type;
         public readonly int CtorToken;
         public readonly object[] CtorArgs;
         public readonly NamedArg[] NamedArgs;
 
         public HatcherSpec(
-                TypeSpec typeSpec,
+                ITypeMoniker typeMoniker,
                 int ctorToken,
                 object[] ctorArgs,
-                NamedArg[] namedArgs) {
-            TypeSpec = typeSpec;
+                NamedArg[] namedArgs) 
+        {
+            Type = typeMoniker;
             CtorToken = ctorToken;
             CtorArgs = ctorArgs;
             NamedArgs = namedArgs;
@@ -29,13 +31,13 @@ namespace Cuckoo.Gather.Specs
 
         public HatcherSpec(ConstructorInfo ctor, object[] args, NamedArg[] namedArgs)
             : this(
-                new TypeSpec(ctor.DeclaringType),
+                TypeMoniker.Derive(ctor.DeclaringType),
                 ctor.MetadataToken,
                 args,
                 namedArgs) { }
 
         public override string ToString() {
-            return TypeSpec.Name;
+            return Type.GetAssemblyQualifiedName();
         }
     }
 

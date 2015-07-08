@@ -26,34 +26,6 @@ namespace Cuckoo.Test
 
 
 
-        class GenClass<A, B>
-        {
-
-        }
-
-
-        [TestMethod]
-        public void TypeSpecsWellCommunicated() {
-            var type = typeof(GenClass<ModuleDefinition[], List<GatheringTests>>);
-            
-            var mod = ModuleDefinition.ReadModule(
-                                        type.Assembly.Location);
-
-            var typeSpec = new TypeSpec(type);
-
-            
-            var resolver = new TypeSpec2Cecil(mod);
-
-
-            var typeRef = resolver.Resolve(typeSpec);
-
-
-            var goodTypeRef = mod.Import(type);
-
-            Assert.IsTrue(goodTypeRef.FullName == typeRef.FullName
-                            && goodTypeRef.Module == typeRef.Module);
-        }
-
 
 
         //[TestMethod]

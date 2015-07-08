@@ -73,7 +73,6 @@
     <Compile Include="CallWeaver.ArgSpec.cs" />
     <Compile Include="RoostWeaver.ArgSpec.cs" />
     <Compile Include="ScopedTypeSource.cs" />
-    <Compile Include="TypeSpec2Cecil.cs" />
     <Compile Include="WeaveContext.cs" />
     <Compile Include="Cecil\MethodDefinitionExtensions.cs" />
     <Compile Include="Cecil\TypeDefinitionExtensions.cs" />

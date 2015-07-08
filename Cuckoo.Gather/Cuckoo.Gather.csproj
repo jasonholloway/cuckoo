@@ -48,11 +48,13 @@
     <Compile Include="GatherAgent.cs" />
     <Compile Include="AttributeTargeter.cs" />
     <Compile Include="Gatherer.cs" />
+    <Compile Include="Monikers\MethodMonikers.cs" />
+    <Compile Include="Monikers\TypeMonikerExtensions.cs" />
+    <Compile Include="Monikers\TypeMonikers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specs\HatcherSpec.cs" />
     <Compile Include="Specs\MethodSpec.cs" />
     <Compile Include="Specs\RoostSpec.cs" />
-    <Compile Include="Specs\TypeSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cuckoo.Gather;
+using Cuckoo.Gather.Monikers;
 
 namespace Cuckoo.Weave
 {
@@ -45,7 +46,7 @@ namespace Cuckoo.Weave
         public void WeaveModule(ModuleDefinition module) 
         {
             var groupedRoostSpecs = _roostSpecs.GroupBy(
-                                                s => s.MethodSpec.Token,
+                                                s => ((MethodDef)s.Method).MetadataToken,
                                                 (k, r) => new {
                                                     MethodToken = k,
                                                     HatcherSpecs = r.Select(f => f.HatcherSpec)
@@ -71,13 +72,13 @@ namespace Cuckoo.Weave
                             var hatchWeaveSpecs = spec.HatcherSpecs
                                                         .Select(s => {
                                                             var asm = _asmResolver
-                                                                        .Resolve(AssemblyNameReference.Parse(s.TypeSpec.AssemblyName));
+                                                                        .Resolve(AssemblyNameReference.Parse(s.Type.AssemblyName));
                                                             
-                                                            var typeRef = new TypeReference(
-                                                                                    s.TypeSpec.Namespace,
-                                                                                    s.TypeSpec.Name,
-                                                                                    asm.MainModule,
-                                                                                    asm.MainModule );
+                                                            //var typeRef = new TypeReference(
+                                                            //                        s.TypeSpec.Namespace,
+                                                            //                        s.TypeSpec.Name,
+                                                            //                        asm.MainModule,
+                                                            //                        asm.MainModule );
 
                                                             //var typeRef = (TypeReference)asm.MainModule                 
                                                             //                                    .Import()               

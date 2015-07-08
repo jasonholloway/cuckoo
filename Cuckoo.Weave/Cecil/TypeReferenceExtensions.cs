@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Cuckoo.Weave.Cecil
 {
-    internal static class TypeReferenceExtensions
+    public static class TypeReferenceExtensions
     {
         public static bool ImplementsInterface<TInterface>(this TypeReference @this) {
             return @this.ImplementsInterface(typeof(TInterface).FullName);
@@ -21,6 +21,56 @@ namespace Cuckoo.Weave.Cecil
                             && typeDef.BaseType.ImplementsInterface(interfaceName));
 
         }
+
+
+
+
+        public static string GetAssemblyQualifiedName(this TypeReference @this) {
+            var sb = new StringBuilder();
+
+            BuildClassName(@this, sb);
+
+            if(@this.IsGenericInstance) {
+                sb.Append("[");
+
+                bool isSucceeder = false;
+
+                foreach(var genArg in ((GenericInstanceType)@this).GenericArguments) {
+                    if(isSucceeder) {
+                        sb.Append(",");
+                    }
+
+                    sb.Append("[");
+                    sb.Append(genArg.GetAssemblyQualifiedName());
+                    sb.Append("]");
+                    isSucceeder = true;
+                }
+
+                sb.Append("]");
+            }
+
+            sb.Append(", ");
+            sb.Append(@this.Resolve().Module.Assembly.FullName);
+
+            return sb.ToString();
+        }
+
+
+
+        static void BuildClassName(TypeReference typeRef, StringBuilder sb) {
+            if(typeRef.IsNested) {
+                BuildClassName(typeRef.DeclaringType, sb);
+                sb.Append("+");
+            }
+            else {
+                sb.Append(typeRef.Namespace);
+                sb.Append(".");
+            }
+
+            sb.Append(typeRef.Name);
+        }
+
+
 
     }
 }
