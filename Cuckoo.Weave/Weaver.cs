@@ -1,6 +1,7 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using Cuckoo.Weave.Cecil;
+using Cuckoo.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,7 @@ using Cuckoo.Gather.Monikers;
 namespace Cuckoo.Weave
 {
     using NamedArg = KeyValuePair<string, object>;
-    using Cuckoo.Common;
-    using Cuckoo.Gather.Specs;
-
+    
     public class Weaver
     {
         AssemblyDefinition _asmDef;
@@ -46,11 +45,15 @@ namespace Cuckoo.Weave
         public void WeaveModule(ModuleDefinition module) 
         {
             var groupedRoostSpecs = _roostSpecs.GroupBy(
-                                                s => ((MethodDef)s.Method).MetadataToken,
+                                                s => ((MethodDef)s.TargetMethod).MetadataToken,
                                                 (k, r) => new {
                                                     MethodToken = k,
-                                                    HatcherSpecs = r.Select(f => f.HatcherSpec)
-                                                                         .ToArray()
+                                                    Hatchers = r.Select(f => new {
+                                                                                Ctor = f.HatcherCtor,
+                                                                                CtorArgs = f.HatcherCtorArgs,
+                                                                                CtorNamedArgs = f.HatcherCtorNamedArgs
+                                                                            })
+                                                                            .ToArray()
                                                 });
             
             var roostWeaveSpecs 
@@ -69,31 +72,23 @@ namespace Cuckoo.Weave
 
                             int iProvWeaveSpec = 0;
 
-                            var hatchWeaveSpecs = spec.HatcherSpecs
-                                                        .Select(s => {
+                            var hatchWeaveSpecs = spec.Hatchers
+                                                        .Select(h => {
                                                             var asm = _asmResolver
-                                                                        .Resolve(AssemblyNameReference.Parse(s.Type.AssemblyName));
+                                                                        .Resolve(AssemblyNameReference.Parse(h.Ctor.DeclaringType.AssemblyName));
                                                             
-                                                            //var typeRef = new TypeReference(
-                                                            //                        s.TypeSpec.Namespace,
-                                                            //                        s.TypeSpec.Name,
-                                                            //                        asm.MainModule,
-                                                            //                        asm.MainModule );
+                                                            var tHatcher = asm.MainModule
+                                                                                .GetType(h.Ctor.DeclaringType.FullName);
 
-                                                            //var typeRef = (TypeReference)asm.MainModule                 
-                                                            //                                    .Import()               
-                                                            //                                    .LookupToken(s.TypeSpec..TypeToken);
+                                                            var mCtor = tHatcher.ReferenceMethod(
+                                                                                        m => m.Name == h.Ctor.Name
+                                                                                            && true); //NEED TO CHECK ARGS!!!!!!!
 
-                                                            //type needs to be reconstructed from tokens...
-
-                                                            var ctorRef = (MethodReference)asm.MainModule
-                                                                                                .LookupToken(s.CtorToken);
-                                                            
                                                             return new HatcherWeaveSpec(
                                                                                 iProvWeaveSpec++, 
-                                                                                ctorRef,
-                                                                                s.CtorArgs,
-                                                                                s.NamedArgs );
+                                                                                mCtor,
+                                                                                h.CtorArgs,
+                                                                                h.CtorNamedArgs );
                                                         })
                                                         .ToArray();
 

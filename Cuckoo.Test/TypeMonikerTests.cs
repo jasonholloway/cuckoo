@@ -1,5 +1,4 @@
 ﻿using Cuckoo.Gather.Monikers;
-using Cuckoo.Gather.Specs;
 using Cuckoo.Test.Infrastructure;
 using Cuckoo.Weave;
 using Cuckoo.Weave.Cecil;
@@ -16,6 +15,8 @@ namespace Cuckoo.Test
     [TestClass]
     public class TypeMonikerTests
     {
+
+
         [TestMethod]
         public void PrimitiveTypes() {
             TestTypeMonikers(new[] {
@@ -80,8 +81,11 @@ namespace Cuckoo.Test
 
 
 
-        void TestTypeMonikers(Type[] types) {
-            var typeRefs = types.Select(t => Type2TypeRefViaMoniker(t));
+        void TestTypeMonikers(Type[] types) 
+        {
+            var monikers = new MonikerGenerator();
+
+            var typeRefs = types.Select(t => Type2TypeRefViaMoniker(t, monikers));
 
             var zipped = types.Zip(typeRefs, (t, r) => new { Type = t, TypeRef = r });
 
@@ -93,13 +97,13 @@ namespace Cuckoo.Test
 
 
 
-        TypeReference Type2TypeRefViaMoniker(Type type) {
+        TypeReference Type2TypeRefViaMoniker(Type type, MonikerGenerator monikers) {
             var mod = ModuleDefinition.ReadModule(
                                         type.Assembly.Location);
 
-            var typeMoniker = TypeMoniker.Derive(type);
+            var moniker = monikers.Type(type);
 
-            return mod.ImportTypeMoniker(typeMoniker);
+            return mod.ImportTypeMoniker(moniker);
         }
 
 

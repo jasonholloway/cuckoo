@@ -4,56 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Cuckoo.Gather.Monikers
-{
-    public static class TypeMoniker
-    {
-        public static ITypeMoniker Derive(Type type) {
-            if(type.IsValueType && type.IsByRef) {
-                return new ByRefTypeSpec(
-                                Derive(type.GetElementType())
-                                );
-            }
-
-            if(type.IsArray) {
-                return new ArrayTypeSpec(
-                                Derive(type.GetElementType()),
-                                type.GetArrayRank()
-                                );
-            }
-            else if(type.IsGenericType && !type.IsGenericTypeDefinition) {
-                return new GenTypeSpec(
-                                Derive(type.GetGenericTypeDefinition()),
-                                type.GetGenericArguments()
-                                        .Select(a => Derive(a))
-                                        .ToArray()
-                                );
-            }
-
-
-            if(type.IsGenericParameter) {
-                return new GenParamSpec(
-                                //...                
-                                );
-            }
-            
-
-            if(type.IsNested) {
-                return new NestedTypeDef(
-                                Derive(type.DeclaringType),
-                                type.Name
-                                );
-            }
-
-            return new TypeDef(
-                            type.Assembly.FullName,
-                            type.Namespace,
-                            type.Name
-                            );
-        }
-    }
-
-
-
+{    
     public interface ITypeMoniker
     {
         string AssemblyName { get; }
@@ -241,24 +192,67 @@ namespace Cuckoo.Gather.Monikers
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
     [Serializable]
-    public class GenParamSpec : ITypeMoniker
+    public class TypeGenParam : ITypeMoniker
     {
+        public string Name { get; private set; }
+        public ITypeMoniker DeclaringType { get; private set; }
+        public int Index { get; private set; }
+
+        public TypeGenParam(string name, ITypeMoniker decType, int index) {
+            Name = name;
+            DeclaringType = decType;
+            Index = index;
+        }
 
         public string AssemblyName {
-            get { throw new NotImplementedException(); }
+            get { return DeclaringType.AssemblyName; }
         }
-
-        public string Name {
-            get { throw new NotImplementedException(); }
-        }
-
+        
         public string FullName {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         public string AssemblyQualifiedName {
-            get { throw new NotImplementedException(); }
+            get { return null; }
+        }
+    }
+
+    [Serializable]
+    public class MethodGenParam : ITypeMoniker
+    {
+        public string Name { get; private set; }
+        public IMethodMoniker DeclaringMethod { get; private set; }
+        public int Index { get; private set; }
+
+        public MethodGenParam(string name, IMethodMoniker decMethod, int index) {
+            Name = name;
+            DeclaringMethod = decMethod;
+            Index = index;
+        }
+
+        public string AssemblyName {
+            get { return DeclaringMethod.DeclaringType.AssemblyName; }
+        }
+        
+        public string FullName {
+            get { return null; }
+        }
+
+        public string AssemblyQualifiedName {
+            get { return null; }
         }
     }
 

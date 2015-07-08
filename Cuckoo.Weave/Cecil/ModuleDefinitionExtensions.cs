@@ -1,5 +1,4 @@
 ﻿using Cuckoo.Gather.Monikers;
-using Cuckoo.Gather.Specs;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using System;
@@ -18,8 +17,30 @@ namespace Cuckoo.Weave.Cecil
 
 
 
-        public static MethodReference ImportMethodReference(this ModuleDefinition @this, IMethodMoniker methodMoniker) 
+        public static MethodReference ImportMethodMoniker(this ModuleDefinition @this, IMethodMoniker methodMoniker) 
         {
+            if(methodMoniker is GenMethodSpec) {
+                var spec = (GenMethodSpec)methodMoniker;
+
+                var baseRef = @this.ImportMethodMoniker(spec.BaseMethod);
+
+                return (MethodReference)baseRef.MakeGenericInstanceMethod(
+                                                            spec.GenArgs
+                                                                    .Select(a => @this.ImportTypeMoniker(a))
+                                                                    .ToArray()  
+                                                            );
+            }
+            
+            if(methodMoniker is MethodDef) {
+                var def = (MethodDef)methodMoniker;
+
+                var type = @this.ImportTypeMoniker(def.DeclaringType);
+
+                return type.ReferenceMethod(
+                                    m => m.MetadataToken.ToInt32() == def.MetadataToken
+                                    );
+            }                         
+            
             throw new NotImplementedException();
         }
 

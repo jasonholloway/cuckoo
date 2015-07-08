@@ -5,40 +5,7 @@ using System.Reflection;
 using System.Text;
 
 namespace Cuckoo.Gather.Monikers
-{
-    //Generic method specs won't fully work, though this doesn't matter here, as we only have to do with normal method defs
-    //and generic method defs. You can't target a MethodSpec.
-
-    //BUT THEY DO HAVE TO WORK!!!!
-    //if i'll be using monikers to target methods by arg types, which i will.
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    public static class MethodMoniker
-    {
-        public static IMethodMoniker Derive(MethodBase method) {
-            if(method.IsGenericMethod) {
-                var info = (MethodInfo)method;
-
-                return new GenMethodSpec(
-                                Derive(info.GetGenericMethodDefinition()),
-                                info.GetGenericArguments()
-                                        .Select(a => TypeMoniker.Derive(a))
-                                        .ToArray()
-                                );
-            }
-
-            return new MethodDef(
-                            TypeMoniker.Derive(method.DeclaringType),
-                            method.Name,
-                            method.GetParameters()
-                                    .Select(p => TypeMoniker.Derive(p.ParameterType))
-                                    .ToArray(),
-                            method.MetadataToken
-                            );
-        }
-    }
-
-
+{    
     public interface IMethodMoniker
     {
         ITypeMoniker DeclaringType { get; }
@@ -46,6 +13,7 @@ namespace Cuckoo.Gather.Monikers
         string FullName { get; }
         ITypeMoniker[] ArgTypes { get; }
     }
+
 
     [Serializable]
     public class MethodDef : IMethodMoniker

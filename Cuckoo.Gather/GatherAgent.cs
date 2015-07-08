@@ -1,7 +1,7 @@
-﻿using Cuckoo.Gather.Specs;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
+using Cuckoo.Gather.Monikers;
 
 namespace Cuckoo.Gather
 {
@@ -40,11 +40,14 @@ namespace Cuckoo.Gather
             foreach(var t in targets) {
                 ValidateTarget(t);
             }
+            
+
+            var monikers = new MonikerGenerator();
 
             var specs = targets
                             .Select(t => new RoostSpec(
-                                                t.TargetMethod, 
-                                                t.HatcherCtor,
+                                                monikers.Method(t.TargetMethod),
+                                                monikers.Method(t.HatcherCtor),
                                                 t.HatcherCtorArgs,
                                                 t.HatcherCtorNamedArgs.ToArray()
                                                 ));

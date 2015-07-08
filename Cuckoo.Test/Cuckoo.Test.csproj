@@ -93,7 +93,8 @@
     <Compile Include="Infrastructure\WeaveTestBase.cs" />
     <Compile Include="GatheringTests.cs" />
     <Compile Include="StructTests.cs" />
-    <Compile Include="TypeSpecTests.cs" />
+    <Compile Include="MethodMonikerTests.cs" />
+    <Compile Include="TypeMonikerTests.cs" />
     <Compile Include="VirtualTests.cs" />
     <Compile Include="PropertyTests.cs" />
     <Compile Include="AsyncTests.cs" />

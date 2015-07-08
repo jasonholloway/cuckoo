@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using AssertExLib;
-using Cuckoo.Gather.Specs;
 using Cuckoo.Weave;
 using Mono.Cecil;
 
