@@ -25,7 +25,7 @@ namespace Cuckoo.Test
             TestMethodMonikers(new Expression<Action>[] {
                                         () => int.Parse("", null),
                                         () => new object().GetType(),
-                                        () => new ArrayTypeSpec(null, 0).GetAssemblyQualifiedName(),
+                                        () => new MethodReference(null, null).ReturnsValue(),
                                         () => "blah".EndsWith("", StringComparison.CurrentCultureIgnoreCase)
                                         });
         }
@@ -60,7 +60,12 @@ namespace Cuckoo.Test
 
         [TestMethod]
         public void Constructors() {
-            throw new NotImplementedException();
+            TestMethodMonikers(new Expression<Action>[] {
+                                        () => new AClass(),
+                                        () => new AnotherClass<byte>(),
+                                        () => new string('e', 23),
+                                        () => new List<int>(new[] { 1, 2, 3 })
+                                        });
         }
 
 
@@ -97,8 +102,30 @@ namespace Cuckoo.Test
                 Assert.IsTrue(mRef.DeclaringType.GetAssemblyQualifiedName() == mBase.DeclaringType.AssemblyQualifiedName);
                 Assert.IsTrue(mRef.Name == mBase.Name);
 
-                Assert.IsTrue(mRef.Parameters.Select(p => p.ParameterType.GetAssemblyQualifiedName())
-                                .SequenceEqual(mBase.GetParameters().Select(p => p.ParameterType.AssemblyQualifiedName)));
+                var zippedParams = mRef.ResolveParamTypes().Zip(
+                                                mBase.GetParameters()
+                                                            .Select(p => p.ParameterType),
+                                                (t1, t2) => new {
+                                                    CecilParamType = t1,
+                                                    ReflParamType = t2
+                                                });
+                                
+                foreach(var zp in zippedParams) {
+                    if(zp.CecilParamType is GenericParameter) {
+                        throw new NotImplementedException();
+                    }
+                    else if(zp.CecilParamType.IsGenericInstance) {
+                        Assert.IsTrue(zp.CecilParamType.GetElementType().GetAssemblyQualifiedName()
+                                                        == zp.ReflParamType.GetGenericTypeDefinition().AssemblyQualifiedName);
+
+                        //should really check resolved args here too
+                        //...
+                    }
+                    else {
+                        Assert.IsTrue(zp.CecilParamType.GetAssemblyQualifiedName()
+                                                        == zp.ReflParamType.AssemblyQualifiedName);
+                    }
+                }
 
                 Assert.IsTrue(mRef.IsGenericInstance == (mBase.IsGenericMethod && !mBase.IsGenericMethodDefinition));
 
@@ -108,6 +135,8 @@ namespace Cuckoo.Test
                 }
             }
         }
+
+
 
 
 

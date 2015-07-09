@@ -21,6 +21,7 @@ namespace Cuckoo.Gather.Monikers
             return moniker;
         }
 
+        //Should return some build action, which is to be built finally
 
         ITypeMoniker CreateTypeMoniker(Type type) 
         {            
@@ -50,14 +51,12 @@ namespace Cuckoo.Gather.Monikers
                 if(type.DeclaringMethod != null) {
                     return new MethodGenParam(
                                     type.Name,
-                                    this.Method(type.DeclaringMethod),
                                     type.GenericParameterPosition
                                     );
                 }
                 else {
                     return new TypeGenParam(
                                     type.Name,
-                                    this.Type(type.DeclaringType),
                                     type.GenericParameterPosition
                                     );
                 }

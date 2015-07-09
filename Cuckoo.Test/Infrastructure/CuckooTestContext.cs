@@ -13,27 +13,6 @@ namespace Cuckoo.Test.Infrastructure
     [TestClass]
     public class CuckooTestContext
     {
-        public static string TargetAssemblyPath { get; private set; }
-        public static WeaverSandbox Sandbox { get; private set; }
-        
-
-        [AssemblyInitialize]
-        public static void AsmInit(TestContext testContext) {            
-            TargetAssemblyPath = Path.Combine(
-                                        Environment.CurrentDirectory, 
-                                        "Cuckoo.TestAssembly.dll" );
-
-            Sandbox = new WeaverSandbox(TargetAssemblyPath, "CuckooWeave1");
-
-            var roostSpecs = Sandbox.Gather();
-
-            Sandbox.Weave(roostSpecs);
-        }
-
-        [AssemblyCleanup]
-        public static void AsmCleanUp() {
-            ((IDisposable)CuckooTestContext.Sandbox).Dispose();
-        }
     }
 
 

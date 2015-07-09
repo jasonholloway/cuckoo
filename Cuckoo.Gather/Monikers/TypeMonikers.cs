@@ -208,17 +208,15 @@ namespace Cuckoo.Gather.Monikers
     public class TypeGenParam : ITypeMoniker
     {
         public string Name { get; private set; }
-        public ITypeMoniker DeclaringType { get; private set; }
         public int Index { get; private set; }
 
-        public TypeGenParam(string name, ITypeMoniker decType, int index) {
+        public TypeGenParam(string name, int index) {
             Name = name;
-            DeclaringType = decType;
             Index = index;
         }
 
         public string AssemblyName {
-            get { return DeclaringType.AssemblyName; }
+            get { return null; }
         }
         
         public string FullName {
@@ -234,17 +232,15 @@ namespace Cuckoo.Gather.Monikers
     public class MethodGenParam : ITypeMoniker
     {
         public string Name { get; private set; }
-        public IMethodMoniker DeclaringMethod { get; private set; }
         public int Index { get; private set; }
 
-        public MethodGenParam(string name, IMethodMoniker decMethod, int index) {
+        public MethodGenParam(string name, int index) {
             Name = name;
-            DeclaringMethod = decMethod;
             Index = index;
         }
 
         public string AssemblyName {
-            get { return DeclaringMethod.DeclaringType.AssemblyName; }
+            get { return null; }
         }
         
         public string FullName {

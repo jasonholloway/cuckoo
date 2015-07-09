@@ -35,16 +35,16 @@ namespace Cuckoo.Weave.Cecil
                 ExplicitThis = @this.ExplicitThis
             };
 
+            foreach(GenericParameter genParamDef in @this.GenericParameters) {
+                methodRef.GenericParameters.Add(new GenericParameter(genParamDef.Name, methodRef));
+            }
+
             foreach(ParameterDefinition paramDef in @this.Parameters) {
                 methodRef.Parameters.Add(new ParameterDefinition(
                                                             paramDef.Name, 
-                                                            paramDef.Attributes, 
+                                                            paramDef.Attributes,
                                                             declaringTypeRef.Module.Import(paramDef.ParameterType, methodRef)
                                                             ));
-            }
-
-            foreach(GenericParameter genParamDef in @this.GenericParameters) {
-                methodRef.GenericParameters.Add(new GenericParameter(genParamDef.Name, methodRef));
             }
 
             return methodRef;

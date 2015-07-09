@@ -2,5 +2,6 @@
 Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.33440
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
-[IL]: Error: [c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll : Cuckoo.TestAssembly.Atts+Cuckoo.TestAssembly.<CuckooCall>_AttArgsByParamsArray::.cctor][mdToken=0x60000b3][offset 0x00000057][found ref array mdarray 'System.Int32[]'][expected ref array mdarray 'System.Object[]'] Unexpected array type on the stack.
-1 Error(s) Verifying c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll
+[IL]: Error: [c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll : Cuckoo.TestAssembly.Atts+Cuckoo.TestAssembly.<CuckooCall>_VariousAttArgs::.cctor][mdToken=0x60000af][offset 0x00000060][found ref 'System.Type'][expected ref array mdarray 'System.Object[]'] Unexpected array type on the stack.
+[IL]: Error: [c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll : Cuckoo.TestAssembly.Atts+Cuckoo.TestAssembly.<CuckooCall>_VariousAttArgs::.cctor][mdToken=0x60000af][offset 0x0000008B] Stack must be empty on return from a void function.
+2 Error(s) Verifying c:\users\jason\appdata\local\temp\cuckooweave1\cuckoo.testassembly.dll

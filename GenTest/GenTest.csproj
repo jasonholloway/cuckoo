@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C4392EC3-616A-42E3-8604-8EDCCE234040}</ProjectGuid>
+    <ProjectGuid>{5CED118C-29B5-4574-AA88-9F0F88FA4B07}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cuckoo.Gather</RootNamespace>
-    <AssemblyName>Cuckoo.Gather</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>GenTest</RootNamespace>
+    <AssemblyName>GenTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,26 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AssemblyLocator.cs" />
-    <Compile Include="CuckooGatherException.cs" />
-    <Compile Include="GatherAgent.cs" />
-    <Compile Include="AttributeTargeter.cs" />
-    <Compile Include="Gatherer.cs" />
-    <Compile Include="Monikers\MethodMonikers.cs" />
-    <Compile Include="Monikers\MonikerGenerator.Method.cs" />
-    <Compile Include="Monikers\MonikerGenerator.Type.cs" />
-    <Compile Include="Monikers\TypeMonikers.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoostSpec.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
-      <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
-      <Name>Cuckoo</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

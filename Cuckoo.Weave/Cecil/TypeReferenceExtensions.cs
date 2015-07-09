@@ -50,7 +50,9 @@ namespace Cuckoo.Weave.Cecil
             }
 
             sb.Append(", ");
-            sb.Append(@this.Resolve().Module.Assembly.FullName);
+            sb.Append(@this.IsGenericParameter 
+                            ? ((GenericParameter)@this).Owner.Module.Assembly.FullName
+                            : @this.Resolve().Module.Assembly.FullName);
 
             return sb.ToString();
         }
