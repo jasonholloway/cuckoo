@@ -2,7 +2,7 @@
 *******************************************************************
 TO DO:
 
-> Ensure monikers handle gen params well enough to allow matching to target methods
+> Hatcher ctor args need to be articulated to cope with param arrays
 > TypeInitializationFailure with RoostTargeter
 
 > Sign it all
@@ -12,6 +12,7 @@ TO DO:
 
 *******************************************************************
 DONE
+> Ensure monikers handle gen params well enough to allow matching to target methods DONE
 > TypeMonikers DONE
 > Targeters should return specs with methodbases; tokens should be internal only DONE
 > Rebuild nuget package after any changes DONE

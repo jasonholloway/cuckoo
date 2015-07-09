@@ -17,16 +17,16 @@ namespace Cuckoo.Weave.Cecil
 
 
 
-        public static MethodReference ImportMethodMoniker(this ModuleDefinition @this, IMethodMoniker methodMoniker) 
+        public static MethodReference ImportMethodMoniker(this ModuleDefinition @this, IMethodMoniker methodMoniker, IAssemblyResolver resolver = null) 
         {
             if(methodMoniker is GenMethodSpec) {
                 var spec = (GenMethodSpec)methodMoniker;
 
-                var baseRef = @this.ImportMethodMoniker(spec.BaseMethod);
+                var baseRef = @this.ImportMethodMoniker(spec.BaseMethod, resolver);
 
                 return (MethodReference)baseRef.MakeGenericInstanceMethod(
                                                             spec.GenArgs
-                                                                    .Select(a => @this.ImportTypeMoniker(a))
+                                                                    .Select(a => @this.ImportTypeMoniker(a, resolver))
                                                                     .ToArray()  
                                                             );
             }
@@ -34,7 +34,7 @@ namespace Cuckoo.Weave.Cecil
             if(methodMoniker is MethodDef) {
                 var def = (MethodDef)methodMoniker;
 
-                var type = @this.ImportTypeMoniker(def.DeclaringType);
+                var type = @this.ImportTypeMoniker(def.DeclaringType, resolver);
 
                 return type.ReferenceMethod(
                                     m => m.MetadataToken.ToInt32() == def.MetadataToken
@@ -46,23 +46,25 @@ namespace Cuckoo.Weave.Cecil
 
 
 
-        public static TypeReference ImportTypeMoniker(this ModuleDefinition @this, ITypeMoniker typeMoniker) 
+        public static TypeReference ImportTypeMoniker(this ModuleDefinition @this, ITypeMoniker typeMoniker, IAssemblyResolver resolver = null) 
         {
+            resolver = resolver ?? @this.AssemblyResolver;
+
             if(typeMoniker is ArrayTypeSpec) {
                 var arraySpec = (ArrayTypeSpec)typeMoniker;
 
-                var elTypeRef = @this.ImportTypeMoniker(arraySpec.ElementType);
+                var elTypeRef = @this.ImportTypeMoniker(arraySpec.ElementType, resolver);
 
                 return elTypeRef.MakeArrayType(arraySpec.Rank);
             }
             else if(typeMoniker is GenTypeSpec) {
                 var genSpec = (GenTypeSpec)typeMoniker;
 
-                var elTypeRef = @this.ImportTypeMoniker(genSpec.ElementType);
+                var elTypeRef = @this.ImportTypeMoniker(genSpec.ElementType, resolver);
 
                 return elTypeRef.MakeGenericInstanceType(
                                         genSpec.GenArgs
-                                                    .Select(a => @this.ImportTypeMoniker(a))
+                                                    .Select(a => @this.ImportTypeMoniker(a, resolver))
                                                     .ToArray()
                                         );
             }
@@ -72,7 +74,7 @@ namespace Cuckoo.Weave.Cecil
             if(typeMoniker is NestedTypeDef) {
                 var nestedDef = (NestedTypeDef)typeMoniker;
 
-                var decTypeRef = @this.ImportTypeMoniker(nestedDef.DeclaringType);
+                var decTypeRef = @this.ImportTypeMoniker(nestedDef.DeclaringType, resolver);
 
                 typeRef = decTypeRef.Resolve().NestedTypes
                                                   .First(n => n.Name == nestedDef.Name);
@@ -80,7 +82,13 @@ namespace Cuckoo.Weave.Cecil
             else {
                 var typeDef = (TypeDef)typeMoniker;
 
-                var asm = @this.AssemblyResolver.Resolve(typeDef.AssemblyName);
+                var asm = resolver.Resolve(typeDef.AssemblyName);
+
+                if(asm == null) {
+                    throw new InvalidOperationException(string.Format(
+                                                                "Unable to resolve assembly {0}",
+                                                                typeDef.AssemblyName ));
+                }
 
                 typeRef = (TypeReference)asm.MainModule.GetType(
                                                     string.Format("{0}.{1}", typeDef.Namespace, typeDef.Name));

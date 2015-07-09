@@ -47,6 +47,21 @@ namespace Cuckoo.Test
         }
 
 
+        class YetAnotherClass
+        {
+            public YetAnotherClass() {
+
+            }
+
+            public YetAnotherClass(params int[] r) {
+
+            }
+
+            public YetAnotherClass(int i, int e) {
+
+            }
+        }
+
 
 
         [TestMethod]
@@ -64,7 +79,10 @@ namespace Cuckoo.Test
                                         () => new AClass(),
                                         () => new AnotherClass<byte>(),
                                         () => new string('e', 23),
-                                        () => new List<int>(new[] { 1, 2, 3 })
+                                        () => new List<int>(new[] { 1, 2, 3 }),
+                                        () => new YetAnotherClass(),
+                                        () => new YetAnotherClass(1),
+                                        () => new YetAnotherClass(1, 2)
                                         });
         }
 

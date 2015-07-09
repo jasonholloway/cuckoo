@@ -75,14 +75,10 @@ namespace Cuckoo.Weave
                             var hatchWeaveSpecs = spec.Hatchers
                                                         .Select(h => {
                                                             var asm = _asmResolver
-                                                                        .Resolve(AssemblyNameReference.Parse(h.Ctor.DeclaringType.AssemblyName));
+                                                                            .Resolve(AssemblyNameReference.Parse(h.Ctor.DeclaringType.AssemblyName));
                                                             
-                                                            var tHatcher = asm.MainModule
-                                                                                .GetType(h.Ctor.DeclaringType.FullName);
-
-                                                            var mCtor = tHatcher.ReferenceMethod(
-                                                                                        m => m.Name == h.Ctor.Name
-                                                                                            && true); //NEED TO CHECK ARGS!!!!!!!
+                                                            var mCtor = asm.MainModule
+                                                                            .ImportMethodMoniker(h.Ctor, _asmResolver);
 
                                                             return new HatcherWeaveSpec(
                                                                                 iProvWeaveSpec++, 
@@ -97,7 +93,7 @@ namespace Cuckoo.Weave
                                                 hatchWeaveSpecs );
                         });
             
-
+            
             var roostWeavers = roostWeaveSpecs
                                     .Where(s => !s.Method.IsAbstract)
                                     .Select(s => new RoostWeaver(s, _log));

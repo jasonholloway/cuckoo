@@ -149,12 +149,14 @@ namespace Cuckoo.Weave
                         i.Emit(OpCodes.Stloc_S, vHatchers);
 
                         foreach(var hatchSpec in spec.HatcherSpecs) 
-                        {                        
+                        {
+                            //ctor args loaded improperly into spec... should be one array!
+
                             foreach(var ctorArg in hatchSpec.CtorArgs) {
                                 i.EmitConstant(mod.Import(ctorArg.GetType()), ctorArg);
                             }
 
-                            i.Emit(OpCodes.Newobj, mod.Import(hatchSpec.CtorMethod)); //!!!!!
+                            i.Emit(OpCodes.Newobj, mod.Import(hatchSpec.CtorMethod)); //!!!!! HATCHSPEC CTORARGS WRONG!!!!
                             i.Emit(OpCodes.Dup);
                             i.Emit(OpCodes.Stloc_S, vHatcher);
 

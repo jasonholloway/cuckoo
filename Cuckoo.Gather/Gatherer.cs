@@ -37,7 +37,9 @@ namespace Cuckoo.Gather
                 
                 agent.Init(_locator);
 
-                return agent.GatherAllRoostSpecs(_targetAsmName);
+                var specs = agent.GatherAllRoostSpecs(_targetAsmName);
+
+                return specs;
             }
             finally {
                 AppDomain.Unload(appDom);

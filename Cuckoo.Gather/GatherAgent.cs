@@ -44,16 +44,22 @@ namespace Cuckoo.Gather
 
             var monikers = new MonikerGenerator();
 
-            var specs = targets
-                            .Select(t => new RoostSpec(
-                                                monikers.Method(t.TargetMethod),
-                                                monikers.Method(t.HatcherCtor),
-                                                t.HatcherCtorArgs,
-                                                t.HatcherCtorNamedArgs.ToArray()
-                                                ));
-            
-            return specs.ToArray();
+            var specs = targets.Select(t => BuildRoostSpec(monikers, t));
+        
+            return specs.ToArray(); 
         }
+
+
+
+        RoostSpec BuildRoostSpec(MonikerGenerator monikers, RoostTarget target) {
+            return new RoostSpec(
+                        monikers.Method(target.TargetMethod),
+                        monikers.Method(target.HatcherCtor),
+                        target.HatcherCtorArgs,
+                        target.HatcherCtorNamedArgs.ToArray()
+                        );
+        }
+
 
 
 
@@ -87,6 +93,7 @@ namespace Cuckoo.Gather
                             );
             }
 
+            
             var rParams = target.HatcherCtor.GetParameters();
 
             if(rParams.Length != target.HatcherCtorArgs.Length) {

@@ -13,11 +13,8 @@ namespace Cuckoo.Example
             string m = GetMessage();
             Console.WriteLine(m);
 
-
             var a = new AClass();
             Console.WriteLine("Cuckooed by custom targeter: {0} ... {1}", a.Hello(), a.HelloAgain());
-
-            Console.ReadLine();
         }
 
         [TestCuckoo]
