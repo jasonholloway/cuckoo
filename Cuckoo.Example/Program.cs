@@ -14,6 +14,9 @@ namespace Cuckoo.Example
             Console.WriteLine(m);
 
             var a = new AClass();
+            
+            a.Hello();
+
             Console.WriteLine("Cuckooed by custom targeter: {0} ... {1}", a.Hello(), a.HelloAgain());
         }
 

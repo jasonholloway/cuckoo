@@ -1,17 +1,17 @@
 #Cuckoo: a full-feathered method interceptor
 
 ##Overview
-Cuckoo is a Fody add-in for AOP-style method interception. It modifies assemblies so that marked methods immediately delegate to user-provided ICuckoo classes, which manage each call accordingly, and can trigger arbitrary code as they like.
+Cuckoo is a Fody add-in for AOP-style method interception. It modifies assemblies so that marked methods delegate immediately to user-provided classes, which are given full control over the call's further execution, and full access to all passed parameters.
 
-Another para here for pacing.
+Methods are most easily targeted by attribute, although an underlying mechanism is also exposed (via a simple API), whereby interceptions can be declared generally.
 
-By being based on the Mono.Cecil and Fody libraries, Cuckoo suits itself to .NET development on any platform.
+And by being built on the Mono.Cecil and Fody libraries, Cuckoo suits itself to .NET development on any platform.
 
 ####Features
  - Wraps method calls
  - Triggers arbitrary code
  - Gives access to (and alters) arguments and return values
- - Controlled by attribute declarations
+ - Controlled by attribute declarations, or by arbitrary rules from user code
  - Cross-platform compatible
 
 
@@ -22,6 +22,7 @@ Install via NuGet
 
 ####Create a Cuckoo attribute  
 Create a custom CuckooAttribute
+
 
 ####Apply to methods  
 Decorate the methods of your choice
