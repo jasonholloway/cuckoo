@@ -51,6 +51,17 @@ function Update-FodyConfig($addinName, $project)
     {
         Write-Host "Appending node"
         $newNode = $xml.CreateElement($addinName)
+
+		$targeterNode = $xml.CreateElement("Targeter")
+		$targeterNode.SetAttribute("FullName","Cuckoo.Gather.Targeters.AttributeTargeter")
+		$targeterNode.SetAttribute("Assembly","Cuckoo.Gather")
+		$newNode.AppendChild($targeterNode);
+		
+		$targeterNode = $xml.CreateElement("Targeter")
+		$targeterNode.SetAttribute("FullName","Cuckoo.Gather.Targeters.CascadeTargeter")
+		$targeterNode.SetAttribute("Assembly","Cuckoo.Gather")
+		$newNode.AppendChild($targeterNode);
+
         $weavers.AppendChild($newNode)
     }
 

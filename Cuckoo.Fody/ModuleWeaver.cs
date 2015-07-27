@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Cuckoo.Gather.Monikers;
 using Cuckoo.Gather.Targeters;
+using System.Xml.Linq;
 
 namespace Cuckoo.Fody
 {
@@ -21,33 +22,22 @@ namespace Cuckoo.Fody
         public string AddinDirectoryPath { get; set; }
         public string References { get; set; }
         public List<string> ReferenceCopyLocalPaths { get; set; }
-        
+        public XElement Config { get; set; }
 
         public void Execute() 
         {
             var logger = new Logger(LogInfo, LogError);
 
-            var locator = BuildAssemblyLocator();
+            var targeterTypes = ConfigReader.Read(Config)
+                                                .ToArray();
 
-
-
-            //targeters to be resolved from passed parameters!
-            //AssemblyLocator needs to be able to service whatever's specified, too.
-
-
-            var monikers = new MonikerGenerator();
-
-            var targeterTypes = new[] { 
-                                    monikers.Type(typeof(AttributeTargeter)),
-                                    monikers.Type(typeof(CascadeTargeter))
-                                };
-
+            var assemblyLocator = BuildAssemblyLocator();
 
             var gatherer = new Gatherer(
                                     AddinDirectoryPath,
                                     ModuleDefinition.Assembly.FullName,
                                     targeterTypes,
-                                    locator,
+                                    assemblyLocator,
                                     logger );
 
             var roostSpecs = gatherer.Gather();

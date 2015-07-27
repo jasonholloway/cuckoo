@@ -7,12 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using AssertExLib;
-using Cuckoo.Weave;
-using Mono.Cecil;
+//using Cuckoo.Weave;
+//using Mono.Cecil;
 using Cuckoo.Gather.Monikers;
 using Cuckoo.Gather.Targeters;
+using Cuckoo.Gather.Test.ExampleTargeter;
 
-namespace Cuckoo.Test
+namespace Cuckoo.Gather.Test
 {
     [TestClass]
     public class GatheringTests
@@ -20,8 +21,25 @@ namespace Cuckoo.Test
         [TestMethod]
         public void GatheringBadMethodsThrowExceptions() {
             AssertEx.Throws<CuckooGatherException>(() => {
-                GatherFromAssembly(typeof(EffusiveTargeter).Assembly);
+                GatherFromAssembly(
+                    typeof(EffusiveTargeter).Assembly,
+                    new[] { typeof(AttributeTargeter), typeof(CascadeTargeter) }
+                    );
             });
+        }
+        
+
+        [TestMethod]
+        public void CorrectTargeterFoundInAssembly() 
+        {
+            var monikers = new MonikerGenerator();
+
+            var specs = GatherFromAssembly(
+                            typeof(Targeter99).Assembly,
+                            new[] { typeof(Targeter99) }
+                            );
+
+            Assert.AreEqual(99, specs.Count());
         }
 
 
@@ -48,7 +66,7 @@ namespace Cuckoo.Test
         
 
 
-        IEnumerable<RoostSpec> GatherFromAssembly(Assembly asm) 
+        IEnumerable<RoostSpec> GatherFromAssembly(Assembly asm, Type[] targeterTypes) 
         {
             var appDom = AppDomain.CreateDomain(
                                     "GatheringTests",
@@ -72,12 +90,11 @@ namespace Cuckoo.Test
 
                 var monikers = new MonikerGenerator();
 
-                var targeterTypes = new[] { 
-                                        monikers.Type(typeof(AttributeTargeter)),
-                                        monikers.Type(typeof(CascadeTargeter))
-                                    };
+                var targeterMonikers = targeterTypes
+                                            .Select(t => monikers.Type(t))
+                                            .ToArray();
 
-                return agent.GatherAllRoostSpecs(asm.FullName, targeterTypes.ToArray());
+                return agent.GatherAllRoostSpecs(asm.FullName, targeterMonikers);
             }
             finally {
                 AppDomain.Unload(appDom);

@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DE09F201-5930-4D24-ADBF-F4B27981AF25}</ProjectGuid>
+    <ProjectGuid>{FD92EAD4-BF13-4A7D-9364-798AD78C2871}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cuckoo.Test</RootNamespace>
-    <AssemblyName>Cuckoo.Test</AssemblyName>
+    <RootNamespace>Cuckoo.Gather.Test</RootNamespace>
+    <AssemblyName>Cuckoo.Gather.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -16,8 +16,6 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,7 +25,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,40 +33,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssertExLib">
       <HintPath>..\packages\AssertEx.1.0.0\lib\net45\AssertExLib.dll</HintPath>
     </Reference>
-    <Reference Include="FizzWare.NBuilder">
-      <HintPath>..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build" />
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Tasks.v4.0" />
-    <Reference Include="Microsoft.Build.Utilities.v4.0" />
-    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FodyCecil.1.28.3\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FodyCecil.1.28.3\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FodyCecil.1.28.3\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FodyCecil.1.28.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="Sequences">
-      <HintPath>..\packages\Sequences.1.0.1\lib\portable-net45+sl5+win8\Sequences.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Numerics" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -84,53 +53,29 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Infrastructure\AssemblyResolver.cs" />
-    <Compile Include="Infrastructure\CuckooTestContext.cs" />
-    <Compile Include="Infrastructure\IMethodTester.cs" />
-    <Compile Include="Infrastructure\MethodTester2.cs" />
-    <Compile Include="Infrastructure\WeaverSandbox.cs" />
-    <Compile Include="Infrastructure\ShadowFolder.cs" />
-    <Compile Include="Infrastructure\WeaveTestBase.cs" />
-    <Compile Include="StructTests.cs" />
-    <Compile Include="MethodMonikerTests.cs" />
-    <Compile Include="TypeMonikerTests.cs" />
-    <Compile Include="VirtualTests.cs" />
-    <Compile Include="PropertyTests.cs" />
-    <Compile Include="AsyncTests.cs" />
-    <Compile Include="TypeSpecArgTests.cs" />
-    <Compile Include="CtorTests.cs" />
-    <Compile Include="ArgTests.cs" />
-    <Compile Include="StaticTests.cs" />
-    <Compile Include="AttributeTests.cs" />
-    <Compile Include="GenericClassTests.cs" />
-    <Compile Include="GenericMethodTests.cs" />
-    <Compile Include="BasicTests.cs" />
+    <Compile Include="GatheringTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cuckoo.BadTargeterExample\Cuckoo.EffusiveTargeterExample.csproj">
       <Project>{6b0c2643-69aa-461e-97b7-0e58c2c6ad37}</Project>
       <Name>Cuckoo.EffusiveTargeterExample</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cuckoo.Gather.Test.ExampleTargeter\Cuckoo.Gather.Test.ExampleTargeter.csproj">
+      <Project>{00a6aba1-6411-47b5-9689-7fb9b56a9862}</Project>
+      <Name>Cuckoo.Gather.Test.ExampleTargeter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cuckoo.Gather\Cuckoo.Gather.csproj">
       <Project>{c4392ec3-616a-42e3-8604-8edcce234040}</Project>
       <Name>Cuckoo.Gather</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cuckoo.Weave\Cuckoo.Weave.csproj">
-      <Project>{15a60ca7-49a7-4e64-a160-26f2d0da485c}</Project>
-      <Name>Cuckoo.Weave</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cuckoo\Cuckoo.csproj">
       <Project>{892d38cc-e0f7-4691-b9e6-8f52b2b194d0}</Project>
       <Name>Cuckoo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cuckoo.TestAssembly\Cuckoo.TestAssembly.csproj">
-      <Project>{34ab5b1e-e2e1-4025-ad1d-c4701ee25715}</Project>
-      <Name>Cuckoo.TestAssembly</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

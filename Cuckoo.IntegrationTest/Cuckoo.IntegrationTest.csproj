@@ -54,6 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="IntegrationTests.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Choose>

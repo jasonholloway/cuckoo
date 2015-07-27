@@ -29,7 +29,7 @@ namespace Cuckoo.Test
         [TestMethod]
         public void SimpleTypes() {
             TestTypeMonikers(new[] {
-                            typeof(GatheringTests),
+                            typeof(TypeMonikerTests),
                             typeof(Weaver),
                             typeof(CuckooTestContext)
                         });
@@ -53,7 +53,7 @@ namespace Cuckoo.Test
         [TestMethod]
         public void ArrayTypes() {
             TestTypeMonikers(new[] {
-                            typeof(GatheringTests[]),
+                            typeof(TypeMonikerTests[]),
                             typeof(int[])
                         });
         }
@@ -62,7 +62,7 @@ namespace Cuckoo.Test
         [TestMethod]
         public void MultiArrayTypes() {
             TestTypeMonikers(new[] {
-                            typeof(GatheringTests[][]),
+                            typeof(TypeMonikerTests[][]),
                             typeof(int[,,][][,])
                         });
         }
