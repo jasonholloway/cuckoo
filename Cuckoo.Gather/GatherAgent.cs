@@ -19,24 +19,21 @@ namespace Cuckoo.Gather
         }
         
 
-        public RoostSpec[] GatherAllRoostSpecs(string targetAsmName) 
+        public RoostSpec[] GatherAllRoostSpecs(string targetAsmName, ITypeMoniker[] targeterTypes) 
         {            
             _targetAsm = Assembly.Load(targetAsmName);
 
-            var pickerTypes = _targetAsm.GetTypes()
-                                    .Where(t => ! t.IsAbstract
-                                                && !t.IsGenericTypeDefinition
-                                                && typeof(IRoostTargeter).IsAssignableFrom(t));       
-     
-            var targeters = new[] { 
-                                new AttributeTargeter() 
-                            } 
-                            .Concat(pickerTypes
-                                        .Select(t => (IRoostTargeter)Activator.CreateInstance(t)));
-            
+
+            var targeters = targeterTypes
+                                .Select(t => {
+                                    var type = Type.GetType(t.AssemblyQualifiedName);
+                                    return (IRoostTargeter)Activator.CreateInstance(type);
+                                });
+
             var targets = targeters
                             .SelectMany(i => i.TargetRoosts(_targetAsm));
             
+
             foreach(var t in targets) {
                 ValidateTarget(t);
             }

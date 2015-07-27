@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Cuckoo.Gather
+namespace Cuckoo.Gather.Targeters
 {
-    internal class AttributeTargeter : IRoostTargeter
+    public class AttributeTargeter : IRoostTargeter
     {
         public IEnumerable<RoostTarget> TargetRoosts(Assembly assembly) 
         {

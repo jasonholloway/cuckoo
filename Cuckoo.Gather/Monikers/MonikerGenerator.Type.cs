@@ -21,7 +21,6 @@ namespace Cuckoo.Gather.Monikers
             return moniker;
         }
 
-        //Should return some build action, which is to be built finally
 
         ITypeMoniker CreateTypeMoniker(Type type) 
         {            

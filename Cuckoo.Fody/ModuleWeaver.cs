@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cuckoo.Gather.Monikers;
+using Cuckoo.Gather.Targeters;
 
 namespace Cuckoo.Fody
 {
@@ -27,9 +29,24 @@ namespace Cuckoo.Fody
 
             var locator = BuildAssemblyLocator();
 
+
+
+            //targeters to be resolved from passed parameters!
+            //AssemblyLocator needs to be able to service whatever's specified, too.
+
+
+            var monikers = new MonikerGenerator();
+
+            var targeterTypes = new[] { 
+                                    monikers.Type(typeof(AttributeTargeter)),
+                                    monikers.Type(typeof(CascadeTargeter))
+                                };
+
+
             var gatherer = new Gatherer(
                                     AddinDirectoryPath,
                                     ModuleDefinition.Assembly.FullName,
+                                    targeterTypes,
                                     locator,
                                     logger );
 

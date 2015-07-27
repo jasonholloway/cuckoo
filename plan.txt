@@ -1,9 +1,26 @@
 ﻿
+A derivative caching lib would scan the entire assembly and reweave according to marker attributes - not functional ones.
+Certain info would need consolidating from their dispersion before weaving decisions could be made. 
+
+As is, attributes are NOT expected to be functional. 
+
+But we DO insist on targeting code to be present in the given assembly. This makes no sense for derivative libraries, which would
+insinuate themselves into the project by NuGet, with no requirement for further user interaction.
+
+Fody, in its emplacement, alters the build script. Could a further user library do similarly? Could it set a variable in the project file
+to relay instructions to Cuckoo? 
+
+What else could be done? A special file in the root folder, like FodyWeavers.xml? Shouldn't rely on Fody in this, so can't jump that file
+in particular. Files are lame though. If the build script would work, that would be the avenue.
+
+.targets file is merged in somehow... this would spec the assembly of the targeter, and the assembly to target.
+
+See here (I think): http://haacked.com/archive/2014/04/15/nuget-build-dependencies/
+
+
 *******************************************************************
 TO DO:
-
-> MDB files!!!
-
+> Targeters to be specified by param - to be done by Cuckoo.Fody and passed to the gatherer
 > Sign it all
 > With signing in place, reduce public surface
 > Test package on Mono again

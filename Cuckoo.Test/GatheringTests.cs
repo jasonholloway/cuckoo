@@ -9,6 +9,8 @@ using System.Reflection;
 using AssertExLib;
 using Cuckoo.Weave;
 using Mono.Cecil;
+using Cuckoo.Gather.Monikers;
+using Cuckoo.Gather.Targeters;
 
 namespace Cuckoo.Test
 {
@@ -67,7 +69,15 @@ namespace Cuckoo.Test
 
                 agent.Init(locator);
 
-                return agent.GatherAllRoostSpecs(asm.FullName);
+
+                var monikers = new MonikerGenerator();
+
+                var targeterTypes = new[] { 
+                                        monikers.Type(typeof(AttributeTargeter)),
+                                        monikers.Type(typeof(CascadeTargeter))
+                                    };
+
+                return agent.GatherAllRoostSpecs(asm.FullName, targeterTypes.ToArray());
             }
             finally {
                 AppDomain.Unload(appDom);

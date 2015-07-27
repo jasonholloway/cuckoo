@@ -44,9 +44,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLocator.cs" />
+    <Compile Include="Targeters\CascadeTargeter.cs" />
     <Compile Include="CuckooGatherException.cs" />
     <Compile Include="GatherAgent.cs" />
-    <Compile Include="AttributeTargeter.cs" />
+    <Compile Include="Targeters\AttributeTargeter.cs" />
     <Compile Include="Gatherer.cs" />
     <Compile Include="Monikers\MethodMonikers.cs" />
     <Compile Include="Monikers\MonikerGenerator.Method.cs" />

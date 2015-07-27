@@ -11,5 +11,4 @@ namespace Cuckoo
         IEnumerable<RoostTarget> TargetRoosts(Assembly assembly);    
     }
     
-
 }

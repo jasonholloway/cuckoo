@@ -10,6 +10,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Cuckoo.Gather.Monikers;
+using Cuckoo.Gather.Targeters;
 
 namespace Cuckoo.Test.Infrastructure
 {
@@ -61,9 +63,19 @@ namespace Cuckoo.Test.Infrastructure
 
             var locator = new AssemblyLocator(new Dictionary<string, string>()); //can be empty as everything should be in temp folder
 
+
+            var monikers = new MonikerGenerator();
+
+            var targeterTypes = new[] { 
+                                    monikers.Type(typeof(AttributeTargeter)),
+                                    monikers.Type(typeof(CascadeTargeter))
+                                };
+
+      
             var gatherer = new Gatherer(
                                     _folder.FolderPath, 
                                     targetAsmName.FullName,
+                                    targeterTypes,
                                     locator,
                                     _log );
 
