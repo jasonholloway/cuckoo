@@ -22,13 +22,13 @@ namespace Cuckoo.Gather
         public Gatherer(
                     string baseDir, 
                     string targetAsmName, 
-                    ITypeMoniker[] targeterTypes, 
+                    IEnumerable<ITypeMoniker> targeterTypes, 
                     AssemblyLocator locator, 
                     Logger logger) 
         {
             _baseDir = baseDir;
             _targetAsmName = targetAsmName;
-            _targeterTypes = targeterTypes;
+            _targeterTypes = targeterTypes.ToArray();
             _locator = locator;
             _log = logger;
         }

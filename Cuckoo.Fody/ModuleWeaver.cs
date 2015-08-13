@@ -28,8 +28,9 @@ namespace Cuckoo.Fody
         {
             var logger = new Logger(LogInfo, LogError);
 
-            var targeterTypes = ConfigReader.Read(Config)
-                                                .ToArray();
+            var targeterTypes = ConfigReader.Read(Config);
+
+            logger.Info("Cuckoo.Fody: {0} targeters chosen...", targeterTypes.Count());
 
             var assemblyLocator = BuildAssemblyLocator();
 
@@ -42,16 +43,18 @@ namespace Cuckoo.Fody
 
             var roostSpecs = gatherer.Gather();
 
-            logger.Info("Cuckoo.Fody: {0} roosts identified...", roostSpecs.Count());
+            logger.Info("Cuckoo.Fody: {0} roosts targeted...", roostSpecs.Count());
 
-            var weaver = new Weaver(
-                                ModuleDefinition.Assembly,
-                                roostSpecs,
-                                logger );
+            if(roostSpecs.Any()) {
+                var weaver = new Weaver(
+                                    ModuleDefinition.Assembly,
+                                    roostSpecs,
+                                    logger);
 
-            weaver.Weave();
+                weaver.Weave();
 
-            logger.Info("Cuckoo.Fody: All cuckoos nested!");
+                logger.Info("Cuckoo.Fody: All cuckoos nested!");
+            }
         }
 
 

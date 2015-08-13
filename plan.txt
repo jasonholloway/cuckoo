@@ -21,7 +21,6 @@ See here (I think): http://haacked.com/archive/2014/04/15/nuget-build-dependenci
 
 *******************************************************************
 TO DO:
-> Targeters to be specified by param - to be done by Cuckoo.Fody and passed to the gatherer
 > Sign it all
 > With signing in place, reduce public surface
 > Test package on Mono again
@@ -29,6 +28,7 @@ TO DO:
 
 *******************************************************************
 DONE
+> Targeters to be specified by param - to be done by Cuckoo.Fody and passed to the gatherer DONE
 > Ensure monikers handle gen params well enough to allow matching to target methods DONE
 > TypeMonikers DONE
 > Targeters should return specs with methodbases; tokens should be internal only DONE
