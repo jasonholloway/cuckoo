@@ -20,11 +20,11 @@ namespace Cuckoo.Gather
 
 
         public Gatherer(
-                    string baseDir, 
-                    string targetAsmName, 
-                    IEnumerable<ITypeMoniker> targeterTypes, 
-                    AssemblyLocator locator, 
-                    Logger logger) 
+            string baseDir, 
+            string targetAsmName, 
+            IEnumerable<ITypeMoniker> targeterTypes, 
+            AssemblyLocator locator, 
+            Logger logger) 
         {
             _baseDir = baseDir;
             _targetAsmName = targetAsmName;
@@ -34,7 +34,8 @@ namespace Cuckoo.Gather
         }
 
 
-        public IEnumerable<RoostSpec> Gather() {
+        public IEnumerable<RoostSpec> Gather() 
+        {
             var appDom = AppDomain.CreateDomain(
                                     "CuckooGathering",
                                     null,

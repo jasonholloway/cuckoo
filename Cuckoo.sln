@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bits", "Bits", "{40A4C9F0-C6C6-467D-B076-E9F0EBB4A7B4}"
 	ProjectSection(SolutionItems) = preProject
@@ -46,6 +46,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cuckoo.Gather.Test.ExampleTargeter", "Cuckoo.Gather.Test.ExampleTargeter\Cuckoo.Gather.Test.ExampleTargeter.csproj", "{00A6ABA1-6411-47B5-9689-7FB9B56A9862}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		net_2_0_Debug|Any CPU = net_2_0_Debug|Any CPU
@@ -439,8 +442,5 @@ Global
 		{16A9FA61-C3EC-4F48-83E9-F1DA7972A9F8} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
 		{FD92EAD4-BF13-4A7D-9364-798AD78C2871} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
 		{00A6ABA1-6411-47B5-9689-7FB9B56A9862} = {AB0DB700-160E-43C2-B2A8-B9B54A6791DD}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
