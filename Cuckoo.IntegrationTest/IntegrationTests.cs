@@ -27,7 +27,10 @@ namespace Cuckoo.IntegrationTest
                                     new[] { "Rebuild" })
                             );
 
-            Assert.IsTrue(result.OverallResult == BuildResultCode.Success);
+            Assert.IsTrue(
+                result.OverallResult == BuildResultCode.Success,
+                "Ensure installed NuGet package is up to date!"
+                );
         }
 
         [TestMethod]

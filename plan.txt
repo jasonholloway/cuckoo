@@ -21,6 +21,8 @@ See here (I think): http://haacked.com/archive/2014/04/15/nuget-build-dependenci
 
 *******************************************************************
 TO DO:
+> Gatherer should be named, more substantial part
+
 > Sign it all
 > With signing in place, reduce public surface
 > Test package on Mono again

@@ -54,7 +54,7 @@ namespace Cuckoo.IntegrationTest
 
         public LoggerVerbosity Verbosity {
             get {
-                return LoggerVerbosity.Normal;
+                return LoggerVerbosity.Detailed;
             }
             set {
                 throw new NotImplementedException();
