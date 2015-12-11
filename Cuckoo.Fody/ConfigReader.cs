@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Cuckoo.Gather.Monikers;
+using Cuckoo.Gather.Monikers; 
 using Mono.Cecil;
 
 namespace Cuckoo.Fody

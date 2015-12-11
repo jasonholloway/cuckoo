@@ -1,0 +1,31 @@
+{
+  "name": "cuckoo",
+  "version": "1.0.0",
+  "description": "Various build tasks, mainly nuget-related",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "event-stream": "^3.3.2",
+    "fs": "0.0.2",
+    "gulp-dotnet-assembly-info": "^0.1.11",
+    "gulp-notify": "^2.2.0",
+    "gulp-shell": "^0.5.1",
+    "gulp-util": "^3.0.7",
+    "interpolate": "^0.1.0",
+    "nuget": "0.0.3",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonholloway/cuckoo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jasonholloway/cuckoo/issues"
+  },
+  "homepage": "https://github.com/jasonholloway/cuckoo#readme"
+}

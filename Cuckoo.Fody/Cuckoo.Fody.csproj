@@ -59,7 +59,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CuckooModuleWeaverBase.cs" />
+    <Compile Include="ModuleWeaverBase.cs" />
     <Compile Include="ModuleWeaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConfigReader.cs" />
@@ -84,10 +84,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(SolutionDir)tools\nugetpack $(SolutionDir)nuget
-rd /s /q $(SolutionDir)packages\Cuckoo.Fody.1.0
-cd $(SolutionDir)
-D:\apps\nuget\nuget restore -source "file://D:/dev/nugetrepo"</PostBuildEvent>
+    <PostBuildEvent>cd $(SolutionDir)nuget
+call gulp package-and-push
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

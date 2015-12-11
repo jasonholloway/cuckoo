@@ -1,5 +1,6 @@
 ﻿using Cuckoo.Common;
 using Cuckoo.Gather;
+using Cuckoo.Gather.Monikers;
 using Cuckoo.Weave;
 using Mono.Cecil;
 using System;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 
 namespace Cuckoo.Fody
 {
-    public abstract class CuckooModuleWeaverBase
+    public abstract class ModuleWeaverBase
     {
         public Action<string> LogInfo { get; set; }
         public Action<string> LogError { get; set; }
@@ -22,25 +23,47 @@ namespace Cuckoo.Fody
         public List<string> ReferenceCopyLocalPaths { get; set; }
         public XElement Config { get; set; }
 
-        public void Execute() {
+
+        List<ITypeMoniker> _targeterMonikers = new List<ITypeMoniker>();
+        
+        protected void AddTargeter<T>() where T : IRoostTargeter, new() {
+            AddTargeter(typeof(T));
+        }
+
+        protected void AddTargeter(Type type) {
+            var g = new MonikerGenerator();
+            AddTargeter(g.Type(type));
+        }
+
+        protected void AddTargeter(ITypeMoniker moniker) {
+            _targeterMonikers.Add(moniker);
+        }
+
+        protected void AddTargeters(IEnumerable<ITypeMoniker> monikers) {
+            _targeterMonikers.AddRange(monikers);
+        }
+
+
+
+
+
+        public virtual void Execute() {
             var logger = new Logger(LogInfo, LogError);
-
-            var targeterTypes = ConfigReader.Read(Config);
-
-            logger.Info("Cuckoo.Fody: {0} targeters chosen...", targeterTypes.Count());
-
+            
+            logger.Info("Cuckoo: {0} targeters chosen...", _targeterMonikers.Count());
+            
             var assemblyLocator = BuildAssemblyLocator();
 
             var gatherer = new Gatherer(
                                     AddinDirectoryPath,
                                     ModuleDefinition.Assembly.FullName,
-                                    targeterTypes,
+                                    _targeterMonikers,
                                     assemblyLocator,
                                     logger);
 
             var roostSpecs = gatherer.Gather();
 
-            logger.Info("Cuckoo.Fody: {0} roosts targeted...", roostSpecs.Count());
+            logger.Info("Cuckoo: {0} roosts targeted...", roostSpecs.Count());
 
             if(roostSpecs.Any()) {
                 var weaver = new Weaver(
@@ -50,7 +73,7 @@ namespace Cuckoo.Fody
 
                 weaver.Weave();
 
-                logger.Info("Cuckoo.Fody: All cuckoos nested!");
+                logger.Info("Cuckoo: All cuckoos nested!");
             }
         }
 

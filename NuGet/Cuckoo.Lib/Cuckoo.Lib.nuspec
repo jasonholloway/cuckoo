@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata minClientVersion="2.8">
+    <id>Cuckoo.Lib</id>
+    <version>$version$</version>
+    <title>Cuckoo.Lib</title>
+    <authors>Jason Holloway</authors>
+    <owners>Jason Holloway</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://github.com/jasonholloway/cuckoo</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://github.com/jasonholloway/cuckoo/blob/master/icon.png</iconUrl>
+    <summary>A compile-time method interceptor. Wraps calls by aspect.</summary>
+    <description>
+		A method-interception library for use in Fody add-ins. Nicely encapsulates all that nasty IL code.
+		
+		A counterpart to the standalone Cuckoo.Fody add-in.
+	</description>
+    <language>en-GB</language>
+    <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil, mono</tags>
+	<developmentDependency>true</developmentDependency>
+    <dependencies>
+		<dependency id="FodyCecil" />
+    </dependencies>
+  </metadata>
+  <files>
+	<!--<file src="..\..\cuckoo.fody\bin\$target$\Cuckoo*.*" target="" />-->
+	<file src="..\..\cuckoo.fody\bin\$target$\Cuckoo*.*" target="lib\40" />
+  </files>
+</package>

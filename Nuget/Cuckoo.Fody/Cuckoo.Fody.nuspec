@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="2.8">
     <id>Cuckoo.Fody</id>
-    <version>1.0</version>
+    <version>$version$</version>
     <title>Cuckoo.Fody</title>
     <authors>Jason Holloway</authors>
     <owners>Jason Holloway</owners>
@@ -19,15 +19,15 @@ And Mono-compatible!
 </description>
     <language>en-GB</language>
     <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil, mono</tags>
-	  <developmentDependency>true</developmentDependency>
+	<developmentDependency>true</developmentDependency>
     <dependencies>
       <dependency id="Fody"/>
     </dependencies>
   </metadata>
   <files>
-	  <file src="..\cuckoo.fody\bin\debug\Cuckoo*.*" target="" />
-	  <file src="..\cuckoo\bin\debug\*.*" target="lib\40" />
-	  <file src="install.ps1" target="tools" />
+	<file src="..\..\cuckoo.fody\bin\$target$\Cuckoo*.*" target="" />
+	<file src="..\..\cuckoo\bin\$target$\*.*" target="lib\40" />
+	<file src="install.ps1" target="tools" />
     <file src="uninstall.ps1" target="tools" />
   </files>
 </package>

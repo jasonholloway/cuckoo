@@ -37,8 +37,9 @@
     <StartupObject>Cuckoo.Example.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cuckoo">
-      <HintPath>..\packages\Cuckoo.Fody.1.0\lib\40\Cuckoo.dll</HintPath>
+    <Reference Include="Cuckoo, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cuckoo.Fody.1.0.0.3\lib\40\Cuckoo.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

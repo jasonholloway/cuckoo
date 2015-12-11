@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata minClientVersion="2.8">
+    <id>CuckooConsumer.Fody</id>
+    <version>$version$</version>
+    <title>CuckooConsumer.Fody</title>
+    <authors>Jason Holloway</authors>
+    <owners>Jason Holloway</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://github.com/jasonholloway/cuckoo</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://github.com/jasonholloway/cuckoo/blob/master/icon.png</iconUrl>
+    <summary>Cuckoo.Lib example consumer</summary>
+    <description>
+Cuckoo is a full-feathered method interceptor, allowing method calls to be wrapped and tweaked. It applies its aspects at compile-time to minimise runtime bumph - much like PostSharp, but free and modular.
+
+And Mono-compatible!
+
+</description>
+    <language>en-GB</language>
+    <tags>intercept, aop, aspect, weaving, postsharp, afterthought, fody, cecil, mono</tags>
+	<developmentDependency>true</developmentDependency>
+    <dependencies>
+	  <!--<dependency id="Cuckoo.Lib" />-->
+      <dependency id="Fody" />
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="..\..\CuckooConsumer.Fody\bin\$target$\CuckooConsumer*.*" target="" />
+	<file src="..\..\CuckooConsumer\bin\$target$\*.*" target="lib\40" />
+	<file src="install.ps1" target="tools" />
+    <file src="uninstall.ps1" target="tools" />
+  </files>
+</package>
